@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <functional>
 
 class Component {
 public:
@@ -29,6 +30,20 @@ class PlayerControlComponent : public Component {
 public:
     bool isControlable;
     PlayerControlComponent(bool isControlable) : isControlable(isControlable) {}
+};
+
+
+class OnClickComponent : public Component {
+public:
+    std::function<void()> onClick;
+
+    OnClickComponent(std::function<void()> onClick) : onClick(onClick) {}
+
+    void triggerClick() {
+        if (onClick) {
+            onClick();
+        }
+    }
 };
 
 class TextureComponent : public Component {

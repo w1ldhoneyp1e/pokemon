@@ -276,7 +276,7 @@ CMakeFiles/Pokemon.dir/main.cpp.obj: D:/ispring/study/second_course/project\ pra
   C:/mingw64/include/c++/13.1.0/tr1/poly_laguerre.tcc \
   C:/mingw64/include/c++/13.1.0/tr1/riemann_zeta.tcc \
   D:/ispring/study/second_course/project\ practice/Pokemon/systems/WindowManager.h \
-  D:/ispring/study/second_course/project\ practice/Pokemon/systems/EntityManager.h \
+  D:/ispring/study/second_course/project\ practice/Pokemon/systems/ClickHandler.h \
   D:/ispring/study/second_course/project\ practice/Pokemon/Entity.h \
   D:/ispring/study/second_course/project\ practice/Pokemon/Components.h \
   C:/mingw64/include/c++/13.1.0/functional \
@@ -304,6 +304,7 @@ CMakeFiles/Pokemon.dir/main.cpp.obj: D:/ispring/study/second_course/project\ pra
   C:/mingw64/include/c++/13.1.0/backward/auto_ptr.h \
   C:/mingw64/include/c++/13.1.0/bits/ranges_uninitialized.h \
   C:/mingw64/include/c++/13.1.0/pstl/glue_memory_defs.h \
+  D:/ispring/study/second_course/project\ practice/Pokemon/systems/EntityManager.h \
   D:/ispring/study/second_course/project\ practice/Pokemon/systems/RenderSystem.h \
   C:/mingw64/include/c++/13.1.0/iostream \
   C:/mingw64/include/c++/13.1.0/istream \
@@ -320,6 +321,8 @@ D:/ispring/study/second_course/project\ practice/Pokemon/systems/InputSystem.h:
 C:/mingw64/include/c++/13.1.0/bits/istream.tcc:
 
 C:/mingw64/include/c++/13.1.0/istream:
+
+D:/ispring/study/second_course/project\ practice/Pokemon/systems/EntityManager.h:
 
 C:/mingw64/include/c++/13.1.0/pstl/glue_memory_defs.h:
 
@@ -356,8 +359,6 @@ C:/mingw64/include/c++/13.1.0/iostream:
 C:/mingw64/include/c++/13.1.0/functional:
 
 D:/ispring/study/second_course/project\ practice/Pokemon/Components.h:
-
-D:/ispring/study/second_course/project\ practice/Pokemon/systems/EntityManager.h:
 
 C:/mingw64/include/c++/13.1.0/tr1/riemann_zeta.tcc:
 
@@ -848,6 +849,8 @@ C:/SFML-2.6.1/include/SFML/Graphics/VertexBuffer.hpp:
 C:/SFML-2.6.1/include/SFML/System/ThreadLocalPtr.hpp:
 
 C:/SFML-2.6.1/include/SFML/Window/Clipboard.hpp:
+
+D:/ispring/study/second_course/project\ practice/Pokemon/systems/ClickHandler.h:
 
 C:/SFML-2.6.1/include/SFML/Window/Export.hpp:
 

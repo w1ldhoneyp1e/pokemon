@@ -277,7 +277,7 @@ CMakeFiles/Pokemon.dir/main.cpp.obj
  C:/mingw64/include/c++/13.1.0/tr1/poly_laguerre.tcc
  C:/mingw64/include/c++/13.1.0/tr1/riemann_zeta.tcc
  D:/ispring/study/second_course/project practice/Pokemon/systems/WindowManager.h
- D:/ispring/study/second_course/project practice/Pokemon/systems/EntityManager.h
+ D:/ispring/study/second_course/project practice/Pokemon/systems/ClickHandler.h
  D:/ispring/study/second_course/project practice/Pokemon/Entity.h
  D:/ispring/study/second_course/project practice/Pokemon/Components.h
  C:/mingw64/include/c++/13.1.0/functional
@@ -305,6 +305,7 @@ CMakeFiles/Pokemon.dir/main.cpp.obj
  C:/mingw64/include/c++/13.1.0/backward/auto_ptr.h
  C:/mingw64/include/c++/13.1.0/bits/ranges_uninitialized.h
  C:/mingw64/include/c++/13.1.0/pstl/glue_memory_defs.h
+ D:/ispring/study/second_course/project practice/Pokemon/systems/EntityManager.h
  D:/ispring/study/second_course/project practice/Pokemon/systems/RenderSystem.h
  C:/mingw64/include/c++/13.1.0/iostream
  C:/mingw64/include/c++/13.1.0/istream

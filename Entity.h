@@ -7,20 +7,17 @@
 
 class Entity {
 public:
-    int id;
+    std::string id;
 
-    Entity(int id) : id(id) {}
+    Entity(std::string id) : id(id) {}
 
-    // Хранение компонентов с обычными указателями
     std::unordered_map<std::type_index, Component*> components;
 
-    // Добавление компонента
     template <typename T, typename... Args>
     void addComponent(Args&&... args) {
         components[typeid(T)] = new T(std::forward<Args>(args)...);
     }
 
-    // Получение компонента
     template <typename T>
     T* getComponent() {
         auto it = components.find(typeid(T));
@@ -30,10 +27,9 @@ public:
         return nullptr;
     }
 
-    // Удаление всех компонентов
     ~Entity() {
         for (auto& [type, component] : components) {
-            delete component; // Освобождаем память под каждый компонент
+            delete component;
         }
     }
 };

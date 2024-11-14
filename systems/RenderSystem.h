@@ -12,22 +12,29 @@ public:
     RenderSystem(sf::RenderWindow* window, EntityManager* entityManager)
         : window(window), entityManager(entityManager) {}
 
-    // Добавляем сущность в систему
     void addEntity(Entity* entity) {
         entities.push_back(entity);
     }
 
-    // Удаляем сущность из системы по ID
-    void removeEntity(int entityId) {
+    void addEntities(std::vector<Entity*>* incomeEntities) {
+        for (auto it = incomeEntities->begin(); it != incomeEntities->end(); ++it) {
+            entities.push_back(*it);
+        }
+    }
+
+    void removeEntity(std::string entityId) {
         for (auto it = entities.begin(); it != entities.end(); ++it) {
             if ((*it)->id == entityId) {
                 entities.erase(it);
-                break;  // Выходим из цикла после удаления
+                break;
             }
         }
     }
 
-    // Метод для рендеринга всех зарегистрированных сущностей
+    void removeEntities() {
+        entities.clear();
+    }
+
     void render() {
         if (!window) return;
 
@@ -36,19 +43,16 @@ public:
         for (auto it = entities.begin(); it != entities.end(); ) {
             Entity* entity = *it;
             
-            // Проверка на существование сущности в EntityManager
             if (!entity || entityManager->getEntity(entity->id) != entity) {
-                it = entities.erase(it); // Удаляем из списка, если сущность недействительна
+                it = entities.erase(it);
                 continue;
             }
 
-            // Проверка на существование компонентов
             auto textureComp = entity->getComponent<TextureComponent>();
             auto positionComp = entity->getComponent<PositionComponent>();
             auto sizeComp = entity->getComponent<SizeComponent>();
 
             if (textureComp && positionComp) {
-                // Устанавливаем позицию спрайта перед рендером
                 textureComp->sprite.setPosition(positionComp->x, positionComp->y);
 
                 if (sizeComp) {
@@ -59,7 +63,7 @@ public:
                 }
                 window->draw(textureComp->sprite);
             }
-            ++it; // Переход к следующей сущности
+            ++it;
         }
         window->display();
     }
@@ -67,5 +71,5 @@ public:
 private:
     sf::RenderWindow* window;
     EntityManager* entityManager;
-    std::vector<Entity*> entities;  // Список сущностей для рендеринга
+    std::vector<Entity*> entities;
 };

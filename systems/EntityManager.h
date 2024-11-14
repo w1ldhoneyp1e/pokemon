@@ -3,18 +3,15 @@
 
 class EntityManager {
 public:
-    int nextEntityId = 0;
-    std::unordered_map<int, Entity*> entities; // Обычные указатели вместо shared_ptr
+    std::unordered_map<std::string, Entity*> entities; // Обычные указатели вместо shared_ptr
 
-    // Создание новой сущности
-    Entity* createEntity() {
-        auto* entity = new Entity(nextEntityId++);
+    Entity* createEntity(std::string id) {
+        auto* entity = new Entity(id);
         entities[entity->id] = entity;
         return entity;
     }
 
-    // Получение сущности по ID
-    Entity* getEntity(int entityId) {
+    Entity* getEntity(std::string entityId) {
         auto it = entities.find(entityId);
         return (it != entities.end()) ? it->second : nullptr;
     }
@@ -30,19 +27,17 @@ public:
         return result;
     }
 
-    // Удаление сущности по ID
-    void removeEntity(int entityId) {
+    void removeEntity(std::string entityId) {
         auto it = entities.find(entityId);
         if (it != entities.end()) {
-            delete it->second; // Удаляем сущность
+            delete it->second;
             entities.erase(it);
         }
     }
 
-    // Деструктор для удаления всех сущностей
     ~EntityManager() {
         for (auto& [id, entity] : entities) {
-            delete entity; // Освобождаем память под каждый объект Entity
+            delete entity;
         }
         entities.clear();
     }
