@@ -1,0 +1,3 @@
+D:/ispring/study/second_course/project practice/Pokemon/build/CMakeFiles/Pokemon.dir
+D:/ispring/study/second_course/project practice/Pokemon/build/CMakeFiles/edit_cache.dir
+D:/ispring/study/second_course/project practice/Pokemon/build/CMakeFiles/rebuild_cache.dir

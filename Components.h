@@ -1,0 +1,39 @@
+#pragma once
+#include <string>
+
+class Component {
+public:
+    virtual ~Component() = default;
+};
+
+// Компонент позиции
+class PositionComponent : public Component {
+public:
+    float x, y;
+    PositionComponent(float x, float y) : x(x), y(y) {}
+};
+
+class SpeedComponent : public Component {
+public:
+    float speed;
+    SpeedComponent(float speed) : speed(speed) {}
+};
+
+class SizeComponent : public Component {
+public:
+    int width, height;
+    SizeComponent(int width, int height) : width(width), height(height) {}
+};
+
+class TextureComponent : public Component {
+public:
+    int width;
+    int height;
+    sf::Texture texture;
+    sf::Sprite sprite;
+
+    explicit TextureComponent(const sf::Texture& tex, int width, int height) : texture(tex) {
+        sprite.setTexture(texture);
+        sprite.setTextureRect(sf::IntRect(0, 0, width, height));
+    }
+};
