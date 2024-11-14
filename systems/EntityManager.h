@@ -19,6 +19,17 @@ public:
         return (it != entities.end()) ? it->second : nullptr;
     }
 
+    template <typename T>
+    std::vector<Entity*> getEntitiesWithComponent() const {
+        std::vector<Entity*> result;
+        for (const auto& [id, entity] : entities) {
+            if (entity->getComponent<T>() != nullptr) { // Проверяем, есть ли компонент T
+                result.push_back(entity);
+            }
+        }
+        return result;
+    }
+
     // Удаление сущности по ID
     void removeEntity(int entityId) {
         auto it = entities.find(entityId);

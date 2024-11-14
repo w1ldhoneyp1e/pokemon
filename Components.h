@@ -25,6 +25,12 @@ public:
     SizeComponent(int width, int height) : width(width), height(height) {}
 };
 
+class PlayerControlComponent : public Component {
+public:
+    bool isControlable;
+    PlayerControlComponent(bool isControlable) : isControlable(isControlable) {}
+};
+
 class TextureComponent : public Component {
 public:
     int width;

@@ -3,11 +3,17 @@
 #include <cmath>
 #include "./systems/WindowManager.h"
 #include "./systems/EntityManager.h"
+#include "./systems/EntityManager.h"
 #include "./systems/RenderSystem.h"
 #include "./systems/InputSystem.h"
 #include "./Player/PlayerMovementSystem.h"
 #include "Entity.h"
 #include <iostream>
+
+enum struct GameState {
+    Menu,
+    Game,
+};
 
 void pollEvents(sf::RenderWindow* window, InputSystem* inputSystem) {
 	sf::Event event;
@@ -18,18 +24,17 @@ void pollEvents(sf::RenderWindow* window, InputSystem* inputSystem) {
 	}
 }
 
-void update(Entity* player, InputSystem inputSystem) {
-	auto keys = inputSystem.getPressedKeys();
-	if (keys.size()) {
-        playerMovementSystem(player, keys.back());
-    }
+void update(EntityManager* entityManager, InputSystem* inputSystem) {
+	auto keys = inputSystem->getPressedKeys();
+	if (keys.empty()) return;
+	playerMovementSystem(entityManager->getEntitiesWithComponent<PlayerControlComponent>().back(), keys.back());
 }
 
 void init() {
 }
 
 int main() {
-	sf::Clock clock;
+	GameState state = GameState::Menu;
 	WindowManager windowManager;
 	windowManager.createWindow();
 	sf::RenderWindow* window = windowManager.getWindow();
@@ -40,10 +45,21 @@ int main() {
 	player->addComponent<PositionComponent>(300, 300);
 	player->addComponent<SizeComponent>(48, 96);
 	player->addComponent<SpeedComponent>(0.25);
-	sf::Texture texture;
-    if (texture.loadFromFile("../res/Ash_sprite(16x32).png")) {
-        player->addComponent<TextureComponent>(texture, 16, 32);
+	player->addComponent<PlayerControlComponent>(true);
+	sf::Texture playerTexture;
+    if (playerTexture.loadFromFile("../res/Ash_sprite(16x32).png")) {
+        player->addComponent<TextureComponent>(playerTexture, 16, 32);
     }
+
+	auto startButton = entityManager.createEntity();
+	startButton->addComponent<PositionComponent>(400-108, 200-40);
+	startButton->addComponent<SizeComponent>(216, 80);
+	sf::Texture buttonTexture;
+	if (buttonTexture.loadFromFile("../res/button(54x20).png")) {
+		startButton->addComponent<TextureComponent>(buttonTexture, 54, 20);
+	}
+	Entity* button = startButton;
+	renderSystem.addEntity(startButton);
 
 	InputSystem inputSystem;
 
@@ -51,9 +67,7 @@ int main() {
 
 	while (window->isOpen()) {
 		pollEvents(window, &inputSystem);
-		sf::Time elapsed = clock.restart();
-		float dt = elapsed.asSeconds();
-		update(player, inputSystem);
+		update(&entityManager, &inputSystem);
 		renderSystem.render();
 	}
 	return 0;
