@@ -3,25 +3,28 @@
 
 class EntityManager {
 public:
-    std::unordered_map<std::string, Entity*> entities; // Обычные указатели вместо shared_ptr
+    std::unordered_map<std::string, Entity*> entities;
+    // TODO: заменить на умные указатели
 
     Entity* createEntity(std::string id) {
         auto* entity = new Entity(id);
-        entities[entity->id] = entity;
+        entities[id] = entity;
         return entity;
     }
 
     Entity* getEntity(std::string entityId) {
         auto it = entities.find(entityId);
-        return (it != entities.end()) ? it->second : nullptr;
+        return (it != entities.end()) 
+            ? entities[entityId] 
+            : nullptr;
     }
 
     template <typename T>
-    std::vector<Entity*> getEntitiesWithComponent() const {
+    std::vector<Entity*> getEntitiesWithComponent() {
         std::vector<Entity*> result;
-        for (const auto& [id, entity] : entities) {
-            if (entity->getComponent<T>() != nullptr) { // Проверяем, есть ли компонент T
-                result.push_back(entity);
+        for (auto it = entities.begin(); it != entities.end(); ++it) {
+            if (it->second->getComponent<T>() != nullptr) {
+                result.push_back(it->second);
             }
         }
         return result;
@@ -36,8 +39,8 @@ public:
     }
 
     ~EntityManager() {
-        for (auto& [id, entity] : entities) {
-            delete entity;
+        for (auto it = entities.begin(); it != entities.end(); ++it) {
+            delete it->second;
         }
         entities.clear();
     }

@@ -16,8 +16,8 @@ public:
         entities.push_back(entity);
     }
 
-    void addEntities(std::vector<Entity*>* incomeEntities) {
-        for (auto it = incomeEntities->begin(); it != incomeEntities->end(); ++it) {
+    void addEntities(std::vector<Entity*> incomeEntities) {
+        for (auto it = incomeEntities.begin(); it != incomeEntities.end(); ++it) {
             entities.push_back(*it);
         }
     }
@@ -40,7 +40,7 @@ public:
 
         window->clear(COLOR_WHITE);
 
-        for (auto it = entities.begin(); it != entities.end(); ) {
+        for (auto it = entities.begin(); it != entities.end(); ++it) {
             Entity* entity = *it;
             
             if (!entity || entityManager->getEntity(entity->id) != entity) {
@@ -63,7 +63,6 @@ public:
                 }
                 window->draw(textureComp->sprite);
             }
-            ++it;
         }
         window->display();
     }

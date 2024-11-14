@@ -7,7 +7,6 @@ public:
     virtual ~Component() = default;
 };
 
-// Компонент позиции
 class PositionComponent : public Component {
 public:
     float x, y;
@@ -32,6 +31,10 @@ public:
     PlayerControlComponent(bool isControlable) : isControlable(isControlable) {}
 };
 
+class GameTypeEntityComponent : public Component {
+public:
+    GameTypeEntityComponent() {}
+};
 
 class OnClickComponent : public Component {
 public:

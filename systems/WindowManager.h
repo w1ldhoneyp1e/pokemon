@@ -19,8 +19,8 @@ public:
     }
     
 private:
-    const unsigned int WINDOW_WIDTH = 800;
-    const unsigned int WINDOW_HEIGHT = 600;
+    const unsigned int WINDOW_WIDTH = 767;
+    const unsigned int WINDOW_HEIGHT = 639;
     const std::string NAME = "Pokemon";
     sf::ContextSettings settings;
     sf::RenderWindow window;

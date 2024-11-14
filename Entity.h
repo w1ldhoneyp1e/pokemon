@@ -12,6 +12,7 @@ public:
     Entity(std::string id) : id(id) {}
 
     std::unordered_map<std::type_index, Component*> components;
+    // TODO: заменить на умные указатели
 
     template <typename T, typename... Args>
     void addComponent(Args&&... args) {
@@ -28,8 +29,8 @@ public:
     }
 
     ~Entity() {
-        for (auto& [type, component] : components) {
-            delete component;
+        for (auto it = components.begin(); it != components.end(); ++it) {
+            delete it->second;
         }
     }
 };
