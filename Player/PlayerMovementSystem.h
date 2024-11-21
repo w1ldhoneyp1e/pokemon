@@ -14,16 +14,28 @@ void playerMovementSystem(Entity* player, const std::vector<sf::Keyboard::Key>& 
     for (sf::Keyboard::Key key : keys) {
         switch (key) {
             case sf::Keyboard::W:
-                position->y -= movementSpeed;
+                position->setPos(
+                    position->getX(),
+                    position->getY() - movementSpeed
+                );
                 break;
             case sf::Keyboard::A:
-                position->x -= movementSpeed;
+                position->setPos(
+                    position->getX() - movementSpeed,
+                    position->getY()
+                );
                 break;
             case sf::Keyboard::S:
-                position->y += movementSpeed;
+                position->setPos(
+                    position->getX(),
+                    position->getY() + movementSpeed
+                );
                 break;
             case sf::Keyboard::D:
-                position->x += movementSpeed;
+                position->setPos(
+                    position->getX() + movementSpeed,
+                    position->getY()
+                );
                 break;
             default:
                 break;

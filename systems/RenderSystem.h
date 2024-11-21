@@ -47,7 +47,7 @@ public:
             auto layerB = b->getComponent<RenderLayerComponent>();
             
             // Обработка случая, когда компонента нет
-            return (layerA && layerB) ? layerA->layer < layerB->layer : (layerA == nullptr); 
+            return (layerA && layerB) ? layerA->getLayer() < layerB->getLayer() : (layerA == nullptr); 
         });
 
         for (Entity* entity : entities) {
@@ -60,12 +60,12 @@ public:
             auto sizeComp = entity->getComponent<SizeComponent>();
 
             if (textureComp && positionComp) {
-                textureComp->sprite.setPosition(positionComp->x, positionComp->y);
+                textureComp->sprite.setPosition(positionComp->getX(), positionComp->getY());
 
                 if (sizeComp) {
                     textureComp->sprite.setScale(
-                        sizeComp->width / textureComp->sprite.getLocalBounds().width,
-                        sizeComp->height / textureComp->sprite.getLocalBounds().height
+                        sizeComp->getWidth() / textureComp->sprite.getLocalBounds().width,
+                        sizeComp->getHeight() / textureComp->sprite.getLocalBounds().height
                     );
                 }
                 window->draw(textureComp->sprite);

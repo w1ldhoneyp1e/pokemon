@@ -10,10 +10,10 @@ bool isClickOnEntity(const sf::Event::MouseButtonEvent& mouseEvent, Entity* enti
         return false;
     }
 
-    const float left = positionComp->x;
-    const float top = positionComp->y;
-    const float right = left + sizeComp->width;
-    const float bottom = top + sizeComp->height;
+    const float left = positionComp->getX();
+    const float top = positionComp->getY();
+    const float right = left + sizeComp->getWidth();
+    const float bottom = top + sizeComp->getHeight();
     
     return (mouseEvent.x >= left 
         && mouseEvent.x <= right 

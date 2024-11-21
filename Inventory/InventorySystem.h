@@ -16,8 +16,8 @@ void createInventory(EntityManager* entityManager) {
 		INVENTORY_HEIGHT * 4
 	);
 	inventory->addComponent<PositionComponent>(
-		WINDOW_WIDTH / 2 - INVENTORY_WIDTH * 2.5, 
-		WINDOW_HEIGHT / 2 - INVENTORY_HEIGHT * 2
+		INVENTORY_POSITION_X, 
+		INVENTORY_POSITION_Y
 	);
 	inventory->addComponent<RenderLayerComponent>(3);
     inventory->addComponent<InventoryTypeEntityComponent>();
@@ -50,6 +50,25 @@ void createInventory(EntityManager* entityManager) {
 			INVENTORY_BUTTON_CLOSE_HEIGHT
 		);
 	}
+
+	// Покемоны в инвентаре
+	auto player = entityManager->getEntity("player");
+	auto ids = player->getComponent<PlayersInventoryComponent>()->getPokemons();
+	int i = 0;
+	int j = 0;
+	for (auto id : ids) {
+		auto pokemon = entityManager->getEntity(id);
+		pokemon->getComponent<PositionComponent>()->setPos(
+			INVENTORY_CELLS_POSITION_START_X + i * 40,
+			INVENTORY_CELLS_POSITION_START_Y + j * 40
+		);
+		pokemon->getComponent<RenderLayerComponent>()->setLayer(4);
+		i++;
+		if (i / INVENTORY_CELLS_PER_ROW) {
+			j++;
+			i = 0;
+		} 
+	}
 }
 
 void closeInventory(
@@ -61,14 +80,31 @@ void closeInventory(
 	auto keys = inputSystem->getPressedKeys();
 	auto button = entityManager->getEntity("inventoryButtonClose");
 	if (
-		inputSystem->hasMouseClick() && isClickOnEntity(inputSystem->getMouseClick(), button)
-		|| !keys.empty() && std::find(keys.begin(), keys.end(), sf::Keyboard::Escape) != keys.end()
+		inputSystem->hasMouseClick() 
+		&& isClickOnEntity(inputSystem->getMouseClick(), button)
+		|| !keys.empty()
+		&& (
+			std::find(keys.begin(), keys.end(), sf::Keyboard::Escape) != keys.end()
+			|| std::find(keys.begin(), keys.end(), sf::Keyboard::E) != keys.end()
+		)
 	) {
+		// Удаляем элементы инвентаря с экрана
 		*state = GameState::Game;
 		auto menuEntities = entityManager->getEntitiesWithComponent<InventoryTypeEntityComponent>();
 		for (Entity* entity : menuEntities) {
 			renderSystem->removeEntity(entity->getId());
 		}
+
+		// Удаляем покемонов с экрана
+		auto pokemons = entityManager->getEntitiesWithComponent<PokemonComponent>();
+		for (auto pokemon : pokemons) {
+			if (pokemon->getComponent<PokemonComponent>()->isCollected()) {
+				renderSystem->removeEntity(pokemon->getId());
+			}
+		}
+
 		inputSystem->clear();
 	}
+	
+
 }

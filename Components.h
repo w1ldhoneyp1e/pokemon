@@ -8,9 +8,23 @@ public:
 };
 
 class PositionComponent : public Component {
-public:
+private:
     float x, y;
+public:
     PositionComponent(float x, float y) : x(x), y(y) {}
+
+    float getX() {
+        return x;
+    }
+
+    float getY() {
+        return y;
+    }
+
+    void setPos(float _x, float _y) {
+        x = _x;
+        y = _y;
+    }
 };
 
 class SpeedComponent : public Component {
@@ -20,15 +34,38 @@ public:
 };
 
 class SizeComponent : public Component {
-public:
+private:
     int width, height;
+public:
     SizeComponent(int width, int height) : width(width), height(height) {}
+
+    void setSize(int _width, int _height) {
+        width = _width;
+        height = _height;
+    }
+
+    int getWidth() {
+        return width;
+    }
+
+    int getHeight() {
+        return height;
+    }
 };
 
 class RenderLayerComponent : public Component {
-public:
+private:
     int layer;
+public:
     RenderLayerComponent(int layer) : layer(layer) {}
+
+    int getLayer() {
+        return layer;
+    }
+
+    void setLayer(int _layer) {
+        layer = _layer;
+    }
 };
 
 class PlayerControlComponent : public Component {
@@ -50,6 +87,61 @@ public:
 class InventoryTypeEntityComponent : public Component {
 public:
     InventoryTypeEntityComponent() {}
+};
+
+class PokemonComponent : public Component {
+private:
+    std::string name;
+    bool collected;
+public:
+    PokemonComponent(const std::string& name) 
+        : name(name), collected(false) {}
+
+    const std::string& getName() const {
+        return name;
+    }
+
+    void setName(const std::string& newName) {
+        name = newName;
+    }
+
+    bool isCollected() {
+        return collected;
+    }
+
+    void setCollected(bool status) {
+        collected = status;
+    }
+};
+
+class PlayersInventoryComponent : public Component {
+public:
+    void addPokemon(std::string id) {
+        collection.push_back(id);
+    }
+
+    void clearInventory() {
+        collection.clear();
+    }
+
+    std::string getPokemon(size_t index) const {
+        if (index < collection.size()) {
+            return collection[index];
+        } else {
+            return nullptr;
+        }
+    }
+
+    std::vector<std::string> getPokemons() {
+        return collection;
+    }
+
+    size_t getPokemonCount() const {
+        return collection.size();
+    }
+
+private:
+    std::vector<std::string> collection;
 };
 
 class OnClickComponent : public Component {

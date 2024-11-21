@@ -6,6 +6,7 @@
 #include "./systems/InputSystem.h"
 #include "./Player/PlayerMovementSystem.h"
 #include "./Inventory/InventorySystem.h"
+#include "./Pokemon/PokemonSystem.h"
 #include "GameState.h"
 #include "Entity.h"
 #include "Initialize.h"
@@ -62,8 +63,15 @@ void update(
 			*state = GameState::Inventory;
 			createInventory(entityManager);
 			renderSystem->addEntities(entityManager->getEntitiesWithComponent<InventoryTypeEntityComponent>());
+			auto pokemons = entityManager->getEntitiesWithComponent<PokemonComponent>();
+			for (auto pokemon : pokemons) {
+				if (pokemon->getComponent<PokemonComponent>()->isCollected()) {
+					renderSystem->addEntity(pokemon);
+				}
+			}
 			inputSystem->clear();
 		}
+		pokemonCollision(entityManager, renderSystem);
 	break;
 
 	case GameState::Inventory: {
@@ -124,7 +132,7 @@ int main() {
 	InputSystem inputSystem;
 
 	gameLoop(
-		window, 
+		window,
 		&entityManager, 
 		&renderSystem, 
 		&inputSystem, 

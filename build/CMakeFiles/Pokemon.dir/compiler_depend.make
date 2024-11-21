@@ -315,6 +315,8 @@ CMakeFiles/Pokemon.dir/main.cpp.obj: D:/ispring/study/second_course/project\ pra
   D:/ispring/study/second_course/project\ practice/Pokemon/Inventory/InventorySystem.h \
   D:/ispring/study/second_course/project\ practice/Pokemon/GameState.h \
   D:/ispring/study/second_course/project\ practice/Pokemon/const.h \
+  D:/ispring/study/second_course/project\ practice/Pokemon/Pokemon/PokemonSystem.h \
+  D:/ispring/study/second_course/project\ practice/Pokemon/systems/CollisionSystem.h \
   D:/ispring/study/second_course/project\ practice/Pokemon/Initialize.h \
   C:/mingw64/include/c++/13.1.0/chrono \
   C:/mingw64/include/c++/13.1.0/bits/chrono.h \
@@ -362,6 +364,10 @@ C:/mingw64/include/c++/13.1.0/sstream:
 C:/mingw64/include/c++/13.1.0/cstdint:
 
 D:/ispring/study/second_course/project\ practice/Pokemon/Initialize.h:
+
+D:/ispring/study/second_course/project\ practice/Pokemon/systems/CollisionSystem.h:
+
+D:/ispring/study/second_course/project\ practice/Pokemon/Pokemon/PokemonSystem.h:
 
 D:/ispring/study/second_course/project\ practice/Pokemon/const.h:
 
