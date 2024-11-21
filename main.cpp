@@ -5,10 +5,13 @@
 #include "./systems/RenderSystem.h"
 #include "./systems/InputSystem.h"
 #include "./Player/PlayerMovementSystem.h"
+#include "./Inventory/InventorySystem.h"
+#include "GameState.h"
 #include "Entity.h"
 #include "Initialize.h"
 #include <iostream>
-
+#include <chrono>
+#include <random>
 
 
 void pollEvents(sf::RenderWindow* window, InputSystem* inputSystem) {
@@ -20,7 +23,15 @@ void pollEvents(sf::RenderWindow* window, InputSystem* inputSystem) {
 	}
 }
 
-void update(EntityManager* entityManager, InputSystem* inputSystem, RenderSystem* renderSystem, GameState* state) {
+void update(
+		EntityManager* entityManager, 
+		InputSystem* inputSystem, 
+		RenderSystem* renderSystem, 
+		GameState* state, 
+		float deltaTime,
+		sf::RenderWindow* window
+	) {
+	// TODO: Вынести в объект аргументы
 	auto keys = inputSystem->getPressedKeys();
 	bool isClicked = false;
 	switch (*state)
@@ -32,18 +43,71 @@ void update(EntityManager* entityManager, InputSystem* inputSystem, RenderSystem
 				*state = GameState::Game;
 				renderSystem->removeEntities();
 				renderSystem->addEntities(entityManager->getEntitiesWithComponent<GameTypeEntityComponent>());
+				inputSystem->clear();
 			}
 		break;
 	}
+
 	case GameState::Game:
 		if (keys.empty()) return;
-		playerMovementSystem(entityManager->getEntitiesWithComponent<PlayerControlComponent>().back(), keys.back());
+		playerMovementSystem(entityManager->getEntitiesWithComponent<PlayerControlComponent>().back(), keys, deltaTime);
+		if (std::find(keys.begin(), keys.end(), sf::Keyboard::Escape) != keys.end()) {
+			*state = GameState::Menu;
+			renderSystem->removeEntities();
+			renderSystem->addEntities(entityManager->getEntitiesWithComponent<MenuTypeEntityComponent>());
+			inputSystem->clear();
+		}
+		// Открытие инвентаря
+		if (std::find(keys.begin(), keys.end(), sf::Keyboard::E) != keys.end()) {
+			*state = GameState::Inventory;
+			createInventory(entityManager);
+			renderSystem->addEntities(entityManager->getEntitiesWithComponent<InventoryTypeEntityComponent>());
+			inputSystem->clear();
+		}
 	break;
+
+	case GameState::Inventory: {
+		closeInventory(
+			entityManager, 
+			inputSystem,
+			renderSystem,
+			state
+		);
+		break;
+	}
 	
 	default:
 		break;
 	}
 	
+}
+
+void gameLoop(
+		sf::RenderWindow* window, 
+		EntityManager* entityManager, 
+		RenderSystem* renderSystem, 
+		InputSystem* inputSystem, 
+		GameState* state
+	) {
+    auto startTime = std::chrono::high_resolution_clock::now();
+    sf::Clock clock;
+
+    while (window->isOpen()) {
+        auto currentTime = std::chrono::high_resolution_clock::now();
+        float deltaTime = std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - startTime).count() / 1000.0f;
+        startTime = currentTime;
+
+        sf::Event event;
+        while (window->pollEvent(event)) {
+            if (event.type == sf::Event::Closed)
+                window->close();
+            inputSystem->handleEvent(event);
+        }
+
+        update(entityManager, inputSystem, renderSystem, state, deltaTime, window);
+
+        renderSystem->render();
+    }
 }
 
 int main() {
@@ -54,18 +118,18 @@ int main() {
 	EntityManager entityManager;
 	RenderSystem renderSystem(window, &entityManager);
 
-	std::unordered_map<GameState, std::vector<Entity*>> allEntities;
-	init(&allEntities, &entityManager);
-	
+	init(window, &entityManager);
+	renderSystem.addEntities(entityManager.getEntitiesWithComponent<MenuTypeEntityComponent>());
 
 	InputSystem inputSystem;
 
-	renderSystem.addEntities(allEntities[GameState::Menu]);
+	gameLoop(
+		window, 
+		&entityManager, 
+		&renderSystem, 
+		&inputSystem, 
+		&state
+	);
 
-	while (window->isOpen()) {
-		pollEvents(window, &inputSystem);
-		update(&entityManager, &inputSystem, &renderSystem, &state);
-		renderSystem.render();
-	}
 	return 0;
 }

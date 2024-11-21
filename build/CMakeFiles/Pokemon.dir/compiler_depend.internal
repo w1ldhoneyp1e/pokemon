@@ -313,5 +313,29 @@ CMakeFiles/Pokemon.dir/main.cpp.obj
  D:/ispring/study/second_course/project practice/Pokemon/systems/InputSystem.h
  C:/mingw64/include/c++/13.1.0/optional
  D:/ispring/study/second_course/project practice/Pokemon/Player/PlayerMovementSystem.h
+ D:/ispring/study/second_course/project practice/Pokemon/Inventory/InventorySystem.h
+ D:/ispring/study/second_course/project practice/Pokemon/GameState.h
+ D:/ispring/study/second_course/project practice/Pokemon/const.h
  D:/ispring/study/second_course/project practice/Pokemon/Initialize.h
+ C:/mingw64/include/c++/13.1.0/chrono
+ C:/mingw64/include/c++/13.1.0/bits/chrono.h
+ C:/mingw64/include/c++/13.1.0/ratio
+ C:/mingw64/include/c++/13.1.0/cstdint
+ C:/mingw64/include/c++/13.1.0/bits/parse_numbers.h
+ C:/mingw64/include/c++/13.1.0/sstream
+ C:/mingw64/include/c++/13.1.0/bits/sstream.tcc
+ C:/mingw64/include/c++/13.1.0/bits/chrono_io.h
+ C:/mingw64/include/c++/13.1.0/iomanip
+ C:/mingw64/include/c++/13.1.0/bits/quoted_string.h
+ C:/mingw64/include/c++/13.1.0/format
+ C:/mingw64/include/c++/13.1.0/charconv
+ C:/mingw64/include/c++/13.1.0/span
+ C:/mingw64/include/c++/13.1.0/variant
+ C:/mingw64/include/c++/13.1.0/random
+ C:/mingw64/include/c++/13.1.0/bits/random.h
+ C:/mingw64/include/c++/13.1.0/x86_64-w64-mingw32/bits/opt_random.h
+ C:/mingw64/include/c++/13.1.0/bits/random.tcc
+ C:/mingw64/include/c++/13.1.0/numeric
+ C:/mingw64/include/c++/13.1.0/bits/stl_numeric.h
+ C:/mingw64/include/c++/13.1.0/pstl/glue_numeric_defs.h
 

@@ -25,6 +25,12 @@ public:
     SizeComponent(int width, int height) : width(width), height(height) {}
 };
 
+class RenderLayerComponent : public Component {
+public:
+    int layer;
+    RenderLayerComponent(int layer) : layer(layer) {}
+};
+
 class PlayerControlComponent : public Component {
 public:
     bool isControlable;
@@ -34,6 +40,16 @@ public:
 class GameTypeEntityComponent : public Component {
 public:
     GameTypeEntityComponent() {}
+};
+
+class MenuTypeEntityComponent : public Component {
+public:
+    MenuTypeEntityComponent() {}
+};
+
+class InventoryTypeEntityComponent : public Component {
+public:
+    InventoryTypeEntityComponent() {}
 };
 
 class OnClickComponent : public Component {

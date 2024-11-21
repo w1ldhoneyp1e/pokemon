@@ -1,3 +1,4 @@
+#pragma once
 #include <SFML/Graphics.hpp>
 #include <unordered_map>
 #include <memory>
@@ -24,7 +25,7 @@ public:
 
     void removeEntity(std::string entityId) {
         for (auto it = entities.begin(); it != entities.end(); ++it) {
-            if ((*it)->id == entityId) {
+            if ((*it)->getId() == entityId) {
                 entities.erase(it);
                 break;
             }
@@ -40,13 +41,19 @@ public:
 
         window->clear(COLOR_WHITE);
 
-        for (auto it = entities.begin(); it != entities.end(); ++it) {
-            Entity* entity = *it;
+        // Сортировка по слоям
+        std::sort(entities.begin(), entities.end(), [](Entity* a, Entity* b) {
+            auto layerA = a->getComponent<RenderLayerComponent>();
+            auto layerB = b->getComponent<RenderLayerComponent>();
             
-            if (!entity || entityManager->getEntity(entity->id) != entity) {
-                it = entities.erase(it);
-                continue;
-            }
+            // Обработка случая, когда компонента нет
+            return (layerA && layerB) ? layerA->layer < layerB->layer : (layerA == nullptr); 
+        });
+
+        for (Entity* entity : entities) {
+            // Проверка на валидность entity -  лучше делать проверку на null
+            if (!entity) continue;
+
 
             auto textureComp = entity->getComponent<TextureComponent>();
             auto positionComp = entity->getComponent<PositionComponent>();
@@ -64,6 +71,7 @@ public:
                 window->draw(textureComp->sprite);
             }
         }
+
         window->display();
     }
 

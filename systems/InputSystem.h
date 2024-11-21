@@ -1,3 +1,4 @@
+#pragma once
 #include <SFML/Graphics.hpp>
 #include <optional>
 #include <iostream>
@@ -43,6 +44,7 @@ public:
 
     void clear() {
         mouseClicked = false;
+        pressedKeys.clear();
     }
 
 private:

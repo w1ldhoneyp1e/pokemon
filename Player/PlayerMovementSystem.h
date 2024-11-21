@@ -1,28 +1,32 @@
+#pragma once
 #include <SFML/Graphics.hpp>
 #include "../Entity.h"
 #include <iostream>
 
-void playerMovementSystem(Entity* player, sf::Keyboard::Key key) {
+void playerMovementSystem(Entity* player, const std::vector<sf::Keyboard::Key>& keys, float deltaTime) {
     auto position = player->getComponent<PositionComponent>();
-    switch (key)
-    {
-    case sf::Keyboard::W:
-        position->y -= player->getComponent<SpeedComponent>()->speed;
-        break;
-    
-    case sf::Keyboard::A:
-        position->x -= player->getComponent<SpeedComponent>()->speed;
-        break;
+    auto speed = player->getComponent<SpeedComponent>();
 
-    case sf::Keyboard::S:
-        position->y += player->getComponent<SpeedComponent>()->speed;
-    break;
+    if (!position || !speed) return;
 
-    case sf::Keyboard::D:
-        position->x += player->getComponent<SpeedComponent>()->speed;
-        break;
+    float movementSpeed = speed->speed * deltaTime;
 
-    default:
-        break;
+    for (sf::Keyboard::Key key : keys) {
+        switch (key) {
+            case sf::Keyboard::W:
+                position->y -= movementSpeed;
+                break;
+            case sf::Keyboard::A:
+                position->x -= movementSpeed;
+                break;
+            case sf::Keyboard::S:
+                position->y += movementSpeed;
+                break;
+            case sf::Keyboard::D:
+                position->x += movementSpeed;
+                break;
+            default:
+                break;
+        }
     }
 }

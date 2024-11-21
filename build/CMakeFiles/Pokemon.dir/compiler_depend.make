@@ -312,10 +312,60 @@ CMakeFiles/Pokemon.dir/main.cpp.obj: D:/ispring/study/second_course/project\ pra
   D:/ispring/study/second_course/project\ practice/Pokemon/systems/InputSystem.h \
   C:/mingw64/include/c++/13.1.0/optional \
   D:/ispring/study/second_course/project\ practice/Pokemon/Player/PlayerMovementSystem.h \
-  D:/ispring/study/second_course/project\ practice/Pokemon/Initialize.h
+  D:/ispring/study/second_course/project\ practice/Pokemon/Inventory/InventorySystem.h \
+  D:/ispring/study/second_course/project\ practice/Pokemon/GameState.h \
+  D:/ispring/study/second_course/project\ practice/Pokemon/const.h \
+  D:/ispring/study/second_course/project\ practice/Pokemon/Initialize.h \
+  C:/mingw64/include/c++/13.1.0/chrono \
+  C:/mingw64/include/c++/13.1.0/bits/chrono.h \
+  C:/mingw64/include/c++/13.1.0/ratio \
+  C:/mingw64/include/c++/13.1.0/cstdint \
+  C:/mingw64/include/c++/13.1.0/bits/parse_numbers.h \
+  C:/mingw64/include/c++/13.1.0/sstream \
+  C:/mingw64/include/c++/13.1.0/bits/sstream.tcc \
+  C:/mingw64/include/c++/13.1.0/bits/chrono_io.h \
+  C:/mingw64/include/c++/13.1.0/iomanip \
+  C:/mingw64/include/c++/13.1.0/bits/quoted_string.h \
+  C:/mingw64/include/c++/13.1.0/format \
+  C:/mingw64/include/c++/13.1.0/charconv \
+  C:/mingw64/include/c++/13.1.0/span \
+  C:/mingw64/include/c++/13.1.0/variant \
+  C:/mingw64/include/c++/13.1.0/random \
+  C:/mingw64/include/c++/13.1.0/bits/random.h \
+  C:/mingw64/include/c++/13.1.0/x86_64-w64-mingw32/bits/opt_random.h \
+  C:/mingw64/include/c++/13.1.0/bits/random.tcc \
+  C:/mingw64/include/c++/13.1.0/numeric \
+  C:/mingw64/include/c++/13.1.0/bits/stl_numeric.h \
+  C:/mingw64/include/c++/13.1.0/pstl/glue_numeric_defs.h
 
+
+C:/mingw64/include/c++/13.1.0/pstl/glue_numeric_defs.h:
+
+C:/mingw64/include/c++/13.1.0/numeric:
+
+C:/mingw64/include/c++/13.1.0/bits/random.tcc:
+
+C:/mingw64/include/c++/13.1.0/x86_64-w64-mingw32/bits/opt_random.h:
+
+C:/mingw64/include/c++/13.1.0/variant:
+
+C:/mingw64/include/c++/13.1.0/span:
+
+C:/mingw64/include/c++/13.1.0/charconv:
+
+C:/mingw64/include/c++/13.1.0/bits/quoted_string.h:
+
+C:/mingw64/include/c++/13.1.0/bits/chrono_io.h:
+
+C:/mingw64/include/c++/13.1.0/sstream:
+
+C:/mingw64/include/c++/13.1.0/cstdint:
 
 D:/ispring/study/second_course/project\ practice/Pokemon/Initialize.h:
+
+D:/ispring/study/second_course/project\ practice/Pokemon/const.h:
+
+D:/ispring/study/second_course/project\ practice/Pokemon/GameState.h:
 
 D:/ispring/study/second_course/project\ practice/Pokemon/Player/PlayerMovementSystem.h:
 
@@ -343,7 +393,11 @@ C:/mingw64/include/c++/13.1.0/bits/shared_ptr.h:
 
 C:/mingw64/include/c++/13.1.0/bits/unique_ptr.h:
 
+C:/mingw64/include/c++/13.1.0/bits/random.h:
+
 C:/mingw64/include/c++/13.1.0/bits/align.h:
+
+C:/mingw64/include/c++/13.1.0/bits/chrono.h:
 
 C:/mingw64/include/c++/13.1.0/bits/stl_raw_storage_iter.h:
 
@@ -362,6 +416,8 @@ C:/mingw64/include/c++/13.1.0/iostream:
 C:/mingw64/include/c++/13.1.0/functional:
 
 D:/ispring/study/second_course/project\ practice/Pokemon/Components.h:
+
+C:/mingw64/include/c++/13.1.0/ratio:
 
 C:/mingw64/include/c++/13.1.0/bits/allocated_ptr.h:
 
@@ -385,6 +441,8 @@ C:/mingw64/include/c++/13.1.0/bits/stl_multimap.h:
 
 C:/mingw64/include/c++/13.1.0/bits/node_handle.h:
 
+C:/mingw64/include/c++/13.1.0/bits/parse_numbers.h:
+
 C:/mingw64/include/c++/13.1.0/ext/aligned_buffer.h:
 
 C:/mingw64/include/c++/13.1.0/bits/stl_tree.h:
@@ -407,7 +465,11 @@ C:/mingw64/x86_64-w64-mingw32/include/sys/types.h:
 
 C:/mingw64/include/c++/13.1.0/bits/char_traits.h:
 
+C:/mingw64/include/c++/13.1.0/chrono:
+
 C:/mingw64/include/c++/13.1.0/x86_64-w64-mingw32/bits/gthr.h:
+
+C:/mingw64/include/c++/13.1.0/bits/stl_numeric.h:
 
 C:/mingw64/include/c++/13.1.0/x86_64-w64-mingw32/bits/cpu_defines.h:
 
@@ -463,7 +525,11 @@ C:/SFML-2.6.1/include/SFML/System/Clock.hpp:
 
 C:/mingw64/include/c++/13.1.0/ext/numeric_traits.h:
 
+C:/mingw64/include/c++/13.1.0/bits/sstream.tcc:
+
 C:/mingw64/include/c++/13.1.0/exception:
+
+C:/mingw64/include/c++/13.1.0/random:
 
 C:/SFML-2.6.1/include/SFML/Graphics.hpp:
 
@@ -649,6 +715,8 @@ C:/mingw64/include/c++/13.1.0/type_traits:
 
 C:/SFML-2.6.1/include/SFML/System/Utf.inl:
 
+C:/mingw64/include/c++/13.1.0/iomanip:
+
 C:/mingw64/include/c++/13.1.0/bits/utility.h:
 
 C:/mingw64/include/c++/13.1.0/compare:
@@ -809,6 +877,8 @@ C:/SFML-2.6.1/include/SFML/Graphics/Vertex.hpp:
 
 C:/mingw64/include/c++/13.1.0/bits/locale_facets.h:
 
+D:/ispring/study/second_course/project\ practice/Pokemon/Inventory/InventorySystem.h:
+
 C:/mingw64/include/c++/13.1.0/cwctype:
 
 C:/mingw64/x86_64-w64-mingw32/include/wctype.h:
@@ -886,6 +956,8 @@ C:/SFML-2.6.1/include/SFML/System/Thread.inl:
 C:/SFML-2.6.1/include/SFML/Graphics/VertexBuffer.hpp:
 
 C:/SFML-2.6.1/include/SFML/System/ThreadLocalPtr.hpp:
+
+C:/mingw64/include/c++/13.1.0/format:
 
 C:/SFML-2.6.1/include/SFML/Window/Clipboard.hpp:
 

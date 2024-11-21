@@ -1,0 +1,21 @@
+#pragma once
+const int WINDOW_WIDTH = 767;
+const int WINDOW_HEIGHT = 639;
+
+const int START_BUTTON_WIDTH = 54;
+const int START_BUTTON_HEIGHT = 20;
+
+const int PLAYER_START_POSITION_X = 300;
+const int PLAYER_START_POSITION_Y = 300;
+const int PLAYER_WIDTH = 16;
+const int PLAYER_HEIGHT = 32;
+const int PLAYER_SPEED = 100;
+
+const int BACKGROUND_MENU_WIDTH = 62;
+const int BACKGROUND_MENU_HEIGHT = 46;
+
+const int INVENTORY_WIDTH = 80;
+const int INVENTORY_HEIGHT = 102;
+
+const int INVENTORY_BUTTON_CLOSE_WIDTH = 32;
+const int INVENTORY_BUTTON_CLOSE_HEIGHT = 13;

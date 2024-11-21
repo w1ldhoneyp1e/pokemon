@@ -6,9 +6,9 @@
 #include <memory>
 
 class Entity {
-public:
+private:
     std::string id;
-
+public:
     Entity(std::string id) : id(id) {}
 
     std::unordered_map<std::type_index, Component*> components;
@@ -26,6 +26,10 @@ public:
             return dynamic_cast<T*>(it->second);
         }
         return nullptr;
+    }
+
+    std::string getId() {
+        return id;
     }
 
     ~Entity() {
