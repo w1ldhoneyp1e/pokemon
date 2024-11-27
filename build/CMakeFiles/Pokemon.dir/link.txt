@@ -1,3 +1,0 @@
-C:\mingw64\bin\cmake.exe -E rm -f CMakeFiles\Pokemon.dir/objects.a
-C:\mingw64\bin\ar.exe qc CMakeFiles\Pokemon.dir/objects.a @CMakeFiles\Pokemon.dir\objects1.rsp
-C:\mingw64\bin\g++.exe -g -Wl,--whole-archive CMakeFiles\Pokemon.dir/objects.a -Wl,--no-whole-archive -o Pokemon.exe -Wl,--out-implib,libPokemon.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\Pokemon.dir\linkLibs.rsp

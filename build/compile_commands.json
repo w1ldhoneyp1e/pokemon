@@ -1,8 +1,0 @@
-[
-{
-  "directory": "D:/ispring/study/second_course/project practice/Pokemon/build",
-  "command": "C:\\mingw64\\bin\\g++.exe -DSFML_STATIC @CMakeFiles/Pokemon.dir/includes_CXX.rsp -g -std=gnu++20 -o CMakeFiles\\Pokemon.dir\\main.cpp.obj -c \"D:\\ispring\\study\\second_course\\project practice\\Pokemon\\main.cpp\"",
-  "file": "D:/ispring/study/second_course/project practice/Pokemon/main.cpp",
-  "output": "CMakeFiles/Pokemon.dir/main.cpp.obj"
-}
-]
