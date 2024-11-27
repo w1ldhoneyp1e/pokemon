@@ -7,6 +7,7 @@
 #include "./Player/PlayerMovementSystem.h"
 #include "./Inventory/InventorySystem.h"
 #include "./Pokemon/PokemonSystem.h"
+#include "./Catching/CatchingSystem.h"
 #include "GameState.h"
 #include "Entity.h"
 #include "Initialize.h"
@@ -71,7 +72,7 @@ void update(
 			}
 			inputSystem->clear();
 		}
-		pokemonCollision(entityManager, renderSystem);
+		pokemonCollision(entityManager, renderSystem, state);
 	break;
 
 	case GameState::Inventory: {
@@ -80,6 +81,14 @@ void update(
 			inputSystem,
 			renderSystem,
 			state
+		);
+		break;
+	}
+
+	case GameState::Catching: {
+		updateCatching(
+			entityManager,
+			deltaTime
 		);
 		break;
 	}

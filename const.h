@@ -1,6 +1,10 @@
 #pragma once
+#include <cmath>
+
 const int WINDOW_WIDTH = 767;
 const int WINDOW_HEIGHT = 639;
+
+const float PI = std::acos(-1.0);
 
 const int START_BUTTON_WIDTH = 54;
 const int START_BUTTON_HEIGHT = 20;
@@ -13,6 +17,8 @@ const int PLAYER_SPEED = 100;
 
 const int BACKGROUND_MENU_WIDTH = 62;
 const int BACKGROUND_MENU_HEIGHT = 46;
+
+// Inventory
 
 const int INVENTORY_WIDTH = 80;
 const int INVENTORY_HEIGHT = 102;
@@ -29,7 +35,35 @@ const int INVENTORY_CELLS_LIMIT = 13;
 const int INVENTORY_BUTTON_CLOSE_WIDTH = 32;
 const int INVENTORY_BUTTON_CLOSE_HEIGHT = 13;
 
+// Pokemons
+
 const int BULBASOUR_POSITION_X = PLAYER_START_POSITION_X + 100;
 const int BULBASOUR_POSITION_Y = PLAYER_START_POSITION_Y;
 const int BULBASOUR_WIDTH = 36;
 const int BULBASOUR_HEIGHT = 33;
+
+// Catching
+
+const int CATCHING_LOCATION_WIDTH = 383;
+const int CATCHING_LOCATION_HEIGHT = 640;
+
+const int ARROW_WIDTH = 57;
+const int ARROW_HEIGHT = 162;
+
+const int ARROW_POS_X = WINDOW_WIDTH / 2;
+const int ARROW_POS_Y = WINDOW_HEIGHT - 70;
+
+const int ARROW_SPEED = 2;
+
+const int ARROW_POKEBALL_GAP = 30;
+
+const float ARROW_MAX_ANGLE = PI / 6 * 2;
+const float ARROW_MIN_ANGLE = - PI / 6 * 2;
+
+const int POKEBALL_WIDTH = 13;
+const int POKEBALL_HEIGHT = 12;
+
+const int POKEBALL_POS_X = ARROW_POS_X;
+const int POKEBALL_POS_Y = ARROW_POS_Y + POKEBALL_HEIGHT / 2;
+
+const float ARROW_RADIUS = ARROW_POKEBALL_GAP + POKEBALL_HEIGHT / 2;

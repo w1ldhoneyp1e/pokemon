@@ -33,6 +33,15 @@ public:
     SpeedComponent(float speed) : speed(speed) {}
 };
 
+class RotationComponent : public Component {
+public:
+    float speed;
+    float angle;
+    float posX;
+    float posY;
+    RotationComponent(float speed, float posX, float posY) : speed(speed), posX(posX), posY(posY) {}
+};
+
 class SizeComponent : public Component {
 private:
     int width, height;
@@ -84,6 +93,11 @@ public:
     MenuTypeEntityComponent() {}
 };
 
+class CatchingTypeEntityComponent : public Component {
+public:
+    CatchingTypeEntityComponent() {}
+};
+
 class InventoryTypeEntityComponent : public Component {
 public:
     InventoryTypeEntityComponent() {}
@@ -112,6 +126,11 @@ public:
     void setCollected(bool status) {
         collected = status;
     }
+};
+
+class AttackedPokemonComponent : public Component {
+public:
+    AttackedPokemonComponent() {}
 };
 
 class PlayersInventoryComponent : public Component {
@@ -159,6 +178,8 @@ public:
 
 class TextureComponent : public Component {
 public:
+    float originX;
+    float originY;
     int width;
     int height;
     sf::Texture texture;
@@ -167,5 +188,9 @@ public:
     explicit TextureComponent(const sf::Texture& tex, int width, int height) : texture(tex) {
         sprite.setTexture(texture);
         sprite.setTextureRect(sf::IntRect(0, 0, width, height));
+        // sprite.setScale(
+        //     width / tex.getSize().x,
+        //     height / tex.getSize().y
+        // );
     }
 };

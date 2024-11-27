@@ -2,5 +2,6 @@
 enum GameState {
     Menu,
     Game,
-	Inventory
+	Inventory,
+    Catching
 };

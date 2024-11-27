@@ -2,10 +2,13 @@
 #include "../systems/EntityManager.h"
 #include "../systems/RenderSystem.h"
 #include "../systems/CollisionSystem.h"
+#include "../Catching/CatchingSystem.h"
+#include "../GameState.h"
 #include "../const.h"
 void pokemonCollision(
 	EntityManager* entityManager,
-	RenderSystem* renderSystem
+	RenderSystem* renderSystem,
+	GameState* state
 ) {
 	// Селектим покемонов. Для каждого проверяем, не было ли коллизии
 	auto pokemons = entityManager->getEntitiesWithComponent<PokemonComponent>();
@@ -17,9 +20,13 @@ void pokemonCollision(
 			&& inventory->getPokemonCount() < INVENTORY_CELLS_LIMIT
 			&& !pokemon->getComponent<PokemonComponent>()->isCollected()
 		) {
+			*state = GameState::Catching;
+			pokemon->addComponent<AttackedPokemonComponent>();
 			renderSystem->removeEntity(pokemon->getId());
-			inventory->addPokemon(pokemon->getId());
-			pokemon->getComponent<PokemonComponent>()->setCollected(true);
+			// inventory->addPokemon(pokemon->getId());
+			// pokemon->getComponent<PokemonComponent>()->setCollected(true);
+			pokemon->removeComponent<GameTypeEntityComponent>();
+			initCatching(entityManager, renderSystem);
 		}
 	}
 }

@@ -5,6 +5,7 @@
 #include <vector>
 #include "../Entity.h"
 #include <iostream>
+#include "../const.h"
 
 class RenderSystem {
 public:
@@ -57,10 +58,20 @@ public:
 
             auto textureComp = entity->getComponent<TextureComponent>();
             auto positionComp = entity->getComponent<PositionComponent>();
+            auto rotationComp = entity->getComponent<RotationComponent>();
             auto sizeComp = entity->getComponent<SizeComponent>();
 
             if (textureComp && positionComp) {
-                textureComp->sprite.setPosition(positionComp->getX(), positionComp->getY());
+                auto posX = positionComp->getX();
+                auto posY = positionComp->getY();
+                // if (textureComp->originX) {
+                //     posX = textureComp->originX;
+                // }
+                // if (textureComp->originY) {
+                //     posY = textureComp->originY;
+                // }
+
+                textureComp->sprite.setPosition(posX, posY);
 
                 if (sizeComp) {
                     textureComp->sprite.setScale(
@@ -68,6 +79,16 @@ public:
                         sizeComp->getHeight() / textureComp->sprite.getLocalBounds().height
                     );
                 }
+
+                if (rotationComp) {
+                    auto x = textureComp->sprite.getOrigin().x;
+                    auto y = textureComp->sprite.getOrigin().y;
+
+                    std::cout << rotationComp->angle << std::endl;
+
+                    textureComp->sprite.setRotation(rotationComp->angle * 180 / PI);
+                }
+
                 window->draw(textureComp->sprite);
             }
         }

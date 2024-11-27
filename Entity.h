@@ -28,6 +28,15 @@ public:
         return nullptr;
     }
 
+    template <typename T>
+    T* removeComponent() {
+        auto it = components.find(typeid(T));
+        if (it != components.end()) {
+            components.erase(it);
+        }
+        return nullptr;
+    }
+
     std::string getId() {
         return id;
     }
