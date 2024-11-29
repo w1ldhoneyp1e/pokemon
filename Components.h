@@ -133,6 +133,26 @@ public:
     AttackedPokemonComponent() {}
 };
 
+class ThrowablePokeballComponent : public Component {
+private:
+    bool _isThrown;
+    float angle;
+public:
+    ThrowablePokeballComponent() : _isThrown(false) {}
+    void setThrown() {
+        _isThrown = true;
+    }
+    bool isThrown() {
+        return _isThrown;
+    }
+    void setAngle(float _angle) {
+        angle = _angle;
+    }
+    float getAngle() {
+        return angle;
+    }
+};
+
 class PlayersInventoryComponent : public Component {
 public:
     void addPokemon(std::string id) {

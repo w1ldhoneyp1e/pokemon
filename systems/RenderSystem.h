@@ -42,17 +42,14 @@ public:
 
         window->clear(COLOR_WHITE);
 
-        // Сортировка по слоям
         std::sort(entities.begin(), entities.end(), [](Entity* a, Entity* b) {
             auto layerA = a->getComponent<RenderLayerComponent>();
             auto layerB = b->getComponent<RenderLayerComponent>();
             
-            // Обработка случая, когда компонента нет
             return (layerA && layerB) ? layerA->getLayer() < layerB->getLayer() : (layerA == nullptr); 
         });
 
         for (Entity* entity : entities) {
-            // Проверка на валидность entity -  лучше делать проверку на null
             if (!entity) continue;
 
 
@@ -83,8 +80,6 @@ public:
                 if (rotationComp) {
                     auto x = textureComp->sprite.getOrigin().x;
                     auto y = textureComp->sprite.getOrigin().y;
-
-                    std::cout << rotationComp->angle << std::endl;
 
                     textureComp->sprite.setRotation(rotationComp->angle * 180 / PI);
                 }

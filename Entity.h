@@ -28,6 +28,13 @@ public:
         return nullptr;
     }
 
+    void removeAllComponents() {
+    for (auto& [type, component] : components) {
+        delete component;
+    }
+    components.clear();
+}
+
     template <typename T>
     T* removeComponent() {
         auto it = components.find(typeid(T));

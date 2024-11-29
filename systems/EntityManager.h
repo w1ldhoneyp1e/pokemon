@@ -33,7 +33,9 @@ public:
     void removeEntity(std::string entityId) {
         auto it = entities.find(entityId);
         if (it != entities.end()) {
-            delete it->second;
+            if (it->second) {
+                delete it->second;
+            }
             entities.erase(it);
         }
     }

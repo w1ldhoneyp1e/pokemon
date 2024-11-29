@@ -72,7 +72,7 @@ void update(
 			}
 			inputSystem->clear();
 		}
-		pokemonCollision(entityManager, renderSystem, state);
+		pokemonCollision(inputSystem, entityManager, renderSystem, state);
 	break;
 
 	case GameState::Inventory: {
@@ -88,6 +88,9 @@ void update(
 	case GameState::Catching: {
 		updateCatching(
 			entityManager,
+			inputSystem,
+			renderSystem,
+			state,
 			deltaTime
 		);
 		break;

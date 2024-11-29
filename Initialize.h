@@ -91,7 +91,7 @@ void init(sf::RenderWindow* window, EntityManager* entityManager) {
 		BULBASOUR_POSITION_X, 
 		BULBASOUR_POSITION_Y
 	);
-    bulbasour->addComponent<SizeComponent>(BULBASOUR_WIDTH, BULBASOUR_HEIGHT);
+    bulbasour->addComponent<SizeComponent>(POKEMON_INVENTORY_WIDTH, POKEMON_INVENTORY_HEIGHT);
 	bulbasour->addComponent<RenderLayerComponent>(1);
 	bulbasour->addComponent<PokemonComponent>("Bulbasour");
     bulbasour->addComponent<GameTypeEntityComponent>();
@@ -99,8 +99,8 @@ void init(sf::RenderWindow* window, EntityManager* entityManager) {
     if (bulbasourTexture.loadFromFile("../res/bulbasour(36x33).png")) {
         bulbasour->addComponent<TextureComponent>(
 			bulbasourTexture,
-			BULBASOUR_WIDTH, 
-			BULBASOUR_HEIGHT
+			POKEMON_INVENTORY_WIDTH, 
+			POKEMON_INVENTORY_HEIGHT
 		);
     }
 }

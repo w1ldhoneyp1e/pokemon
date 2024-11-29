@@ -62,6 +62,10 @@ void createInventory(EntityManager* entityManager) {
 			INVENTORY_CELLS_POSITION_START_X + i * 40,
 			INVENTORY_CELLS_POSITION_START_Y + j * 40
 		);
+		pokemon->getComponent<SizeComponent>()->setSize(
+			POKEMON_INVENTORY_WIDTH,
+			POKEMON_INVENTORY_HEIGHT
+		);
 		pokemon->getComponent<RenderLayerComponent>()->setLayer(4);
 		i++;
 		if (i / INVENTORY_CELLS_PER_ROW) {

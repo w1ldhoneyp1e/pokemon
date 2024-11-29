@@ -8,15 +8,22 @@
 
 void initCatching(EntityManager* entityManager, RenderSystem* renderSystem);
 void arrowRotation(EntityManager* entityManager, float dt);
+void onSpacePressed(EntityManager* entityManager, InputSystem* inputSystem, float dt);
+void throwPokeball(EntityManager* entityManager, float dt);
+void pokeballCollision(EntityManager* entityManager, RenderSystem* renderSystem, GameState* state);
+void removeCatchingEntities(EntityManager* entityManager, RenderSystem* renderSystem);
 
 void updateCatching(
 	EntityManager* entityManager,
+    InputSystem* inputSystem,
+    RenderSystem* renderSystem,
+    GameState* state,
     float dt
 ) {
     arrowRotation(entityManager, dt);
-	// Поворот стрелки
-    // Обработка нажатия пробела
-        // Создать покебол перед стрелкой и выкинуть по направлению стрелки
+    onSpacePressed(entityManager, inputSystem, dt);
+    throwPokeball(entityManager, dt);
+    pokeballCollision(entityManager, renderSystem, state);
     // Обработка коллизии покебола с покемоном
 }
 
@@ -63,6 +70,8 @@ void initCatching(EntityManager* entityManager, RenderSystem* renderSystem) {
         POKEBALL_POS_Y
     );
     pokeball->addComponent<SizeComponent>(POKEBALL_WIDTH * 5, POKEBALL_HEIGHT * 5);
+	pokeball->addComponent<ThrowablePokeballComponent>();
+    pokeball->addComponent<SpeedComponent>(POKEBALL_SPEED);
 	pokeball->addComponent<RenderLayerComponent>(1);
     pokeball->addComponent<CatchingTypeEntityComponent>();
     sf::Texture pokeballTexture;
@@ -114,4 +123,77 @@ void arrowRotation(EntityManager* entityManager, float dt) {
 
     // Устанавливаем новую позицию стрелки
     position->setPos(x, y);
+}
+
+void onSpacePressed(EntityManager* entityManager, InputSystem* inputSystem, float dt) {
+    auto throwAbility = entityManager->getEntity("pokeball")->getComponent<ThrowablePokeballComponent>();
+    if (throwAbility->isThrown()) return;
+    auto keys = inputSystem->getPressedKeys();
+    if (keys.empty()) return;
+    if (std::find(keys.begin(), keys.end(), sf::Keyboard::Space) != keys.end()
+        || std::find(keys.begin(), keys.end(), sf::Keyboard::Enter) != keys.end()
+    ) {
+        auto arrowAngle = entityManager->getEntity("catchingArrow")->getComponent<RotationComponent>()->angle;
+        throwAbility->setAngle(arrowAngle - PI / 2);
+        throwAbility->setThrown();
+        keys.clear();
+    }
+}
+
+void throwPokeball(EntityManager* entityManager, float dt) {
+    auto pokeball = entityManager->getEntity("pokeball");
+    auto rotation = pokeball->getComponent<ThrowablePokeballComponent>();
+    if (!rotation->isThrown()) {
+        return;
+    }
+    auto speed = pokeball->getComponent<SpeedComponent>()->speed;
+    auto position = pokeball->getComponent<PositionComponent>();
+    position->setPos(
+        position->getX() + dt * speed * cosf(rotation->getAngle()),
+        position->getY() + dt * speed * sinf(rotation->getAngle())
+    );
+}
+
+void pokeballCollision(EntityManager* entityManager, RenderSystem* renderSystem, GameState* state) {
+    auto pokeball = entityManager->getEntity("pokeball");
+    auto location = entityManager->getEntity("catchingLocation");
+    auto pokemon = entityManager->getEntitiesWithComponent<AttackedPokemonComponent>()[0];
+    if (isCollision(pokeball, pokemon)) {
+        auto player = entityManager->getEntity("player");
+        auto inventory = player->getComponent<PlayersInventoryComponent>();
+        inventory->addPokemon(pokemon->getId());
+        pokemon->getComponent<PokemonComponent>()->setCollected(true);
+        
+        pokemon->removeComponent<CatchingTypeEntityComponent>();
+
+        removeCatchingEntities(entityManager, renderSystem);
+
+        auto entities = entityManager->getEntitiesWithComponent<GameTypeEntityComponent>();
+        renderSystem->addEntities(entities);
+
+        *state = GameState::Game;
+    }
+    pokeball = entityManager->getEntity("pokeball");
+    location = entityManager->getEntity("catchingLocation");
+    if (pokeball != nullptr && location != nullptr && !isCollision(pokeball, location)) {
+        pokemon->removeComponent<CatchingTypeEntityComponent>();
+        removeCatchingEntities(entityManager, renderSystem);
+        pokemon->getComponent<PositionComponent>()->setPos(
+            BULBASOUR_POSITION_X,
+            BULBASOUR_POSITION_Y
+        );
+        pokemon->addComponent<GameTypeEntityComponent>();
+        auto entities = entityManager->getEntitiesWithComponent<GameTypeEntityComponent>();
+        renderSystem->addEntities(entities);
+
+        *state = GameState::Game;
+    }
+}
+
+void removeCatchingEntities(EntityManager* entityManager, RenderSystem* renderSystem) {
+    auto entities = entityManager->getEntitiesWithComponent<CatchingTypeEntityComponent>();
+    renderSystem->removeEntities();
+    for (auto entity : entities) {
+        entityManager->removeEntity(entity->getId());
+    }
 }
