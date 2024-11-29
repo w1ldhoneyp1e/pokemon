@@ -28,8 +28,6 @@ void pokemonCollision(
 			inputSystem->clear();
 			pokemon->addComponent<AttackedPokemonComponent>();
 			renderSystem->removeEntity(pokemon->getId());
-			// inventory->addPokemon(pokemon->getId());
-			// pokemon->getComponent<PokemonComponent>()->setCollected(true);
 			pokemon->removeComponent<GameTypeEntityComponent>();
 			initCatching(entityManager, renderSystem);
 		}

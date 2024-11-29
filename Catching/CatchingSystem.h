@@ -182,6 +182,10 @@ void pokeballCollision(EntityManager* entityManager, RenderSystem* renderSystem,
             BULBASOUR_POSITION_X,
             BULBASOUR_POSITION_Y
         );
+        pokemon->getComponent<SizeComponent>()->setSize(
+            POKEMON_INVENTORY_WIDTH,
+            POKEMON_INVENTORY_HEIGHT
+        );
         pokemon->addComponent<GameTypeEntityComponent>();
         auto entities = entityManager->getEntitiesWithComponent<GameTypeEntityComponent>();
         renderSystem->addEntities(entities);
