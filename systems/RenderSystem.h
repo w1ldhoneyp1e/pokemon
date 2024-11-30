@@ -24,7 +24,7 @@ public:
         }
     }
 
-    void removeEntity(std::string entityId) {
+    void removeEntity(int entityId) {
         for (auto it = entities.begin(); it != entities.end(); ++it) {
             if ((*it)->getId() == entityId) {
                 entities.erase(it);

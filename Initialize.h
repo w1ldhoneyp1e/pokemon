@@ -11,7 +11,8 @@ void init(sf::RenderWindow* window, EntityManager* entityManager) {
     const sf::Vector2u WINDOW_SIZE = window->getSize();
 
 	// Кнопка начала игры
-	auto startButton = entityManager->createEntity("startGame");
+	auto startButton = entityManager->createEntity();
+	startButton->addComponent<StartButtonComponent>(); // Убрать
 	startButton->addComponent<PositionComponent>(
 		WINDOW_WIDTH / 2 - START_BUTTON_WIDTH * 2, 
 		WINDOW_HEIGHT / 2 - START_BUTTON_HEIGHT * 2
@@ -32,7 +33,7 @@ void init(sf::RenderWindow* window, EntityManager* entityManager) {
 	}
 
 	// Задний фон меню
-	auto backgroundMenu = entityManager->createEntity("backgroundMenu");
+	auto backgroundMenu = entityManager->createEntity();
 	backgroundMenu->addComponent<PositionComponent>(0, 0);
 	backgroundMenu->addComponent<SizeComponent>(WINDOW_WIDTH, WINDOW_HEIGHT);
 	backgroundMenu->addComponent<RenderLayerComponent>(0);
@@ -47,7 +48,7 @@ void init(sf::RenderWindow* window, EntityManager* entityManager) {
 	}
 
 	// Игрок
-	auto player = entityManager->createEntity("player");
+	auto player = entityManager->createEntity();
 	player->addComponent<PositionComponent>(
 		PLAYER_START_POSITION_X,
 		PLAYER_START_POSITION_Y
@@ -71,7 +72,7 @@ void init(sf::RenderWindow* window, EntityManager* entityManager) {
     }
 
     // Локация
-    auto location = entityManager->createEntity("location");
+    auto location = entityManager->createEntity();
     location->addComponent<PositionComponent>(0, 0);
     location->addComponent<SizeComponent>(WINDOW_WIDTH, WINDOW_HEIGHT);
 	location->addComponent<RenderLayerComponent>(0);
@@ -86,7 +87,7 @@ void init(sf::RenderWindow* window, EntityManager* entityManager) {
     }
 
 	// Покемон: Бульбазавр
-    auto bulbasour = entityManager->createEntity("bulbasour");
+    auto bulbasour = entityManager->createEntity();
     bulbasour->addComponent<PositionComponent>(
 		BULBASOUR_POSITION_X, 
 		BULBASOUR_POSITION_Y
@@ -101,6 +102,25 @@ void init(sf::RenderWindow* window, EntityManager* entityManager) {
 			bulbasourTexture,
 			POKEMON_INVENTORY_WIDTH, 
 			POKEMON_INVENTORY_HEIGHT
+		);
+    }
+
+	// Сундук
+    auto chest = entityManager->createEntity();
+    chest->addComponent<PositionComponent>(
+		PLAYER_START_POSITION_X - 100, 
+		PLAYER_START_POSITION_Y
+	);
+    chest->addComponent<SizeComponent>(CHEST_WIDTH, CHEST_HEIGHT);
+	chest->addComponent<RenderLayerComponent>(1);
+    chest->addComponent<ChestComponent>();
+    chest->addComponent<GameTypeEntityComponent>();
+    sf::Texture chestTexture;
+    if (chestTexture.loadFromFile("../res/chestClosed(24x23).png")) {
+        chest->addComponent<TextureComponent>(
+			chestTexture,
+			CHEST_WIDTH, 
+			CHEST_HEIGHT
 		);
     }
 }

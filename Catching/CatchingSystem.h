@@ -13,6 +13,8 @@ void throwPokeball(EntityManager* entityManager, float dt);
 void pokeballCollision(EntityManager* entityManager, RenderSystem* renderSystem, GameState* state);
 void removeCatchingEntities(EntityManager* entityManager, RenderSystem* renderSystem);
 
+void setPokemonPropsIfLose(Entity *pokemon);
+
 void initCatchingLocation(EntityManager* entityManager);
 void initCatchingArrow(EntityManager* entityManager);
 void initCatchingPokeball(EntityManager* entityManager);
@@ -51,7 +53,7 @@ void initCatching(EntityManager* entityManager, RenderSystem* renderSystem) {
 }
 
 void arrowRotation(EntityManager* entityManager, float dt) {
-    auto arrow = entityManager->getEntity("catchingArrow");
+    auto arrow = entityManager->getEntitiesWithComponent<CatchingArrowComponent>()[0];
     auto rotation = arrow->getComponent<RotationComponent>();
     auto position = arrow->getComponent<PositionComponent>();
 
@@ -87,7 +89,8 @@ void initCatchingPokemon(EntityManager* entityManager) {
 
 
 void initCatchingPokeball(EntityManager* entityManager) {
-    auto pokeball = entityManager->createEntity("pokeball");
+    auto pokeball = entityManager->createEntity();
+    pokeball->addComponent<PokeballComponent>();
     pokeball->addComponent<PositionComponent>(
         POKEBALL_POS_X, 
         POKEBALL_POS_Y
@@ -109,8 +112,8 @@ void initCatchingPokeball(EntityManager* entityManager) {
 }
 
 void initCatchingLocation(EntityManager* entityManager) {
-    initCatchingLocation(entityManager);
-    auto catchingLocation = entityManager->createEntity("catchingLocation");
+    auto catchingLocation = entityManager->createEntity();
+    catchingLocation->addComponent<CatchingLocationComponent>();
     catchingLocation->addComponent<PositionComponent>(0, 0);
     catchingLocation->addComponent<SizeComponent>(WINDOW_WIDTH, WINDOW_HEIGHT);
 	catchingLocation->addComponent<RenderLayerComponent>(0);
@@ -126,7 +129,8 @@ void initCatchingLocation(EntityManager* entityManager) {
 }
 
 void initCatchingArrow(EntityManager* entityManager) {
-    auto catchingArrow = entityManager->createEntity("catchingArrow");
+    auto catchingArrow = entityManager->createEntity();
+    catchingArrow->addComponent<CatchingArrowComponent>();
     catchingArrow->addComponent<PositionComponent>(
         ARROW_POS_X, 
         ARROW_POS_Y
@@ -147,14 +151,14 @@ void initCatchingArrow(EntityManager* entityManager) {
 }
 
 void onSpacePressed(EntityManager* entityManager, InputSystem* inputSystem, float dt) {
-    auto throwAbility = entityManager->getEntity("pokeball")->getComponent<ThrowablePokeballComponent>();
+    auto throwAbility = entityManager->getEntitiesWithComponent<PokeballComponent>()[0]->getComponent<ThrowablePokeballComponent>();
     if (throwAbility->isThrown()) return;
     auto keys = inputSystem->getPressedKeys();
     if (keys.empty()) return;
     if (std::find(keys.begin(), keys.end(), sf::Keyboard::Space) != keys.end()
         || std::find(keys.begin(), keys.end(), sf::Keyboard::Enter) != keys.end()
     ) {
-        auto arrowAngle = entityManager->getEntity("catchingArrow")->getComponent<RotationComponent>()->angle;
+        auto arrowAngle = entityManager->getEntitiesWithComponent<CatchingArrowComponent>()[0]->getComponent<RotationComponent>()->angle;
         throwAbility->setAngle(arrowAngle - PI / 2);
         throwAbility->setThrown();
         keys.clear();
@@ -162,7 +166,7 @@ void onSpacePressed(EntityManager* entityManager, InputSystem* inputSystem, floa
 }
 
 void throwPokeball(EntityManager* entityManager, float dt) {
-    auto pokeball = entityManager->getEntity("pokeball");
+    auto pokeball = entityManager->getEntitiesWithComponent<PokeballComponent>()[0];
     auto rotation = pokeball->getComponent<ThrowablePokeballComponent>();
     if (!rotation->isThrown()) {
         return;
@@ -178,19 +182,21 @@ void throwPokeball(EntityManager* entityManager, float dt) {
 void pokeballCollision(EntityManager* entityManager, RenderSystem* renderSystem, GameState* state) {
     //  TODO: сократить минимум в 2 раза
     auto pokemon = entityManager->getEntitiesWithComponent<AttackedPokemonComponent>()[0];
-    auto pokeball = entityManager->getEntity("pokeball");
+    auto pokeball = entityManager->getEntitiesWithComponent<PokeballComponent>()[0];
     if (isCollision(pokeball, pokemon)) {
         handlePokeballPokemonCollision(entityManager, renderSystem, state);
     }
-    auto location = entityManager->getEntity("catchingLocation");
+    auto location = entityManager->getEntitiesWithComponent<CatchingLocationComponent>().empty()
+        ? nullptr
+        : entityManager->getEntitiesWithComponent<CatchingLocationComponent>()[0];
     if (pokeball != nullptr && location != nullptr && !isCollision(pokeball, location)) {
         handlePokeballOutOfMap(entityManager, renderSystem, state);
     }
 }
 
 void handlePokeballOutOfMap(EntityManager* entityManager, RenderSystem* renderSystem, GameState* state) {
-    auto pokeball = entityManager->getEntity("pokeball");
-    auto location = entityManager->getEntity("catchingLocation");
+    auto pokeball = entityManager->getEntitiesWithComponent<PokeballComponent>()[0];
+    auto location = entityManager->getEntitiesWithComponent<CatchingLocationComponent>()[0];
     auto pokemon = entityManager->getEntitiesWithComponent<AttackedPokemonComponent>()[0];
 
     pokemon->removeComponent<CatchingTypeEntityComponent>();
@@ -206,7 +212,7 @@ void handlePokeballOutOfMap(EntityManager* entityManager, RenderSystem* renderSy
 void handlePokeballPokemonCollision(EntityManager* entityManager, RenderSystem* renderSystem, GameState* state) {
     auto pokemon = entityManager->getEntitiesWithComponent<AttackedPokemonComponent>()[0];
     pokemon->removeComponent<CatchingTypeEntityComponent>();
-    auto player = entityManager->getEntity("player");
+    auto player = entityManager->getEntitiesWithComponent<PlayerControlComponent>()[0];
     auto inventory = player->getComponent<PlayersInventoryComponent>();
     inventory->addPokemon(pokemon->getId());
     pokemon->getComponent<PokemonComponent>()->setCollected(true);
@@ -224,7 +230,7 @@ void removeCatchingEntities(EntityManager* entityManager, RenderSystem* renderSy
     auto entities = entityManager->getEntitiesWithComponent<CatchingTypeEntityComponent>();
     renderSystem->removeEntities();
     for (auto entity : entities) {
-        entityManager->removeEntity(entity->getId());
+        entityManager->removeEntity(entity);
     }
 }
 

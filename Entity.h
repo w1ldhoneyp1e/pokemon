@@ -7,9 +7,9 @@
 
 class Entity {
 private:
-    std::string id;
+    int id;
 public:
-    Entity(std::string id) : id(id) {}
+    Entity(int id) : id(id) {}
 
     std::unordered_map<std::type_index, Component*> components;
     // TODO: заменить на умные указатели
@@ -44,7 +44,7 @@ public:
         return nullptr;
     }
 
-    std::string getId() {
+    int getId() {
         return id;
     }
 

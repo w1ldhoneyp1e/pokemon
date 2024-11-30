@@ -7,6 +7,37 @@ public:
     virtual ~Component() = default;
 };
 
+
+
+// Костыль
+
+class StartButtonComponent : public Component {
+public:
+    StartButtonComponent() {}
+};
+class CatchingArrowComponent : public Component {
+public:
+    CatchingArrowComponent() {}
+};
+class CatchingLocationComponent : public Component {
+public:
+    CatchingLocationComponent() {}
+};
+class PokeballComponent : public Component {
+public:
+    PokeballComponent() {}
+};
+class InventoryButtonCloseComponent : public Component {
+public:
+    InventoryButtonCloseComponent() {}
+};
+class ChestButtonCloseComponent : public Component {
+public:
+    ChestButtonCloseComponent() {}
+};
+
+
+
 class PositionComponent : public Component {
 private:
     float x, y;
@@ -155,7 +186,7 @@ public:
 
 class PlayersInventoryComponent : public Component {
 public:
-    void addPokemon(std::string id) {
+    void addPokemon(int id) {
         collection.push_back(id);
     }
 
@@ -163,15 +194,7 @@ public:
         collection.clear();
     }
 
-    std::string getPokemon(size_t index) const {
-        if (index < collection.size()) {
-            return collection[index];
-        } else {
-            return nullptr;
-        }
-    }
-
-    std::vector<std::string> getPokemons() {
+    std::vector<int> getPokemons() {
         return collection;
     }
 
@@ -180,7 +203,35 @@ public:
     }
 
 private:
-    std::vector<std::string> collection;
+    std::vector<int> collection;
+};
+
+class ChestComponent : public Component {
+private:
+    bool _isOpened;
+public:
+    ChestComponent() : _isOpened(false) {}
+    void setOpened() {
+        _isOpened = true;
+    }
+    bool isOpened() {
+        return _isOpened;
+    }
+};
+
+class ItemComponent : public Component {
+public:
+    ItemComponent() {}
+};
+
+class ChestContentComponent : public Component {
+public:
+    ChestContentComponent() {}
+};
+
+class ChestInterfaceComponent : public Component {
+public:
+    ChestInterfaceComponent() {}
 };
 
 class OnClickComponent : public Component {

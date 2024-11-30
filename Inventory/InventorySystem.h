@@ -10,7 +10,7 @@
 void createInventory(EntityManager* entityManager) {
 
 	// Инвентарь
-	auto inventory = entityManager->createEntity("inventory");
+	auto inventory = entityManager->createEntity();
 	inventory->addComponent<SizeComponent>(
 		INVENTORY_WIDTH * 5, 
 		INVENTORY_HEIGHT * 4
@@ -31,7 +31,9 @@ void createInventory(EntityManager* entityManager) {
 	}
 
 	// Кнопка зарытия
-	auto inventoryButtonClose = entityManager->createEntity("inventoryButtonClose");
+	auto inventoryButtonClose = entityManager->createEntity();
+	std::cout << "ID: " << inventoryButtonClose->getId() << std::endl;
+	inventoryButtonClose->addComponent<InventoryButtonCloseComponent>();
 	inventoryButtonClose->addComponent<SizeComponent>(
 		INVENTORY_BUTTON_CLOSE_WIDTH * 4, 
 		INVENTORY_BUTTON_CLOSE_HEIGHT * 4
@@ -40,7 +42,7 @@ void createInventory(EntityManager* entityManager) {
 		WINDOW_WIDTH / 2 - INVENTORY_BUTTON_CLOSE_WIDTH * 6, 
 		WINDOW_HEIGHT / 2 + INVENTORY_BUTTON_CLOSE_HEIGHT * 11
 	);
-	inventoryButtonClose->addComponent<RenderLayerComponent>(3);
+	inventoryButtonClose->addComponent<RenderLayerComponent>(4);
     inventoryButtonClose->addComponent<InventoryTypeEntityComponent>();
 	sf::Texture inventoryButtonCloseTexture;
 	if (inventoryButtonCloseTexture.loadFromFile("../res/backButton(32x13).png")) {
@@ -52,7 +54,7 @@ void createInventory(EntityManager* entityManager) {
 	}
 
 	// Покемоны в инвентаре
-	auto player = entityManager->getEntity("player");
+	auto player = entityManager->getEntitiesWithComponent<PlayerControlComponent>()[0];
 	auto ids = player->getComponent<PlayersInventoryComponent>()->getPokemons();
 	int i = 0;
 	int j = 0;
@@ -82,7 +84,7 @@ void closeInventory(
 		GameState* state
 	) {
 	auto keys = inputSystem->getPressedKeys();
-	auto button = entityManager->getEntity("inventoryButtonClose");
+	auto button = entityManager->getEntitiesWithComponent<InventoryButtonCloseComponent>()[0];
 	if (
 		inputSystem->hasMouseClick() 
 		&& isClickOnEntity(inputSystem->getMouseClick(), button)

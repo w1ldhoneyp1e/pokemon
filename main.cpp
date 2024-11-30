@@ -6,6 +6,7 @@
 #include "./systems/InputSystem.h"
 #include "./Player/PlayerMovementSystem.h"
 #include "./Inventory/InventorySystem.h"
+#include "./Chests/ChestSystem.h"
 #include "./Pokemon/PokemonSystem.h"
 #include "./Catching/CatchingSystem.h"
 #include "GameState.h"
@@ -39,7 +40,7 @@ void update(
 	switch (*state)
 	{
 	case GameState::Menu: {
-		auto button = entityManager->getEntity("startGame");
+		auto button = entityManager->getEntitiesWithComponent<StartButtonComponent>()[0];
 		if (inputSystem->hasMouseClick()) 
 			if (isClickOnEntity(inputSystem->getMouseClick(), button)) {
 				*state = GameState::Game;
@@ -73,6 +74,7 @@ void update(
 			inputSystem->clear();
 		}
 		pokemonCollision(inputSystem, entityManager, renderSystem, state);
+		chestOpening(inputSystem, entityManager, renderSystem, state);
 	break;
 
 	case GameState::Inventory: {
@@ -92,6 +94,16 @@ void update(
 			renderSystem,
 			state,
 			deltaTime
+		);
+		break;
+	}
+
+	case GameState::Chest: {
+		updateChests(
+			inputSystem,
+			entityManager,
+			renderSystem,
+			state
 		);
 		break;
 	}
