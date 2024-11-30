@@ -35,7 +35,10 @@ class ChestButtonCloseComponent : public Component {
 public:
     ChestButtonCloseComponent() {}
 };
-
+class ChestButtonGetComponent : public Component {
+public:
+    ChestButtonGetComponent() {}
+};
 
 
 class PositionComponent : public Component {
@@ -209,15 +212,24 @@ private:
 class ChestComponent : public Component {
 private:
     bool _isOpened;
+    int id;
+    static int idCounter;
 public:
-    ChestComponent() : _isOpened(false) {}
+    ChestComponent() : _isOpened(false), id(idCounter++) {}
+
     void setOpened() {
         _isOpened = true;
     }
-    bool isOpened() {
+
+    bool isOpened() const {
         return _isOpened;
     }
+
+    int getId() const {
+        return id;
+    }
 };
+int ChestComponent::idCounter = 0;
 
 class ItemComponent : public Component {
 public:
@@ -225,8 +237,12 @@ public:
 };
 
 class ChestContentComponent : public Component {
+    int chestId;
 public:
-    ChestContentComponent() {}
+    ChestContentComponent(int _chestId) : chestId(_chestId) {}
+    int getId() const {
+        return chestId;
+    }
 };
 
 class ChestInterfaceComponent : public Component {
