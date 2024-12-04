@@ -1,53 +1,23 @@
 #pragma once
-#include "./systems/EntityManager.h"
+#include "../systems/EntityManager.h"
+#include "../systems/RenderSystem.h"
 #include <SFML/Graphics.hpp>
-#include "Entity.h"
-#include "const.h"
+#include "../Entity.h"
+#include "../const.h"
 
+void initPlayer(EntityManager* entityManager);
+void initLocation(EntityManager* entityManager);
+void initBulbasour(EntityManager* entityManager);
+void initChest(EntityManager* entityManager);
 
+void initGameEntities(EntityManager* entityManager) {
+    initPlayer(entityManager);
+    initLocation(entityManager);
+    initBulbasour(entityManager);
+    initChest(entityManager);
+}
 
-void init(sf::RenderWindow* window, EntityManager* entityManager) {
-    const sf::Vector2i WINDOW_POSITION = window->getPosition();
-    const sf::Vector2u WINDOW_SIZE = window->getSize();
-
-	// Кнопка начала игры
-	auto startButton = entityManager->createEntity();
-	startButton->addComponent<StartButtonComponent>(); // Убрать
-	startButton->addComponent<PositionComponent>(
-		WINDOW_WIDTH / 2 - START_BUTTON_WIDTH * 2, 
-		WINDOW_HEIGHT / 2 - START_BUTTON_HEIGHT * 2
-	);
-	startButton->addComponent<SizeComponent>(
-		START_BUTTON_WIDTH * 4, 
-		START_BUTTON_HEIGHT * 4
-	);
-	startButton->addComponent<RenderLayerComponent>(1);
-    startButton->addComponent<MenuTypeEntityComponent>();
-	sf::Texture buttonTexture;
-	if (buttonTexture.loadFromFile("../res/button(54x20).png")) {
-		startButton->addComponent<TextureComponent>(
-			buttonTexture, 
-			START_BUTTON_WIDTH, 
-			START_BUTTON_HEIGHT
-		);
-	}
-
-	// Задний фон меню
-	auto backgroundMenu = entityManager->createEntity();
-	backgroundMenu->addComponent<PositionComponent>(0, 0);
-	backgroundMenu->addComponent<SizeComponent>(WINDOW_WIDTH, WINDOW_HEIGHT);
-	backgroundMenu->addComponent<RenderLayerComponent>(0);
-    backgroundMenu->addComponent<MenuTypeEntityComponent>();
-	sf::Texture backgroundMenuTexture;
-	if (backgroundMenuTexture.loadFromFile("../res/background_menu(62x46).png")) {
-		backgroundMenu->addComponent<TextureComponent>(
-			backgroundMenuTexture, 
-			BACKGROUND_MENU_WIDTH, 
-			BACKGROUND_MENU_HEIGHT
-		);
-	}
-
-	// Игрок
+void initPlayer(EntityManager* entityManager) {
 	auto player = entityManager->createEntity();
 	player->addComponent<PositionComponent>(
 		PLAYER_START_POSITION_X,
@@ -70,9 +40,10 @@ void init(sf::RenderWindow* window, EntityManager* entityManager) {
 			PLAYER_HEIGHT
 		);
     }
+}
 
-    // Локация
-    auto location = entityManager->createEntity();
+void initLocation(EntityManager* entityManager) {
+	auto location = entityManager->createEntity();
     location->addComponent<PositionComponent>(0, 0);
     location->addComponent<SizeComponent>(WINDOW_WIDTH, WINDOW_HEIGHT);
 	location->addComponent<RenderLayerComponent>(0);
@@ -85,9 +56,10 @@ void init(sf::RenderWindow* window, EntityManager* entityManager) {
 			WINDOW_HEIGHT
 		);
     }
+}
 
-	// Покемон: Бульбазавр
-    auto bulbasour = entityManager->createEntity();
+void initBulbasour(EntityManager* entityManager) {
+	auto bulbasour = entityManager->createEntity();
     bulbasour->addComponent<PositionComponent>(
 		BULBASOUR_POSITION_X, 
 		BULBASOUR_POSITION_Y
@@ -104,9 +76,10 @@ void init(sf::RenderWindow* window, EntityManager* entityManager) {
 			POKEMON_INVENTORY_HEIGHT
 		);
     }
+}
 
-	// Сундук
-    auto chest = entityManager->createEntity();
+void initChest(EntityManager* entityManager) {
+	auto chest = entityManager->createEntity();
     chest->addComponent<PositionComponent>(
 		PLAYER_START_POSITION_X - 100, 
 		PLAYER_START_POSITION_Y

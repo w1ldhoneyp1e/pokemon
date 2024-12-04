@@ -19,17 +19,14 @@ bool isInventoryFull(PlayersInventoryComponent *inventory);
 bool isPokemonCollected(Entity* pokemon);
 bool doesConditionSatisfy(ConditionProps props);
 
-void pokemonCollision(
-	InputSystem* inputSystem,
-	EntityManager* entityManager,
-	RenderSystem* renderSystem,
-	GameState* state
-) {
+void pokemonCollision(Controller* controller) {
 	// Селектим покемонов. Для каждого проверяем, не было ли коллизии
-	auto pokemons = entityManager->getEntitiesWithComponent<PokemonComponent>();
-	auto player = entityManager->getEntitiesWithComponent<PlayerControlComponent>()[0];
+	auto [input, em, render, state] = controller->getAll();
+
+	auto pokemons = em->getEntitiesWithComponent<PokemonComponent>();
+	auto player = em->getEntitiesWithComponent<PlayerControlComponent>()[0];
 	auto inventory = player->getComponent<PlayersInventoryComponent>();
-	auto keys = inputSystem->getPressedKeys();
+	auto keys = input->getPressedKeys();
 	for (auto pokemon : pokemons) {
 		if (doesConditionSatisfy({ // условие должно быть простым
 				pokemon, 
@@ -38,11 +35,11 @@ void pokemonCollision(
 				keys
 			})) {
 			*state = GameState::Catching;
-			inputSystem->clear();
+			input->clear();
 			pokemon->addComponent<AttackedPokemonComponent>();
-			renderSystem->removeEntity(pokemon->getId());
+			render->removeEntity(pokemon->getId());
 			pokemon->removeComponent<GameTypeEntityComponent>();
-			initCatching(entityManager, renderSystem);
+			initCatching(em, render);
 		}
 	}
 }

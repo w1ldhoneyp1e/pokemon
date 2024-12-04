@@ -1,4 +1,5 @@
 #pragma once
+#include "../systems/Controller.h"
 #include "../systems/ClickHandler.h"
 #include "../systems/RenderSystem.h"
 #include "../systems/InputSystem.h"
@@ -7,10 +8,27 @@
 #include "../const.h"
 #include <SFML/Graphics.hpp>
 
-void createInventory(EntityManager* entityManager) {
+void createInventory(EntityManager* em);
 
+void openInventory(Controller* controller) {
+	auto [input, em, render, state] = controller->getAll();
+	auto keys = input->getPressedKeys();
+
+	if ((std::find(keys.begin(), keys.end(), sf::Keyboard::E) == keys.end())) return;
+	*state = GameState::Inventory;
+	createInventory(em);
+	render->addEntities(em->getEntitiesWithComponent<InventoryTypeEntityComponent>());
+	auto pokemons = em->getEntitiesWithComponent<PokemonComponent>();
+	for (auto pokemon : pokemons) {
+		if (!pokemon->getComponent<PokemonComponent>()->isCollected()) continue;
+		render->addEntity(pokemon);
+	}
+	input->clear();
+}
+
+void createInventory(EntityManager* em) {
 	// Инвентарь
-	auto inventory = entityManager->createEntity();
+	auto inventory = em->createEntity();
 	inventory->addComponent<SizeComponent>(
 		INVENTORY_WIDTH * 5, 
 		INVENTORY_HEIGHT * 4
@@ -31,7 +49,7 @@ void createInventory(EntityManager* entityManager) {
 	}
 
 	// Кнопка зарытия
-	auto inventoryButtonClose = entityManager->createEntity();
+	auto inventoryButtonClose = em->createEntity();
 	std::cout << "ID: " << inventoryButtonClose->getId() << std::endl;
 	inventoryButtonClose->addComponent<InventoryButtonCloseComponent>();
 	inventoryButtonClose->addComponent<SizeComponent>(
@@ -54,12 +72,12 @@ void createInventory(EntityManager* entityManager) {
 	}
 
 	// Покемоны в инвентаре
-	auto player = entityManager->getEntitiesWithComponent<PlayerControlComponent>()[0];
+	auto player = em->getEntitiesWithComponent<PlayerControlComponent>()[0];
 	auto ids = player->getComponent<PlayersInventoryComponent>()->getPokemons();
 	int i = 0;
 	int j = 0;
 	for (auto id : ids) {
-		auto pokemon = entityManager->getEntity(id);
+		auto pokemon = em->getEntity(id);
 		pokemon->getComponent<PositionComponent>()->setPos(
 			INVENTORY_CELLS_POSITION_START_X + i * 40,
 			INVENTORY_CELLS_POSITION_START_Y + j * 40
@@ -77,17 +95,14 @@ void createInventory(EntityManager* entityManager) {
 	}
 }
 
-void closeInventory(
-		EntityManager* entityManager, 
-		InputSystem* inputSystem,
-		RenderSystem* renderSystem,
-		GameState* state
-	) {
-	auto keys = inputSystem->getPressedKeys();
-	auto button = entityManager->getEntitiesWithComponent<InventoryButtonCloseComponent>()[0];
+void closeInventory(Controller* controller) {
+	auto [input, em, render, state] = controller->getAll();
+
+	auto keys = input->getPressedKeys();
+	auto button = em->getEntitiesWithComponent<InventoryButtonCloseComponent>()[0];
 	if (
-		inputSystem->hasMouseClick() 
-		&& isClickOnEntity(inputSystem->getMouseClick(), button)
+		input->hasMouseClick() 
+		&& isClickOnEntity(input->getMouseClick(), button)
 		|| !keys.empty()
 		&& (
 			std::find(keys.begin(), keys.end(), sf::Keyboard::Escape) != keys.end()
@@ -96,21 +111,19 @@ void closeInventory(
 	) {
 		// Удаляем элементы инвентаря с экрана
 		*state = GameState::Game;
-		auto menuEntities = entityManager->getEntitiesWithComponent<InventoryTypeEntityComponent>();
+		auto menuEntities = em->getEntitiesWithComponent<InventoryTypeEntityComponent>();
 		for (Entity* entity : menuEntities) {
-			renderSystem->removeEntity(entity->getId());
+			render->removeEntity(entity->getId());
 		}
 
 		// Удаляем покемонов с экрана
-		auto pokemons = entityManager->getEntitiesWithComponent<PokemonComponent>();
+		auto pokemons = em->getEntitiesWithComponent<PokemonComponent>();
 		for (auto pokemon : pokemons) {
 			if (pokemon->getComponent<PokemonComponent>()->isCollected()) {
-				renderSystem->removeEntity(pokemon->getId());
+				render->removeEntity(pokemon->getId());
 			}
 		}
 
-		inputSystem->clear();
+		input->clear();
 	}
-	
-
 }

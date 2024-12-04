@@ -10,97 +10,64 @@
 #include "../GameState.h"
 #include <ctime>
 
-void generateRandomItem(EntityManager *entityManager, int index, int chestId);
-void generateChestContent(EntityManager *entityManager, int chestId);
-Entity* createHealingPotion(EntityManager *entityManager);
-Entity* createCoin(EntityManager *entityManager);
-void initChestContent(EntityManager *entityManager, RenderSystem* renderSystem);
-void initChestButtonCollect(EntityManager *entityManager);
-void initChestButtonClose(EntityManager *entityManager);
-void initChestInterface(EntityManager *entityManager, RenderSystem* renderSystem);
+void generateRandomItem(EntityManager *em, int index, int chestId);
+void generateChestContent(EntityManager *em, int chestId);
+Entity* createHealingPotion(EntityManager *em);
+Entity* createCoin(EntityManager *em);
+void initChestContent(EntityManager *em, RenderSystem* render);
+void initChestButtonCollect(EntityManager *em);
+void initChestButtonClose(EntityManager *em);
+void initChestInterface(EntityManager *em, RenderSystem* render);
 
-void chestOpening(
-	InputSystem* inputSystem,
-	EntityManager* entityManager,
-	RenderSystem* renderSystem,
-	GameState* state
-);
-void collectChest(
-	InputSystem* inputSystem,
-	EntityManager* entityManager,
-	RenderSystem* renderSystem,
-	GameState* state
-);
-void closeChest(
-	InputSystem* inputSystem,
-	EntityManager* entityManager,
-	RenderSystem* renderSystem,
-	GameState* state
-);
+void chestOpening(Controller* controller);
+void collectChest(Controller* controller);
+void closeChest(Controller* controller);
 
 bool doesConditionSatisfy(Entity *chest, Entity *player, std::vector<sf::Keyboard::Key> keys);
 bool isEnterPressed(std::vector<sf::Keyboard::Key> keys);
 
-void updateChests(
-	InputSystem* inputSystem,
-	EntityManager* entityManager,
-	RenderSystem* renderSystem,
-	GameState* state
-) {
-	closeChest(
-	inputSystem,
-	entityManager,
-	renderSystem,
-	state);
-	collectChest(
-	inputSystem,
-	entityManager,
-	renderSystem,
-	state);
+void updateChests(Controller* controller) {
+	closeChest(controller);
+	collectChest(controller);
 }
 
 void chestInit(
-	EntityManager* entityManager,
-    RenderSystem* renderSystem,
+	EntityManager* em,
+    RenderSystem* render,
 	int chestId
 ) {
-	generateChestContent(entityManager, chestId);
-	initChestContent(entityManager, renderSystem);
-	initChestButtonCollect(entityManager);
-	initChestButtonClose(entityManager);
-	initChestInterface(entityManager, renderSystem);
-	auto entities = entityManager->getEntitiesWithComponent<ChestContentComponent>();
-	auto interface = entityManager->getEntitiesWithComponent<ChestInterfaceComponent>();
-	renderSystem->addEntities(entities);
-	renderSystem->addEntities(interface);
+	generateChestContent(em, chestId);
+	initChestContent(em, render);
+	initChestButtonCollect(em);
+	initChestButtonClose(em);
+	initChestInterface(em, render);
+	auto entities = em->getEntitiesWithComponent<ChestContentComponent>();
+	auto interface = em->getEntitiesWithComponent<ChestInterfaceComponent>();
+	render->addEntities(entities);
+	render->addEntities(interface);
 }
 
-void chestCollisionHandler(
-	EntityManager* entityManager,
-    InputSystem* inputSystem,
-    RenderSystem* renderSystem,
-    GameState* state
-) {
+void chestCollisionHandler(Controller* controller) {
 
 }
 
-void generateChestContent(EntityManager *entityManager, int chestId) {
+void generateChestContent(EntityManager *em, int chestId) {
 	std::srand(std::time(0));
     int amountOfItems = 1 + std::rand() % 7;
 	for (int i=1; i <= amountOfItems; ++i) {
-		generateRandomItem(entityManager, i, chestId);
+		generateRandomItem(em, i, chestId);
 	}
 	// Сгенерить число до 7
 	// В цикле создавать сущность рандомно, добавлять в стор
 }
 
-void generateRandomItem(EntityManager *entityManager, int index, int chestId) {
+void generateRandomItem(EntityManager *em, int index, int chestId) {
 	std::srand(std::time(0));
     int typeIdOfItem = std::rand() % 2; // 0 => Healing Potion, 1 => Coin
 	switch (typeIdOfItem)
 	{
 	case 0:{
-		auto healingPotion = createHealingPotion(entityManager);
+		auto healingPotion = createHealingPotion(em);
 		healingPotion->addComponent<ChestContentComponent>(chestId);
 		healingPotion->addComponent<PositionComponent>(
 			CHEST_INTERFACE_X + 12 + (index % MAX_ITEMS_PER_ROW - 1) * 51,
@@ -110,7 +77,7 @@ void generateRandomItem(EntityManager *entityManager, int index, int chestId) {
 	}
 
 	case 1: {
-		auto coin = createCoin(entityManager);
+		auto coin = createCoin(em);
 		coin->addComponent<ChestContentComponent>(chestId);
 		coin->addComponent<PositionComponent>(
 			CHEST_INTERFACE_X + 12 + (index % MAX_ITEMS_PER_ROW - 1) * 51,
@@ -124,8 +91,8 @@ void generateRandomItem(EntityManager *entityManager, int index, int chestId) {
 	}
 }
 
-Entity* createHealingPotion(EntityManager *entityManager) {
-	auto healingPotion = entityManager->createEntity();
+Entity* createHealingPotion(EntityManager *em) {
+	auto healingPotion = em->createEntity();
 	healingPotion->addComponent<RenderLayerComponent>(2);
 	healingPotion->addComponent<SizeComponent>(
 		ITEM_SIDE,
@@ -142,8 +109,8 @@ Entity* createHealingPotion(EntityManager *entityManager) {
 	return healingPotion;
 }
 
-Entity* createCoin(EntityManager *entityManager) {
-	auto coin = entityManager->createEntity();
+Entity* createCoin(EntityManager *em) {
+	auto coin = em->createEntity();
 	coin->addComponent<ItemComponent>();
 	coin->addComponent<RenderLayerComponent>(2);
 	coin->addComponent<SizeComponent>(
@@ -161,12 +128,12 @@ Entity* createCoin(EntityManager *entityManager) {
 	return coin;
 }
 
-void initChestContent(EntityManager *entityManager, RenderSystem* renderSystem) {
-	// Сгенерированные сущности добавить в renderSystem
+void initChestContent(EntityManager *em, RenderSystem* render) {
+	// Сгенерированные сущности добавить в render
 }
 
-void initChestButtonCollect(EntityManager *entityManager) {
-	auto button = entityManager->createEntity();
+void initChestButtonCollect(EntityManager *em) {
+	auto button = em->createEntity();
 	button->addComponent<ChestButtonGetComponent>();
 	button->addComponent<PositionComponent>(
 			CHEST_INTERFACE_BUTTON_GET_X,
@@ -187,8 +154,8 @@ void initChestButtonCollect(EntityManager *entityManager) {
 		);
     }
 }
-void initChestButtonClose(EntityManager *entityManager) {
-	auto button = entityManager->createEntity();
+void initChestButtonClose(EntityManager *em) {
+	auto button = em->createEntity();
 	button->addComponent<ChestButtonCloseComponent>();
 	button->addComponent<PositionComponent>(
 			CHEST_INTERFACE_BUTTON_CLOSE_X,
@@ -209,8 +176,8 @@ void initChestButtonClose(EntityManager *entityManager) {
 		);
     }
 }
-void initChestInterface(EntityManager *entityManager, RenderSystem* renderSystem) {
-	auto inventoryInterface = entityManager->createEntity();
+void initChestInterface(EntityManager *em, RenderSystem* render) {
+	auto inventoryInterface = em->createEntity();
 	inventoryInterface->addComponent<ItemComponent>();
 	inventoryInterface->addComponent<RenderLayerComponent>(1);
 	inventoryInterface->addComponent<PositionComponent>(
@@ -232,75 +199,66 @@ void initChestInterface(EntityManager *entityManager, RenderSystem* renderSystem
     }
 }
 
-void chestOpening(
-	InputSystem* inputSystem,
-	EntityManager* entityManager,
-	RenderSystem* renderSystem,
-	GameState* state
-) {
-	auto chests = entityManager->getEntitiesWithComponent<ChestComponent>();
-	auto player = entityManager->getEntitiesWithComponent<PlayerControlComponent>()[0];
-	auto keys = inputSystem->getPressedKeys();
+void chestOpening(Controller* controller) {
+	auto [input, em, render, state] = controller->getAll();
+
+	auto chests = em->getEntitiesWithComponent<ChestComponent>();
+	auto player = em->getEntitiesWithComponent<PlayerControlComponent>()[0];
+	auto keys = input->getPressedKeys();
 	for (auto chest : chests) {
 		if (doesConditionSatisfy(chest, player, keys)) {
 			int chestId = chest->getComponent<ChestComponent>()->getId();
 			*state = GameState::Chest;
-			inputSystem->clear();
-			chestInit(entityManager, renderSystem, chestId);
+			input->clear();
+			chestInit(em, render, chestId);
 			chest->getComponent<ChestComponent>()->setOpened();
 		}
 	}
 }
 
-void collectChest(
-	InputSystem* inputSystem,
-	EntityManager* entityManager,
-	RenderSystem* renderSystem,
-	GameState* state
-) {
-	auto button = entityManager->getEntitiesWithComponent<ChestButtonGetComponent>().empty()
+void collectChest(Controller* controller) {
+	auto [input, em, render, state] = controller->getAll();
+
+	auto button = em->getEntitiesWithComponent<ChestButtonGetComponent>().empty()
 		? nullptr
-		: entityManager->getEntitiesWithComponent<ChestButtonGetComponent>()[0];
+		: em->getEntitiesWithComponent<ChestButtonGetComponent>()[0];
 	if (
 		button == nullptr
-		|| !isClickOnEntity(inputSystem->getMouseClick(), button)
+		|| !isClickOnEntity(input->getMouseClick(), button)
 	) return;
-	inputSystem->clear();
-	auto entities = entityManager->getEntitiesWithComponent<ChestContentComponent>();
-	auto interface = entityManager->getEntitiesWithComponent<ChestInterfaceComponent>();
+	input->clear();
+	auto entities = em->getEntitiesWithComponent<ChestContentComponent>();
+	auto interface = em->getEntitiesWithComponent<ChestInterfaceComponent>();
 	for(auto entity : entities) {
-		renderSystem->removeEntity(entity->getId());
+		render->removeEntity(entity->getId());
 		entity->addComponent<ItemComponent>();
 		entity->removeComponent<ChestContentComponent>();
 	} 
 	for(auto interfaceComp : interface) {
-		renderSystem->removeEntity(interfaceComp->getId());
-		entityManager->removeEntity(interfaceComp);
+		render->removeEntity(interfaceComp->getId());
+		em->removeEntity(interfaceComp);
 	}
 	*state = GameState::Game;
 }
 
-void closeChest(
-	InputSystem* inputSystem,
-	EntityManager* entityManager,
-	RenderSystem* renderSystem,
-	GameState* state
-) {
-	auto button = entityManager->getEntitiesWithComponent<ChestButtonCloseComponent>()[0];
+void closeChest(Controller* controller) {
+	auto [input, em, render, state] = controller->getAll();
+
+	auto button = em->getEntitiesWithComponent<ChestButtonCloseComponent>()[0];
 	if (
-		!isEscapePressed(inputSystem->getPressedKeys())
-		&& !isClickOnEntity(inputSystem->getMouseClick(), button)
+		!isEscapePressed(input->getPressedKeys())
+		&& !isClickOnEntity(input->getMouseClick(), button)
 	) return;
-	inputSystem->clear();
-	auto entities = entityManager->getEntitiesWithComponent<ChestContentComponent>();
-	auto interface = entityManager->getEntitiesWithComponent<ChestInterfaceComponent>();
+	input->clear();
+	auto entities = em->getEntitiesWithComponent<ChestContentComponent>();
+	auto interface = em->getEntitiesWithComponent<ChestInterfaceComponent>();
 	for(auto entity : entities) {
-		renderSystem->removeEntity(entity->getId());
-		entityManager->removeEntity(entity);
+		render->removeEntity(entity->getId());
+		em->removeEntity(entity);
 	} 
 	for(auto interfaceComp : interface) {
-		renderSystem->removeEntity(interfaceComp->getId());
-		entityManager->removeEntity(interfaceComp);
+		render->removeEntity(interfaceComp->getId());
+		em->removeEntity(interfaceComp);
 	}
 	*state = GameState::Game;
 }
