@@ -17,7 +17,6 @@ void playerMovementSystem(EntityManager* em, InputSystem* input, float deltaTime
     for (sf::Keyboard::Key key : keys) {
         switch (key) {
             case sf::Keyboard::W:
-	            std::cout << "W Pressed" << std::endl;
                 position->setPos(
                     position->getX(),
                     position->getY() - movementSpeed

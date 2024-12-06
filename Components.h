@@ -39,6 +39,23 @@ class ChestButtonGetComponent : public Component {
 public:
     ChestButtonGetComponent() {}
 };
+enum AttackDir {
+    Head,
+    Body,
+	Feet
+};
+class BattleArrowComponent : public Component {
+private:
+    AttackDir dir;
+public:
+    BattleArrowComponent(AttackDir dir) : dir(dir) {}
+    AttackDir getDir() {
+        return dir;
+    }
+    void setDir(AttackDir _dir) {
+        dir = _dir;
+    }
+};
 
 
 class PositionComponent : public Component {
@@ -67,13 +84,106 @@ public:
     SpeedComponent(float speed) : speed(speed) {}
 };
 
+class OriginComponent : public Component {
+public:
+    float x;
+    float y;
+
+    OriginComponent(float x, float y)
+        : x(x), y(y) {}
+
+    float getX() const {
+        return x;
+    }
+
+    float getY() const {
+        return y;
+    }
+
+    void setX(float newX) {
+        x = newX;
+    }
+
+    void setY(float newY) {
+        y = newY;
+    }
+};
+
 class RotationComponent : public Component {
 public:
     float speed;
     float angle;
     float posX;
     float posY;
-    RotationComponent(float speed, float posX, float posY) : speed(speed), posX(posX), posY(posY) {}
+
+    RotationComponent(float speed, float posX, float posY, float angle = 0.0f)
+        : speed(speed), posX(posX), posY(posY), angle(angle) {}
+
+    float getSpeed() const {
+        return speed;
+    }
+
+    float getAngle() const {
+        return angle;
+    }
+
+    float getPosX() const {
+        return posX;
+    }
+
+    float getPosY() const {
+        return posY;
+    }
+
+    void setSpeed(float newSpeed) {
+        speed = newSpeed;
+    }
+
+    void setAngle(float newAngle) {
+        angle = newAngle;
+    }
+
+    void setPosX(float newPosX) {
+        posX = newPosX;
+    }
+
+    void setPosY(float newPosY) {
+        posY = newPosY;
+    }
+};
+
+class HealthComponent : public Component {
+private:
+    float current;
+    float total;
+    bool _isVisible;
+public:
+    HealthComponent(float total, float current, bool isVisible = false)
+        : total(total), current(current), _isVisible(isVisible) {}
+
+    float getTotal() const {
+        return total;
+    }
+
+    float getCurrent() const {
+        return current;
+    }
+
+    float isVisible() const {
+        return _isVisible;
+    }
+
+    void setTotal(float value) {
+        total = value;
+    }
+
+    void setCurrent(float value) {
+        current = value;
+    }
+
+    void setVisible(float value) {
+        _isVisible = value;
+    }
 };
 
 class SizeComponent : public Component {
@@ -132,6 +242,11 @@ public:
     CatchingTypeEntityComponent() {}
 };
 
+class BattleTypeEntityComponent : public Component {
+public:
+    BattleTypeEntityComponent() {}
+};
+
 class InventoryTypeEntityComponent : public Component {
 public:
     InventoryTypeEntityComponent() {}
@@ -160,6 +275,52 @@ public:
     void setCollected(bool status) {
         collected = status;
     }
+};
+
+class TrainerComponent : public Component {
+private:
+    std::string name;
+    bool attacked;
+public:
+    TrainerComponent(const std::string& name) 
+        : name(name), attacked(false) {}
+
+    const std::string& getName() const {
+        return name;
+    }
+
+    void setName(const std::string& newName) {
+        name = newName;
+    }
+
+    bool isAttacked() {
+        return attacked;
+    }
+
+    void setAttacked(bool status) {
+        attacked = status;
+    }
+};
+
+class TrainerPokemonsComponent : public Component {
+public:
+    void addPokemon(int id) {
+        collection.push_back(id);
+    }
+
+    void clearInventory() {
+        collection.clear();
+    }
+
+    std::vector<int> getPokemons() {
+        return collection;
+    }
+
+    size_t getPokemonCount() const {
+        return collection.size();
+    }
+private:
+    std::vector<int> collection;
 };
 
 class AttackedPokemonComponent : public Component {
@@ -272,12 +433,60 @@ public:
     sf::Texture texture;
     sf::Sprite sprite;
 
-    explicit TextureComponent(const sf::Texture& tex, int width, int height) : texture(tex) {
-        sprite.setTexture(texture);
+    explicit TextureComponent(const sf::Texture& tex, int width, int height) : 
+        texture(tex), width(width), height(height), originX(0), originY(0) {
+        sprite.setTexture(texture, true);
+        updateSprite();
+    }
+
+    void setTexture(const sf::Texture& tex) {
+        texture = tex;
+        updateSprite();
+    }
+
+    void setWidth(int w) {
+        width = w;
+        updateSprite();
+    }
+
+    void setHeight(int h) {
+        height = h;
+        updateSprite();
+    }
+
+    void setOriginX(float x) {
+        originX = x;
+        sprite.setOrigin(originX, originY);
+    }
+    void setOriginY(float y) {
+        originY = y;
+        sprite.setOrigin(originX, originY);
+    }
+
+    const sf::Texture& getTexture() {
+        return texture;
+    }
+    int getWidth() { 
+        return width;
+    }
+    int getHeight() { 
+        return height; 
+    }
+    float getOriginX() { 
+        return originX; 
+    }
+    float getOriginY() { 
+        return originY; 
+    }
+    const sf::Sprite& getSprite() {
+        return sprite;
+    }
+
+
+private:
+    void updateSprite() {
+        sprite.setTexture(texture, true);
         sprite.setTextureRect(sf::IntRect(0, 0, width, height));
-        // sprite.setScale(
-        //     width / tex.getSize().x,
-        //     height / tex.getSize().y
-        // );
+        sprite.setOrigin(originX, originY);
     }
 };

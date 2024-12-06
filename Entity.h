@@ -12,8 +12,6 @@ public:
     Entity(int id) : id(id) {}
 
     std::unordered_map<std::type_index, Component*> components;
-    // TODO: заменить на умные указатели
-
     template <typename T, typename... Args>
     void addComponent(Args&&... args) {
         components[typeid(T)] = new T(std::forward<Args>(args)...);

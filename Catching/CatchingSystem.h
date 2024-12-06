@@ -131,7 +131,7 @@ void initCatchingArrow(EntityManager* em) {
     );
     catchingArrow->addComponent<SizeComponent>(ARROW_WIDTH, ARROW_HEIGHT);
 	catchingArrow->addComponent<RotationComponent>(ARROW_SPEED, ARROW_WIDTH / 2, ARROW_HEIGHT + ARROW_POKEBALL_GAP + POKEBALL_HEIGHT * 5 / 2);
-	catchingArrow->addComponent<RenderLayerComponent>(1);
+	catchingArrow->addComponent<RenderLayerComponent>(2);
     catchingArrow->addComponent<CatchingTypeEntityComponent>();
     sf::Texture catchingArrowTexture;
     if (catchingArrowTexture.loadFromFile("../res/arrow(57x162).png")) {
@@ -174,7 +174,6 @@ void throwPokeball(EntityManager* em, float dt) {
 }
 
 void pokeballCollision(EntityManager* em, RenderSystem* render, GameState* state) {
-    //  TODO: сократить минимум в 2 раза
     auto pokemon = em->getEntitiesWithComponent<AttackedPokemonComponent>()[0];
     auto pokeball = em->getEntitiesWithComponent<PokeballComponent>()[0];
     if (isCollision(pokeball, pokemon)) {

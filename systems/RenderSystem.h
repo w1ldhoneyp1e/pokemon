@@ -4,6 +4,7 @@
 #include <memory>
 #include <vector>
 #include "../Entity.h"
+#include "../Health/Health.h"
 #include <iostream>
 #include "../const.h"
 
@@ -57,6 +58,8 @@ public:
             auto positionComp = entity->getComponent<PositionComponent>();
             auto rotationComp = entity->getComponent<RotationComponent>();
             auto sizeComp = entity->getComponent<SizeComponent>();
+            auto originComp = entity->getComponent<OriginComponent>();
+            auto healthComp = entity->getComponent<HealthComponent>();
 
             if (textureComp && positionComp) {
                 auto posX = positionComp->getX();
@@ -67,6 +70,13 @@ public:
                 // if (textureComp->originY) {
                 //     posY = textureComp->originY;
                 // }
+
+                if (originComp) {
+                    textureComp->sprite.setOrigin(
+                        originComp->getX(),
+                        originComp->getY()
+                    );
+                }
 
                 textureComp->sprite.setPosition(posX, posY);
 
@@ -82,6 +92,10 @@ public:
                     auto y = textureComp->sprite.getOrigin().y;
 
                     textureComp->sprite.setRotation(rotationComp->angle * 180 / PI);
+                }
+
+                if (healthComp && healthComp->isVisible()) {
+                    showHealth(window, sizeComp->getWidth(), healthComp, positionComp);
                 }
 
                 window->draw(textureComp->sprite);

@@ -23,7 +23,7 @@ void chestOpening(Controller* controller);
 void collectChest(Controller* controller);
 void closeChest(Controller* controller);
 
-bool doesConditionSatisfy(Entity *chest, Entity *player, std::vector<sf::Keyboard::Key> keys);
+bool doesChestConditionSatisfy(Entity *chest, Entity *player, std::vector<sf::Keyboard::Key> keys);
 bool isEnterPressed(std::vector<sf::Keyboard::Key> keys);
 
 void updateChests(Controller* controller) {
@@ -206,7 +206,7 @@ void chestOpening(Controller* controller) {
 	auto player = em->getEntitiesWithComponent<PlayerControlComponent>()[0];
 	auto keys = input->getPressedKeys();
 	for (auto chest : chests) {
-		if (doesConditionSatisfy(chest, player, keys)) {
+		if (doesChestConditionSatisfy(chest, player, keys)) {
 			int chestId = chest->getComponent<ChestComponent>()->getId();
 			*state = GameState::Chest;
 			input->clear();
@@ -263,7 +263,7 @@ void closeChest(Controller* controller) {
 	*state = GameState::Game;
 }
 
-bool doesConditionSatisfy(Entity *chest, Entity *player, std::vector<sf::Keyboard::Key> keys) {
+bool doesChestConditionSatisfy(Entity *chest, Entity *player, std::vector<sf::Keyboard::Key> keys) {
 	return isEnterPressed(keys)
 	&& isCollision(chest, player)
 	&& !chest->getComponent<ChestComponent>()->isOpened();

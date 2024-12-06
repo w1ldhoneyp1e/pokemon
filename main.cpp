@@ -8,6 +8,8 @@
 #include "./Player/PlayerMovementSystem.h"
 #include "./Inventory/InventorySystem.h"
 #include "./Chests/ChestSystem.h"
+#include "./Battle/Battle.h"
+#include "./Trainer/Trainer.h"
 #include "./Pokemon/PokemonSystem.h"
 #include "./Menu/MenuSystem.h"
 #include "./Time/TimeSystem.h"
@@ -55,6 +57,7 @@ void update(Controller* controller, float deltaTime) {
 		openInventory(controller);
 		pokemonCollision(controller);
 		chestOpening(controller);
+		trainerCollision(controller);
 	break;
 
 	case GameState::Inventory: {
@@ -69,6 +72,11 @@ void update(Controller* controller, float deltaTime) {
 
 	case GameState::Chest: {
 		updateChests(controller);
+		break;
+	}
+
+	case GameState::Battle: {
+		updateBattle(controller);
 		break;
 	}
 	

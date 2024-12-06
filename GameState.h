@@ -4,5 +4,6 @@ enum GameState {
     Game,
 	Inventory,
     Catching,
-    Chest
+    Chest,
+    Battle
 };

@@ -8,7 +8,7 @@
 #include "../GameState.h"
 #include "../const.h"
 
-struct ConditionProps {
+struct PokemonConditionProps {
 	Entity* pokemon;
 	Entity* player;
 	PlayersInventoryComponent* inventory;
@@ -17,7 +17,7 @@ struct ConditionProps {
 
 bool isInventoryFull(PlayersInventoryComponent *inventory);
 bool isPokemonCollected(Entity* pokemon);
-bool doesConditionSatisfy(ConditionProps props);
+bool doesConditionSatisfy(PokemonConditionProps props);
 
 void pokemonCollision(Controller* controller) {
 	// Селектим покемонов. Для каждого проверяем, не было ли коллизии
@@ -27,8 +27,10 @@ void pokemonCollision(Controller* controller) {
 	auto player = em->getEntitiesWithComponent<PlayerControlComponent>()[0];
 	auto inventory = player->getComponent<PlayersInventoryComponent>();
 	auto keys = input->getPressedKeys();
+	if (keys.empty()) return;
 	for (auto pokemon : pokemons) {
-		if (doesConditionSatisfy({ // условие должно быть простым
+		if (pokemon->getComponent<GameTypeEntityComponent>() == nullptr) continue;;
+		if (doesConditionSatisfy({
 				pokemon, 
 				player,
 				inventory,
@@ -44,7 +46,7 @@ void pokemonCollision(Controller* controller) {
 	}
 }
 
-bool doesConditionSatisfy(ConditionProps props) {
+bool doesConditionSatisfy(PokemonConditionProps props) {
 	return isCollision(props.pokemon, props.player) 
 		&& isInventoryFull(props.inventory)
 		&& isPokemonCollected(props.pokemon)

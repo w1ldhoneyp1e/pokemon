@@ -50,7 +50,6 @@ void createInventory(EntityManager* em) {
 
 	// Кнопка зарытия
 	auto inventoryButtonClose = em->createEntity();
-	std::cout << "ID: " << inventoryButtonClose->getId() << std::endl;
 	inventoryButtonClose->addComponent<InventoryButtonCloseComponent>();
 	inventoryButtonClose->addComponent<SizeComponent>(
 		INVENTORY_BUTTON_CLOSE_WIDTH * 4, 

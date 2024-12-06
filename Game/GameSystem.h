@@ -3,22 +3,24 @@
 #include "../systems/RenderSystem.h"
 #include <SFML/Graphics.hpp>
 #include "../Entity.h"
+#include "../Trainer/Trainer.h"
 #include "../const.h"
 
-void initPlayer(EntityManager* entityManager);
-void initLocation(EntityManager* entityManager);
-void initBulbasour(EntityManager* entityManager);
-void initChest(EntityManager* entityManager);
+void initPlayer(EntityManager* em);
+void initGameLocation(EntityManager* em);
+void initBulbasour(EntityManager* em);
+void initChest(EntityManager* em);
 
-void initGameEntities(EntityManager* entityManager) {
-    initPlayer(entityManager);
-    initLocation(entityManager);
-    initBulbasour(entityManager);
-    initChest(entityManager);
+void initGameEntities(EntityManager* em) {
+    initPlayer(em);
+    initGameLocation(em);
+    initBulbasour(em);
+    initChest(em);
+	initTrainer(em);
 }
 
-void initPlayer(EntityManager* entityManager) {
-	auto player = entityManager->createEntity();
+void initPlayer(EntityManager* em) {
+	auto player = em->createEntity();
 	player->addComponent<PositionComponent>(
 		PLAYER_START_POSITION_X,
 		PLAYER_START_POSITION_Y
@@ -42,8 +44,8 @@ void initPlayer(EntityManager* entityManager) {
     }
 }
 
-void initLocation(EntityManager* entityManager) {
-	auto location = entityManager->createEntity();
+void initGameLocation(EntityManager* em) {
+	auto location = em->createEntity();
     location->addComponent<PositionComponent>(0, 0);
     location->addComponent<SizeComponent>(WINDOW_WIDTH, WINDOW_HEIGHT);
 	location->addComponent<RenderLayerComponent>(0);
@@ -58,28 +60,29 @@ void initLocation(EntityManager* entityManager) {
     }
 }
 
-void initBulbasour(EntityManager* entityManager) {
-	auto bulbasour = entityManager->createEntity();
+void initBulbasour(EntityManager* em) {
+	auto bulbasour = em->createEntity();
     bulbasour->addComponent<PositionComponent>(
 		BULBASOUR_POSITION_X, 
 		BULBASOUR_POSITION_Y
 	);
     bulbasour->addComponent<SizeComponent>(POKEMON_INVENTORY_WIDTH, POKEMON_INVENTORY_HEIGHT);
 	bulbasour->addComponent<RenderLayerComponent>(1);
+	bulbasour->addComponent<HealthComponent>(100, 100);
 	bulbasour->addComponent<PokemonComponent>("Bulbasour");
     bulbasour->addComponent<GameTypeEntityComponent>();
     sf::Texture bulbasourTexture;
-    if (bulbasourTexture.loadFromFile("../res/bulbasour(36x33).png")) {
+    if (bulbasourTexture.loadFromFile("../res/bulbasour(64x64).png")) {
         bulbasour->addComponent<TextureComponent>(
 			bulbasourTexture,
-			POKEMON_INVENTORY_WIDTH, 
-			POKEMON_INVENTORY_HEIGHT
+			64, 
+			64
 		);
     }
 }
 
-void initChest(EntityManager* entityManager) {
-	auto chest = entityManager->createEntity();
+void initChest(EntityManager* em) {
+	auto chest = em->createEntity();
     chest->addComponent<PositionComponent>(
 		PLAYER_START_POSITION_X - 100, 
 		PLAYER_START_POSITION_Y
