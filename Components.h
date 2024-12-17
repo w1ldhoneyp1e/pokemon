@@ -247,6 +247,11 @@ public:
     BattleTypeEntityComponent() {}
 };
 
+class EnemyPokemonComponent : public Component {
+public:
+    EnemyPokemonComponent() {}
+};
+
 class InventoryTypeEntityComponent : public Component {
 public:
     InventoryTypeEntityComponent() {}

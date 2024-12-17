@@ -3,6 +3,7 @@
 #include "./InputSystem.h"
 #include "./EntityManager.h"
 #include "../GameState.h"
+#include "./BattleSystem.h"
 
 class Controller {
 private:
@@ -10,6 +11,7 @@ private:
     InputSystem* inputSystem;
     RenderSystem* renderSystem;
     GameState* state;
+    BattleContext battleContext;
 
 public:
     Controller(EntityManager* em, InputSystem* is, RenderSystem* rs, GameState* st)
@@ -38,14 +40,19 @@ public:
         return state;
     }
 
+    BattleContext& getBattleContext() {
+        return battleContext;
+    }
+
 	struct Systems {
         InputSystem* input;
         EntityManager* entityManager;
         RenderSystem* renderSystem;
         GameState* state;
+        BattleContext* battleContext;
     };
 
     Systems getAll() {
-        return {inputSystem, entityManager, renderSystem, state};
+        return {inputSystem, entityManager, renderSystem, state, &battleContext};
     }
 };

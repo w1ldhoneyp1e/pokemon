@@ -2,6 +2,7 @@
 #include "../systems/Controller.h"
 #include "../systems/EntityManager.h"
 #include "../systems/RenderSystem.h"
+#include "../systems/ClickHandler.h"
 #include "../const.h"
 #include <ctime>
 
@@ -13,10 +14,27 @@ void initEnemyPokemon(EntityManager *em);
 Entity *getEnemy(EntityManager *em);
 Entity *getPokemon(EntityManager *em, Entity *enemy);
 
-void onArrowClick();
+void onArrowClick(EntityManager *em, InputSystem *input);
+void damageHandler(EntityManager *em);
 
 void updateBattle(Controller *controller) {
-	onArrowClick();
+	auto& battleContext = controller->getBattleContext();
+    auto [input, em, render, state, battleContext] = controller->getAll();
+
+    switch (battleContext.state) {
+    case BattleState::PlayerTurn:
+        onArrowClick(em, input);
+        break;
+
+    case BattleState::EnemyTurn:
+        break;
+
+    case BattleState::Animation:
+        break;
+
+    case BattleState::EndCheck:
+        break;
+    }
 }
 
 void initBattle(EntityManager *em, RenderSystem *render) {
@@ -86,8 +104,8 @@ void initMyPokemon(EntityManager *em) {
 	if (pokemonTexture.loadFromFile("../res/" + pokemon->getComponent<PokemonComponent>()->getName() + "(64x64).png")) {
 		texture->setTexture(pokemonTexture);
 	}
-	
 }
+
 void initEnemyPokemon(EntityManager *em) {
 	auto enemy = getEnemy(em);
 	auto pokemon = getPokemon(em, enemy);
@@ -100,6 +118,7 @@ void initEnemyPokemon(EntityManager *em) {
 	pokemon->addComponent<RenderLayerComponent>(1);
 	pokemon->addComponent<HealthComponent>(100, 100, true);
     pokemon->addComponent<BattleTypeEntityComponent>();
+    pokemon->addComponent<EnemyPokemonComponent>();
     sf::Texture pokemonTexture;
     if (pokemonTexture.loadFromFile("../res/" + pokemon->getComponent<PokemonComponent>()->getName() + "(64x64).png")) {
         pokemon->addComponent<TextureComponent>(
@@ -127,6 +146,15 @@ Entity *getPokemon(EntityManager *em, Entity *enemy) {
 	return em->getEntity(id);
 }
 
-void onArrowClick() {
+void onArrowClick(EntityManager *em, InputSystem *input) {
+	auto arrows = em->getEntitiesWithComponent<BattleArrowComponent>();
+	for (auto arrow : arrows) {
+		if (!isClickOnEntity(input->getMouseClick(), arrow)) continue;
+		// Получение покемона, который не ходит -> переключать состояние, когда сходил
+		damageHandler(em)
+	}
+}
 
+void damageHandler(EntityManager *em) {
+	auto enemyPokemon = em->getEntitiesWithComponent<EnemyPokemonComponent>().front();
 }
