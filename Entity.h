@@ -1,5 +1,5 @@
 #pragma once
-#include "Components.h"
+#include "./Components/Components.h"
 #include <functional>
 #include <SFML/Window.hpp>
 #include <typeindex>

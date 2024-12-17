@@ -1,5 +1,5 @@
 #pragma once
-#include "../Components.h"
+#include "../Components/Components.h"
 #include "../systems/EntityManager.h"
 #include "../systems/InputSystem.h"
 #include "../systems/RenderSystem.h"

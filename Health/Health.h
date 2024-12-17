@@ -1,5 +1,5 @@
 #include <SFML/Graphics.hpp>
-#include "../Components.h"
+#include "../Components/Components.h"
 #include "../Entity.h"
 
 float getWidth(float length, HealthComponent *healthComp);

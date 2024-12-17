@@ -40,7 +40,7 @@ void handleEvent(sf::RenderWindow* window, Controller* controller) {
 }
 
 void update(Controller* controller, float deltaTime) {
-	auto [input, em, render, state] = controller->getAll();
+	auto [input, em, render, state, battleContext] = controller->getAll();
 	auto keys = input->getPressedKeys();
 	bool isClicked = false;
 	switch (*state)
