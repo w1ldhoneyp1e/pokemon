@@ -16,7 +16,7 @@ bool doesTrainerConditionSatisfy(ConditionProps props);
 void initTrainerPokemons(EntityManager *em, TrainerPokemonsComponent *pokemons);
 
 void trainerCollision(Controller *controller) {
-	auto [input, em, render, state] = controller->getAll();
+	auto [input, em, render, state, battleContext] = controller->getAll();
 
 	auto player = em->getEntitiesWithComponent<PlayerControlComponent>()[0];
 	if (!player->getComponent<PlayersInventoryComponent>()->getPokemonCount()) return;
@@ -32,41 +32,12 @@ void trainerCollision(Controller *controller) {
 			*state = GameState::Battle;
 			input->clear();
 			trainer->getComponent<TrainerComponent>()->setAttacked(true);
-			initBattle(em, render);
+			initBattle(em, render, battleContext);
 		}
 	}
-}
-
-void initTrainer(EntityManager *em) {
-	auto trainer = em->createEntity();
-    trainer->addComponent<PositionComponent>(
-		TRAINER_POSITION_X, 
-		TRAINER_POSITION_Y
-	);
-    trainer->addComponent<SizeComponent>(TRAINER_WIDTH, TRAINER_HEIGHT);
-	trainer->addComponent<RenderLayerComponent>(1);
-	trainer->addComponent<TrainerComponent>("First");
-	trainer->addComponent<TrainerPokemonsComponent>();
-	auto pokemons = trainer->getComponent<TrainerPokemonsComponent>();
-	initTrainerPokemons(em, pokemons);
-    trainer->addComponent<GameTypeEntityComponent>();
-    sf::Texture trainerTexture;
-    if (trainerTexture.loadFromFile("../res/trainer(16x24).png")) {
-        trainer->addComponent<TextureComponent>(
-			trainerTexture,
-			16, 
-			24
-		);
-    }
 }
 
 bool doesTrainerConditionSatisfy(ConditionProps props) {
 	return isCollision(props.trainer, props.player) 
 		&& isEnterPressed(props.keys);
-}
-
-void initTrainerPokemons(EntityManager *em, TrainerPokemonsComponent *pokemons) {
-	auto charmander = em->createEntity();
-	charmander->addComponent<PokemonComponent>("charmander");
-	pokemons->addPokemon(charmander->getId());
 }

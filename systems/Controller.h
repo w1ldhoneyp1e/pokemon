@@ -11,11 +11,11 @@ private:
     InputSystem* inputSystem;
     RenderSystem* renderSystem;
     GameState* state;
-    BattleContext battleContext;
+    BattleContext* battleContext;
 
 public:
-    Controller(EntityManager* em, InputSystem* is, RenderSystem* rs, GameState* st)
-        : entityManager(em), inputSystem(is), renderSystem(rs), state(st) {}
+    Controller(EntityManager* em, InputSystem* is, RenderSystem* rs, GameState* st, BattleContext *ctx)
+        : entityManager(em), inputSystem(is), renderSystem(rs), state(st), battleContext(ctx) {}
 
     ~Controller() {
         delete entityManager;
@@ -40,8 +40,12 @@ public:
         return state;
     }
 
-    BattleContext& getBattleContext() {
+    BattleContext* getBattleContext() {
         return battleContext;
+    }
+
+    void setBattleContext(BattleContext *ctx) {
+        battleContext = ctx;
     }
 
 	struct Systems {
@@ -53,6 +57,6 @@ public:
     };
 
     Systems getAll() {
-        return {inputSystem, entityManager, renderSystem, state, &battleContext};
+        return {inputSystem, entityManager, renderSystem, state, battleContext};
     }
 };

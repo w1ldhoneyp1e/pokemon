@@ -4,8 +4,8 @@
 enum class BattleState {
     PlayerTurn,
     EnemyTurn,
-    Animation,
-    EndCheck
+    PlayerWon,
+    EnemyWon
 };
 
 struct BattleContext {

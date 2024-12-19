@@ -200,7 +200,7 @@ void initChestInterface(EntityManager *em, RenderSystem* render) {
 }
 
 void chestOpening(Controller* controller) {
-	auto [input, em, render, state] = controller->getAll();
+	auto [input, em, render, state, battleContext] = controller->getAll();
 
 	auto chests = em->getEntitiesWithComponent<ChestComponent>();
 	auto player = em->getEntitiesWithComponent<PlayerControlComponent>()[0];
@@ -217,7 +217,7 @@ void chestOpening(Controller* controller) {
 }
 
 void collectChest(Controller* controller) {
-	auto [input, em, render, state] = controller->getAll();
+	auto [input, em, render, state, battleContext] = controller->getAll();
 
 	auto button = em->getEntitiesWithComponent<ChestButtonGetComponent>().empty()
 		? nullptr
@@ -242,7 +242,7 @@ void collectChest(Controller* controller) {
 }
 
 void closeChest(Controller* controller) {
-	auto [input, em, render, state] = controller->getAll();
+	auto [input, em, render, state, battleContext] = controller->getAll();
 
 	auto button = em->getEntitiesWithComponent<ChestButtonCloseComponent>()[0];
 	if (

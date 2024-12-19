@@ -3,8 +3,8 @@
 
 class HealthComponent : public Component {
 private:
-    float current;
-    float total;
+    int current;
+    int total;
     bool _isVisible;
 public:
     HealthComponent(float total, float current, bool isVisible = false)
@@ -27,7 +27,9 @@ public:
     }
 
     void setCurrent(float value) {
-        current = value;
+        current = value < 0 
+            ? 0
+            : value;
     }
 
     void setVisible(float value) {

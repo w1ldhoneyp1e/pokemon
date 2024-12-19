@@ -3,13 +3,15 @@
 #include "../systems/RenderSystem.h"
 #include <SFML/Graphics.hpp>
 #include "../Entity.h"
-#include "../Trainer/Trainer.h"
 #include "../const.h"
 
 void initPlayer(EntityManager* em);
 void initGameLocation(EntityManager* em);
 void initBulbasour(EntityManager* em);
 void initChest(EntityManager* em);
+
+void initTrainer(EntityManager* em);
+void initTrainerPokemons(EntityManager *em, TrainerPokemonsComponent *pokemons);
 
 void initGameEntities(EntityManager* em) {
     initPlayer(em);
@@ -69,6 +71,7 @@ void initBulbasour(EntityManager* em) {
     bulbasour->addComponent<SizeComponent>(POKEMON_INVENTORY_WIDTH, POKEMON_INVENTORY_HEIGHT);
 	bulbasour->addComponent<RenderLayerComponent>(1);
 	bulbasour->addComponent<HealthComponent>(100, 100);
+	bulbasour->addComponent<DamageComponent>(20, 30);
 	bulbasour->addComponent<PokemonComponent>("Bulbasour");
     bulbasour->addComponent<GameTypeEntityComponent>();
     sf::Texture bulbasourTexture;
@@ -99,4 +102,33 @@ void initChest(EntityManager* em) {
 			CHEST_HEIGHT
 		);
     }
+}
+
+void initTrainer(EntityManager *em) {
+	auto trainer = em->createEntity();
+    trainer->addComponent<PositionComponent>(
+		TRAINER_POSITION_X, 
+		TRAINER_POSITION_Y
+	);
+    trainer->addComponent<SizeComponent>(TRAINER_WIDTH, TRAINER_HEIGHT);
+	trainer->addComponent<RenderLayerComponent>(1);
+	trainer->addComponent<TrainerComponent>("First");
+	trainer->addComponent<TrainerPokemonsComponent>();
+	auto pokemons = trainer->getComponent<TrainerPokemonsComponent>();
+	initTrainerPokemons(em, pokemons);
+    trainer->addComponent<GameTypeEntityComponent>();
+    sf::Texture trainerTexture;
+    if (trainerTexture.loadFromFile("../res/trainer(16x24).png")) {
+        trainer->addComponent<TextureComponent>(
+			trainerTexture,
+			16, 
+			24
+		);
+    }
+}
+
+void initTrainerPokemons(EntityManager *em, TrainerPokemonsComponent *pokemons) {
+	auto charmander = em->createEntity();
+	charmander->addComponent<PokemonComponent>("charmander");
+	pokemons->addPokemon(charmander->getId());
 }

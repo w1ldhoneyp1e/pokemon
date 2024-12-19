@@ -78,6 +78,13 @@ public:
                     );
                 }
 
+                if (rotationComp) {
+                    auto x = textureComp->sprite.getOrigin().x;
+                    auto y = textureComp->sprite.getOrigin().y;
+
+                    textureComp->sprite.setRotation(rotationComp->angle * 180 / PI);
+                }
+
                 textureComp->sprite.setPosition(posX, posY);
 
                 if (sizeComp) {
@@ -87,19 +94,32 @@ public:
                     );
                 }
 
-                if (rotationComp) {
-                    auto x = textureComp->sprite.getOrigin().x;
-                    auto y = textureComp->sprite.getOrigin().y;
-
-                    textureComp->sprite.setRotation(rotationComp->angle * 180 / PI);
-                }
-
                 if (healthComp && healthComp->isVisible()) {
                     showHealth(window, sizeComp->getWidth(), healthComp, positionComp);
                 }
 
                 window->draw(textureComp->sprite);
             }
+
+            sf::RectangleShape outline;
+
+            sf::FloatRect localBounds = textureComp->sprite.getLocalBounds();
+            outline.setSize(sf::Vector2f(localBounds.width, localBounds.height));
+
+            outline.setOrigin(
+                localBounds.left + textureComp->sprite.getOrigin().x,
+                localBounds.top + textureComp->sprite.getOrigin().y
+            );
+
+            outline.setPosition(textureComp->sprite.getPosition());
+            outline.setRotation(textureComp->sprite.getRotation());
+            outline.setScale(textureComp->sprite.getScale());
+
+            outline.setFillColor(sf::Color::Transparent);
+            outline.setOutlineThickness(2.f);
+            outline.setOutlineColor(sf::Color::Green);
+
+            window->draw(outline);
         }
 
         window->display();

@@ -108,7 +108,8 @@ int main() {
 	EntityManager entityManager;
 	RenderSystem renderSystem(window, &entityManager);
 	InputSystem inputSystem;
-	Controller controller(&entityManager, &inputSystem, &renderSystem, &state);
+	BattleContext battleContext;
+	Controller controller(&entityManager, &inputSystem, &renderSystem, &state, &battleContext);
 
 	initMenu(&entityManager, &renderSystem);
 

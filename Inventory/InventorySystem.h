@@ -11,7 +11,7 @@
 void createInventory(EntityManager* em);
 
 void openInventory(Controller* controller) {
-	auto [input, em, render, state] = controller->getAll();
+	auto [input, em, render, state, battleContext] = controller->getAll();
 	auto keys = input->getPressedKeys();
 
 	if ((std::find(keys.begin(), keys.end(), sf::Keyboard::E) == keys.end())) return;
@@ -95,7 +95,7 @@ void createInventory(EntityManager* em) {
 }
 
 void closeInventory(Controller* controller) {
-	auto [input, em, render, state] = controller->getAll();
+	auto [input, em, render, state, battleContext] = controller->getAll();
 
 	auto keys = input->getPressedKeys();
 	auto button = em->getEntitiesWithComponent<InventoryButtonCloseComponent>()[0];

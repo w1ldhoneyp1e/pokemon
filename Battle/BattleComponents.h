@@ -2,6 +2,7 @@
 #include "../Components/ParentComponent.h"
 
 class BattleTypeEntityComponent : public Component {};
+class PlayerPokemonComponent : public Component {};
 
 enum AttackDir {
     Head,

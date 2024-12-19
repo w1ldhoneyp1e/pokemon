@@ -5,40 +5,55 @@
 #include <iostream>
 
 bool isClickOnEntity(const sf::Event::MouseButtonEvent& mouseEvent, Entity* entity) {
-    // Получаем компоненты позиции, размера, центра и угла поворота
     auto positionComp = entity->getComponent<PositionComponent>();
     auto sizeComp = entity->getComponent<SizeComponent>();
     auto originComp = entity->getComponent<OriginComponent>();
     auto rotationComp = entity->getComponent<RotationComponent>();
 
     if (!positionComp || !sizeComp) {
-        return false; // Если ключевые компоненты отсутствуют, обработка невозможна
+        return false;
     }
 
-    float x = positionComp->getX();
-    float y = positionComp->getY();
+    // Получаем параметры спрайта
+    float left = positionComp->getX();
+    float top = positionComp->getY();
     float width = sizeComp->getWidth();
     float height = sizeComp->getHeight();
-    float angle = rotationComp ? rotationComp->getAngle() : 0.0f;
-    float originX = originComp ? originComp->getX() : 0.0f;
+
+    float originX = originComp ? originComp->getX() : 0.0f; // Центр по умолчанию
     float originY = originComp ? originComp->getY() : 0.0f;
 
-    // Переводим позицию точки клика в локальные координаты объекта
-    sf::Vector2f mousePos(mouseEvent.x, mouseEvent.y);
+    float angle = rotationComp ? rotationComp->getAngle() : 0.0f; // Угол в радианах
 
-    // Смещаем точку клика относительно центра объекта
-    double radius = std::sqrt(std::pow(mousePos.x - x - originX, 2) + std::pow(mousePos.y - y - originY, 2));
+    // Центр спрайта
+    float centerX = left + originX;
+    float centerY = top + originY;
 
-    // Учитываем вращение объекта (обратное преобразование)
-    float rotatedX = std::sin(angle) * radius;
-    float rotatedY = std::cos(angle) * radius;
+    // Перевод координат клика в систему координат спрайта с учётом поворота
+    float dx = mouseEvent.x - centerX;
+    float dy = mouseEvent.y - centerY;
 
-    // Смещаем относительно начала координат (origin)
-    rotatedX += originX;
-    rotatedY += originY;
+    // Учет поворота точки (обратное вращение на угол спрайта)
+    float cosAngle = std::cos(-angle);
+    float sinAngle = std::sin(-angle);
+    float localX = dx * cosAngle - dy * sinAngle;
+    float localY = dx * sinAngle + dy * cosAngle;
 
-    // Проверяем попадание в прямоугольник
-    return rotatedX >= 0 && rotatedX <= width && rotatedY >= -height/2 && rotatedY <= height/2;
+    // Границы прямоугольника в локальных координатах
+    float rectLeft = -originX;
+    float rectTop = -originY;
+    float rectRight = rectLeft + width;
+    float rectBottom = rectTop + height;
+
+    std::cout << "Mouse Global: (" << mouseEvent.x << ", " << mouseEvent.y << ")\n";
+    std::cout << "Mouse Local: (" << localX << ", " << localY << ")\n";
+    std::cout << "Rect Left Top: (" << rectLeft << ", " << rectTop << ")\n";
+    std::cout << "Rect Right Bottom: (" << rectRight << ", " << rectBottom << ")\n";
+
+
+    // Проверка, попала ли точка в прямоугольник
+    return (localX >= rectLeft && localX <= rectRight &&
+            localY >= rectTop && localY <= rectBottom);
 }
 
 

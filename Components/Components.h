@@ -13,3 +13,4 @@
 #include "../Player/PlayerComponents.h"
 #include "../Pokemon/PokemonComponents.h"
 #include "../Trainer/TrainerComponents.h"
+#include "../Damage/DamageComponents.h"
