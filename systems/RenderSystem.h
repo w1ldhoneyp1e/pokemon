@@ -65,6 +65,8 @@ public:
             float scaleY = SCREEN_HEIGHT / baseSize.y;
             float scale = std::min(scaleX, scaleY);
 
+            float offsetX = SCREEN_WIDTH / 2 - scale * WINDOW_WIDTH / 2;
+
             if (textureComp && positionComp) {
                 auto posX = positionComp->getX();
                 auto posY = positionComp->getY();
@@ -86,7 +88,7 @@ public:
                 auto currScale = textureComp->sprite.getScale();
                 textureComp->sprite.setScale(scale * currScale.x, scale * currScale.y);
 
-                textureComp->sprite.setPosition(posX * scale, posY * scale);
+                textureComp->sprite.setPosition(posX * scale + offsetX, posY * scale);
 
                 if (rotationComp) {
                     textureComp->sprite.setRotation(rotationComp->angle * 180 / PI);
