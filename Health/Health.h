@@ -4,12 +4,14 @@
 
 float getWidth(float length, HealthComponent *healthComp);
 
-void showHealth(sf::RenderWindow *window, float length, HealthComponent *healthComp, PositionComponent *positionComp) {
-	sf::RectangleShape rectangle(sf::Vector2f(getWidth(length, healthComp), 20));
+void showHealth(sf::RenderWindow *window, float length, float height, HealthComponent *healthComp, PositionComponent *positionComp, float scale) {
+	// Высоту сделать зависимой от размер покемона
+	sf::RectangleShape rectangle(sf::Vector2f(getWidth(length, healthComp), height * 0.1));
     rectangle.setFillColor(sf::Color::Green);
     rectangle.setOutlineColor(sf::Color::Black);
     rectangle.setOutlineThickness(.5f);
-    rectangle.setPosition(positionComp->getX(), positionComp->getY() - 50);
+	// Отступ сделать зависимым от размера покемона
+    rectangle.setPosition(positionComp->getX() * scale, (positionComp->getY()) * scale);
 	window->draw(rectangle);
 }
 

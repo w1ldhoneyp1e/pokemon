@@ -53,7 +53,6 @@ public:
         for (Entity* entity : entities) {
             if (!entity) continue;
 
-
             auto textureComp = entity->getComponent<TextureComponent>();
             auto positionComp = entity->getComponent<PositionComponent>();
             auto rotationComp = entity->getComponent<RotationComponent>();
@@ -61,31 +60,21 @@ public:
             auto originComp = entity->getComponent<OriginComponent>();
             auto healthComp = entity->getComponent<HealthComponent>();
 
+            sf::Vector2u baseSize(WINDOW_WIDTH, WINDOW_HEIGHT);
+            float scaleX = SCREEN_WIDTH / baseSize.x;
+            float scaleY = SCREEN_HEIGHT / baseSize.y;
+            float scale = std::min(scaleX, scaleY);
+
             if (textureComp && positionComp) {
                 auto posX = positionComp->getX();
                 auto posY = positionComp->getY();
-                // if (textureComp->originX) {
-                //     posX = textureComp->originX;
-                // }
-                // if (textureComp->originY) {
-                //     posY = textureComp->originY;
-                // }
 
                 if (originComp) {
                     textureComp->sprite.setOrigin(
-                        originComp->getX(),
-                        originComp->getY()
+                        originComp->getX() * scale,
+                        originComp->getY() * scale
                     );
                 }
-
-                if (rotationComp) {
-                    auto x = textureComp->sprite.getOrigin().x;
-                    auto y = textureComp->sprite.getOrigin().y;
-
-                    textureComp->sprite.setRotation(rotationComp->angle * 180 / PI);
-                }
-
-                textureComp->sprite.setPosition(posX, posY);
 
                 if (sizeComp) {
                     textureComp->sprite.setScale(
@@ -93,33 +82,48 @@ public:
                         sizeComp->getHeight() / textureComp->sprite.getLocalBounds().height
                     );
                 }
+                
+                auto currScale = textureComp->sprite.getScale();
+                textureComp->sprite.setScale(scale * currScale.x, scale * currScale.y);
+
+                textureComp->sprite.setPosition(posX * scale, posY * scale);
+
+                if (rotationComp) {
+                    textureComp->sprite.setRotation(rotationComp->angle * 180 / PI);
+                }
 
                 if (healthComp && healthComp->isVisible()) {
-                    showHealth(window, sizeComp->getWidth(), healthComp, positionComp);
+                    showHealth(
+                        window,
+                        sizeComp->getWidth() * scale,
+                        sizeComp->getHeight() * scale,
+                        healthComp, positionComp,
+                        scale
+                    );
                 }
 
                 window->draw(textureComp->sprite);
             }
 
-            sf::RectangleShape outline;
+            // sf::RectangleShape outline;
 
-            sf::FloatRect localBounds = textureComp->sprite.getLocalBounds();
-            outline.setSize(sf::Vector2f(localBounds.width, localBounds.height));
+            // sf::FloatRect localBounds = textureComp->sprite.getLocalBounds();
+            // outline.setSize(sf::Vector2f(localBounds.width, localBounds.height));
 
-            outline.setOrigin(
-                localBounds.left + textureComp->sprite.getOrigin().x,
-                localBounds.top + textureComp->sprite.getOrigin().y
-            );
+            // outline.setOrigin(
+            //     localBounds.left + textureComp->sprite.getOrigin().x,
+            //     localBounds.top + textureComp->sprite.getOrigin().y
+            // );
 
-            outline.setPosition(textureComp->sprite.getPosition());
-            outline.setRotation(textureComp->sprite.getRotation());
-            outline.setScale(textureComp->sprite.getScale());
+            // outline.setPosition(textureComp->sprite.getPosition());
+            // outline.setRotation(textureComp->sprite.getRotation());
+            // outline.setScale(textureComp->sprite.getScale());
 
-            outline.setFillColor(sf::Color::Transparent);
-            outline.setOutlineThickness(2.f);
-            outline.setOutlineColor(sf::Color::Green);
+            // outline.setFillColor(sf::Color::Transparent);
+            // outline.setOutlineThickness(2.f);
+            // outline.setOutlineColor(sf::Color::Green);
 
-            window->draw(outline);
+            // window->draw(outline);
         }
 
         window->display();
@@ -130,3 +134,8 @@ private:
     EntityManager* entityManager;
     std::vector<Entity*> entities;
 };
+
+
+
+
+

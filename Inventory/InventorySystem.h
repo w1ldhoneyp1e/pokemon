@@ -30,11 +30,11 @@ void createInventory(EntityManager* em) {
 	// Инвентарь
 	auto inventory = em->createEntity();
 	inventory->addComponent<SizeComponent>(
-		INVENTORY_WIDTH * 5, 
-		INVENTORY_HEIGHT * 4
+		INVENTORY_WIDTH, 
+		INVENTORY_HEIGHT
 	);
 	inventory->addComponent<PositionComponent>(
-		INVENTORY_POSITION_X, 
+		INVENTORY_POSITION_X,
 		INVENTORY_POSITION_Y
 	);
 	inventory->addComponent<RenderLayerComponent>(3);
@@ -43,8 +43,8 @@ void createInventory(EntityManager* em) {
 	if (inventoryTexture.loadFromFile("../res/inventory(80x102).png")) {
 		inventory->addComponent<TextureComponent>(
 			inventoryTexture, 
-			INVENTORY_WIDTH, 
-			INVENTORY_HEIGHT
+			80, 
+			102
 		);
 	}
 
@@ -52,12 +52,12 @@ void createInventory(EntityManager* em) {
 	auto inventoryButtonClose = em->createEntity();
 	inventoryButtonClose->addComponent<InventoryButtonCloseComponent>();
 	inventoryButtonClose->addComponent<SizeComponent>(
-		INVENTORY_BUTTON_CLOSE_WIDTH * 4, 
-		INVENTORY_BUTTON_CLOSE_HEIGHT * 4
+		INVENTORY_BUTTON_CLOSE_WIDTH, 
+		INVENTORY_BUTTON_CLOSE_HEIGHT
 	);
 	inventoryButtonClose->addComponent<PositionComponent>(
-		WINDOW_WIDTH / 2 - INVENTORY_BUTTON_CLOSE_WIDTH * 6, 
-		WINDOW_HEIGHT / 2 + INVENTORY_BUTTON_CLOSE_HEIGHT * 11
+		INVENTORY_BUTTON_CLOSE_X, 
+		INVENTORY_BUTTON_CLOSE_Y
 	);
 	inventoryButtonClose->addComponent<RenderLayerComponent>(4);
     inventoryButtonClose->addComponent<InventoryTypeEntityComponent>();
@@ -65,8 +65,8 @@ void createInventory(EntityManager* em) {
 	if (inventoryButtonCloseTexture.loadFromFile("../res/backButton(32x13).png")) {
 		inventoryButtonClose->addComponent<TextureComponent>(
 			inventoryButtonCloseTexture, 
-			INVENTORY_BUTTON_CLOSE_WIDTH, 
-			INVENTORY_BUTTON_CLOSE_HEIGHT
+			32, 
+			13
 		);
 	}
 
@@ -78,8 +78,8 @@ void createInventory(EntityManager* em) {
 	for (auto id : ids) {
 		auto pokemon = em->getEntity(id);
 		pokemon->getComponent<PositionComponent>()->setPos(
-			INVENTORY_CELLS_POSITION_START_X + i * 40,
-			INVENTORY_CELLS_POSITION_START_Y + j * 40
+			INVENTORY_CELLS_POSITION_START_X + i * 7,
+			INVENTORY_CELLS_POSITION_START_Y + j * 7
 		);
 		pokemon->getComponent<SizeComponent>()->setSize(
 			POKEMON_INVENTORY_WIDTH,
@@ -108,14 +108,12 @@ void closeInventory(Controller* controller) {
 			|| std::find(keys.begin(), keys.end(), sf::Keyboard::E) != keys.end()
 		)
 	) {
-		// Удаляем элементы инвентаря с экрана
 		*state = GameState::Game;
 		auto menuEntities = em->getEntitiesWithComponent<InventoryTypeEntityComponent>();
 		for (Entity* entity : menuEntities) {
 			render->removeEntity(entity->getId());
 		}
 
-		// Удаляем покемонов с экрана
 		auto pokemons = em->getEntitiesWithComponent<PokemonComponent>();
 		for (auto pokemon : pokemons) {
 			if (pokemon->getComponent<PokemonComponent>()->isCollected()) {

@@ -53,7 +53,7 @@ void initGameLocation(EntityManager* em) {
 	location->addComponent<RenderLayerComponent>(0);
     location->addComponent<GameTypeEntityComponent>();
     sf::Texture locationTexture;
-    if (locationTexture.loadFromFile("../res/location(767x639).png")) {
+    if (locationTexture.loadFromFile("../res/townLocation(383x320).png")) {
         location->addComponent<TextureComponent>(
 			locationTexture,
 			WINDOW_WIDTH, 

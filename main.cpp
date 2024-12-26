@@ -104,6 +104,8 @@ int main() {
 	WindowManager windowManager;
 	windowManager.createWindow();
 	sf::RenderWindow* window = windowManager.getWindow();
+	SCREEN_WIDTH = window->getSize().x;
+	SCREEN_HEIGHT = window->getSize().y;
 
 	EntityManager entityManager;
 	RenderSystem renderSystem(window, &entityManager);

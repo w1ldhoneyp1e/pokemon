@@ -33,13 +33,9 @@ void updateCatching(Controller* controller, float dt) {
 }
 
 void initCatching(EntityManager* em, RenderSystem* render) {
-    // Локация ловли
     initCatchingLocation(em);
-    // Стрелка
     initCatchingArrow(em);
-    // Покебол
     initCatchingPokeball(em);
-    // Получить покемона, присвоить позицию и размеры
     initCatchingPokemon(em);
 
     render->removeEntities();
@@ -89,7 +85,7 @@ void initCatchingPokeball(EntityManager* em) {
         POKEBALL_POS_X, 
         POKEBALL_POS_Y
     );
-    pokeball->addComponent<SizeComponent>(POKEBALL_WIDTH * 5, POKEBALL_HEIGHT * 5);
+    pokeball->addComponent<SizeComponent>(POKEBALL_WIDTH, POKEBALL_HEIGHT);
 	pokeball->addComponent<ThrowablePokeballComponent>();
     pokeball->addComponent<SpeedComponent>(POKEBALL_SPEED);
 	pokeball->addComponent<RenderLayerComponent>(1);
@@ -98,8 +94,8 @@ void initCatchingPokeball(EntityManager* em) {
     if (pokeballTexture.loadFromFile("../res/redPokeball(14x50).png")) {
         pokeball->addComponent<TextureComponent>(
 			pokeballTexture,
-			POKEBALL_WIDTH, 
-			POKEBALL_HEIGHT
+			13, 
+			12
 		);
     }
     pokeball->getComponent<TextureComponent>()->sprite.setOrigin(POKEBALL_WIDTH / 2, POKEBALL_HEIGHT / 2);
@@ -137,8 +133,8 @@ void initCatchingArrow(EntityManager* em) {
     if (catchingArrowTexture.loadFromFile("../res/arrow(57x162).png")) {
         catchingArrow->addComponent<TextureComponent>(
 			catchingArrowTexture,
-			ARROW_WIDTH, 
-			ARROW_HEIGHT
+			57, 
+			162
 		);
     }
     catchingArrow->getComponent<TextureComponent>()->sprite.setOrigin(ARROW_WIDTH / 2, ARROW_HEIGHT);

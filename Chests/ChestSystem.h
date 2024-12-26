@@ -70,8 +70,8 @@ void generateRandomItem(EntityManager *em, int index, int chestId) {
 		auto healingPotion = createHealingPotion(em);
 		healingPotion->addComponent<ChestContentComponent>(chestId);
 		healingPotion->addComponent<PositionComponent>(
-			CHEST_INTERFACE_X + 12 + (index % MAX_ITEMS_PER_ROW - 1) * 51,
-			CHEST_INTERFACE_Y + 12 + index / MAX_ITEMS_PER_ROW * 51
+			CHEST_INTERFACE_X + 5 + (index % MAX_ITEMS_PER_ROW - 1) * 25,
+			CHEST_INTERFACE_Y + 5 + index / MAX_ITEMS_PER_ROW * 25
 		);
 		break;
 	}
@@ -80,8 +80,8 @@ void generateRandomItem(EntityManager *em, int index, int chestId) {
 		auto coin = createCoin(em);
 		coin->addComponent<ChestContentComponent>(chestId);
 		coin->addComponent<PositionComponent>(
-			CHEST_INTERFACE_X + 12 + (index % MAX_ITEMS_PER_ROW - 1) * 51,
-			CHEST_INTERFACE_Y + 12 + index / MAX_ITEMS_PER_ROW * 51
+			CHEST_INTERFACE_X + 5 + (index % MAX_ITEMS_PER_ROW - 1) * 25,
+			CHEST_INTERFACE_Y + 5 + index / MAX_ITEMS_PER_ROW * 25
 		);
 		break;
 	}
