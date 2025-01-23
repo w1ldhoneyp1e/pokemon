@@ -27,7 +27,7 @@ void onClickArrow(EntityManager *em, InputSystem *input, BattleContext *ctx);
 void closeBattle(EntityManager *em, RenderSystem *render);
 
 void updateBattle(Controller *controller) {
-    auto [input, em, render, state, battleContext] = controller->getAll();
+    auto [input, em, render, state, battleContext, maps, currentLocation] = controller->getAll();
 
     switch (battleContext->state) {
     case BattleState::PlayerTurn: {

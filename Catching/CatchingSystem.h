@@ -24,7 +24,7 @@ void handlePokeballPokemonCollision(EntityManager* em, RenderSystem* render, Gam
 void handlePokeballOutOfMap(EntityManager* em, RenderSystem* render, GameState* state);
 
 void updateCatching(Controller* controller, float dt) {
-	auto [input, em, render, state, battleContext] = controller->getAll();
+	auto [input, em, render, state, battleContext, maps, currentLocation] = controller->getAll();
 
     arrowRotation(em, dt);
     onSpacePressed(em, input, dt);

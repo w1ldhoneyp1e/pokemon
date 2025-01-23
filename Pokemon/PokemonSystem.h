@@ -21,7 +21,7 @@ bool doesConditionSatisfy(PokemonConditionProps props);
 
 void pokemonCollision(Controller* controller) {
 	// Селектим покемонов. Для каждого проверяем, не было ли коллизии
-	auto [input, em, render, state, battleContext] = controller->getAll();
+	auto [input, em, render, state, battleContext, maps, currentLocation] = controller->getAll();
 
 	auto pokemons = em->getEntitiesWithComponent<PokemonComponent>();
 	auto player = em->getEntitiesWithComponent<PlayerControlComponent>()[0];

@@ -14,6 +14,7 @@
 #include "./Menu/MenuSystem.h"
 #include "./Time/TimeSystem.h"
 #include "./Catching/CatchingSystem.h"
+#include "./Location/LocationType.h"
 #include "GameState.h"
 #include "Entity.h"
 #include <iostream>
@@ -39,8 +40,8 @@ void handleEvent(sf::RenderWindow* window, Controller* controller) {
 	}
 }
 
-void update(Controller* controller, float deltaTime) {
-	auto [input, em, render, state, battleContext] = controller->getAll();
+void update(Controller* controller, float deltaTime, sf::RenderWindow* window) {
+	auto [input, em, render, state, battleContext, maps, currentLocation] = controller->getAll();
 	auto keys = input->getPressedKeys();
 	bool isClicked = false;
 	switch (*state)
@@ -52,7 +53,7 @@ void update(Controller* controller, float deltaTime) {
 
 	case GameState::Game:
 		if (keys.empty()) return;
-		playerMovementSystem(em, input, deltaTime);
+		playerMovementSystem(controller, deltaTime, window);
 		backToMenu(controller);
 		openInventory(controller);
 		pokemonCollision(controller);
@@ -93,7 +94,7 @@ void gameLoop(sf::RenderWindow* window, Controller* controller) {
     while (window->isOpen()) {
         const float deltaTime = updateTime(&startTime);
         handleEvent(window, controller);
-        update(controller, deltaTime);
+        update(controller, deltaTime, window);
         controller->getRenderSystem()->render();
     }
 }
@@ -111,7 +112,18 @@ int main() {
 	RenderSystem renderSystem(window, &entityManager);
 	InputSystem inputSystem;
 	BattleContext battleContext;
-	Controller controller(&entityManager, &inputSystem, &renderSystem, &state, &battleContext);
+	std::unordered_map<LocationType, CollisionMap> collisionMaps;
+
+	sf::Vector2u baseSize(WINDOW_WIDTH, WINDOW_HEIGHT);
+	float scaleX = SCREEN_WIDTH / baseSize.x;
+	float scaleY = SCREEN_HEIGHT / baseSize.y;
+	float scale = std::min(scaleX, scaleY);
+
+	std::cout << "width " <<  WINDOW_WIDTH / 38 << std::endl;
+
+	collisionMaps.emplace(LocationType::Town, CollisionMap("../res/collisionMap/town.txt", WINDOW_WIDTH / 38, WINDOW_HEIGHT / 32));
+	collisionMaps.emplace(LocationType::Forest, CollisionMap("../res/collisionMap/forest.txt", WINDOW_WIDTH / 38, WINDOW_HEIGHT / 32));
+	Controller controller(&entityManager, &inputSystem, &renderSystem, &state, &battleContext, &collisionMaps, LocationType::Town);
 
 	initMenu(&entityManager, &renderSystem);
 

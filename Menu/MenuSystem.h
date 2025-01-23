@@ -7,7 +7,7 @@
 #include "../const.h"
 
 void onStartGameButtonPress(Controller* controller) {
-	auto [input, em, render, state, battleContext] = controller->getAll();
+	auto [input, em, render, state, battleContext, maps, currentLocation] = controller->getAll();
 	auto button = em->getEntitiesWithComponent<StartButtonComponent>()[0];
 	if (!input->hasMouseClick()) return;
 	if (!isClickOnEntity(input->getMouseClick(), button)) return;
@@ -20,7 +20,7 @@ void onStartGameButtonPress(Controller* controller) {
 }
 
 void backToMenu(Controller* controller) {
-	auto [input, em, render, state, battleContext] = controller->getAll();
+	auto [input, em, render, state, battleContext, maps, currentLocation] = controller->getAll();
 	auto keys = input->getPressedKeys();
 
 	if (std::find(keys.begin(), keys.end(), sf::Keyboard::Escape) == keys.end()) return;

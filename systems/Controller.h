@@ -4,6 +4,8 @@
 #include "./EntityManager.h"
 #include "../GameState.h"
 #include "./BattleSystem.h"
+#include "./CollisionMap.h"
+#include "../Location/LocationType.h"
 
 class Controller {
 private:
@@ -12,10 +14,12 @@ private:
     RenderSystem* renderSystem;
     GameState* state;
     BattleContext* battleContext;
+    std::unordered_map<LocationType, CollisionMap>* maps;
+    LocationType currentLocation;
 
 public:
-    Controller(EntityManager* em, InputSystem* is, RenderSystem* rs, GameState* st, BattleContext *ctx)
-        : entityManager(em), inputSystem(is), renderSystem(rs), state(st), battleContext(ctx) {}
+    Controller(EntityManager* em, InputSystem* is, RenderSystem* rs, GameState* st, BattleContext *ctx, std::unordered_map<LocationType, CollisionMap>* maps, LocationType currentLocation)
+        : entityManager(em), inputSystem(is), renderSystem(rs), state(st), battleContext(ctx), maps(maps), currentLocation(currentLocation) {}
 
     ~Controller() {
         delete entityManager;
@@ -44,6 +48,18 @@ public:
         return battleContext;
     }
 
+    LocationType getCurrLocation() {
+        return currentLocation;
+    }
+
+    void setCurrLocation(LocationType loc) {
+        currentLocation = loc;
+    }
+
+    std::unordered_map<LocationType, CollisionMap>* getCollisionMaps() {
+        return maps;
+    }
+
     void setBattleContext(BattleContext *ctx) {
         battleContext = ctx;
     }
@@ -54,9 +70,11 @@ public:
         RenderSystem* renderSystem;
         GameState* state;
         BattleContext* battleContext;
+        std::unordered_map<LocationType, CollisionMap>* maps;
+        LocationType currentLocation;
     };
 
     Systems getAll() {
-        return {inputSystem, entityManager, renderSystem, state, battleContext};
+        return {inputSystem, entityManager, renderSystem, state, battleContext, maps, currentLocation};
     }
 };

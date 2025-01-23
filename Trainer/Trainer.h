@@ -16,7 +16,7 @@ bool doesTrainerConditionSatisfy(ConditionProps props);
 void initTrainerPokemons(EntityManager *em, TrainerPokemonsComponent *pokemons);
 
 void trainerCollision(Controller *controller) {
-	auto [input, em, render, state, battleContext] = controller->getAll();
+	auto [input, em, render, state, battleContext, maps, currentLocation] = controller->getAll();
 
 	auto player = em->getEntitiesWithComponent<PlayerControlComponent>()[0];
 	if (!player->getComponent<PlayersInventoryComponent>()->getPokemonCount()) return;
