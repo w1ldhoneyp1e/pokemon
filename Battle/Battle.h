@@ -168,13 +168,11 @@ Entity *getPokemon(EntityManager *em, Entity *enemy) {
 void onArrowClick(EntityManager *em, InputSystem *input, BattleContext  *ctx) {
 	auto arrows = em->getEntitiesWithComponent<BattleArrowComponent>();
 	if (input->hasMouseClick()) {
-		std::cout << "Click" << std::endl;
 	}
 	for (auto arrow : arrows) {
 		if (!input->hasMouseClick() || !isClickOnEntity(input->getMouseClick(), arrow)) continue;
 		// Получение покемона, который не ходит -> переключать состояние, когда сходил
 		input->clear();
-		std::cout << "Here" << std::endl;
 		damageHandler(em, ctx);
 	}
 }

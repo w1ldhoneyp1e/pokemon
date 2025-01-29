@@ -16,8 +16,6 @@ void playerMovementSystem(Controller* controller, float deltaTime, sf::RenderWin
 
     float movementSpeed = speed->speed * deltaTime;
 
-    std::cout << "currentLocation: " << position->getX() << " " << position->getY() << std::endl;
-
     for (sf::Keyboard::Key key : keys) {
         switch (key) {
             case sf::Keyboard::W: {

@@ -60,9 +60,8 @@ public:
             auto originComp = entity->getComponent<OriginComponent>();
             auto healthComp = entity->getComponent<HealthComponent>();
 
-            sf::Vector2u baseSize(WINDOW_WIDTH, WINDOW_HEIGHT);
-            float scaleX = SCREEN_WIDTH / baseSize.x;
-            float scaleY = SCREEN_HEIGHT / baseSize.y;
+            float scaleX = SCREEN_WIDTH / WINDOW_WIDTH;
+            float scaleY = SCREEN_HEIGHT / WINDOW_HEIGHT;
             float scale = std::min(scaleX, scaleY);
 
             float offsetX = SCREEN_WIDTH / 2 - scale * WINDOW_WIDTH / 2;

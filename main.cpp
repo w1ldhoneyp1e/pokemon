@@ -18,6 +18,7 @@
 #include "GameState.h"
 #include "Entity.h"
 #include <iostream>
+#include <windows.h>
 #include <chrono>
 #include <random>
 
@@ -105,8 +106,13 @@ int main() {
 	WindowManager windowManager;
 	windowManager.createWindow();
 	sf::RenderWindow* window = windowManager.getWindow();
-	SCREEN_WIDTH = window->getSize().x;
-	SCREEN_HEIGHT = window->getSize().y;
+	HWND hwnd = window->getSystemHandle();
+
+    RECT rect;
+    GetWindowRect(hwnd, &rect);
+
+	SCREEN_WIDTH = rect.right - rect.left;
+	SCREEN_HEIGHT = rect.bottom - rect.top;
 
 	EntityManager entityManager;
 	RenderSystem renderSystem(window, &entityManager);
@@ -118,8 +124,6 @@ int main() {
 	float scaleX = SCREEN_WIDTH / baseSize.x;
 	float scaleY = SCREEN_HEIGHT / baseSize.y;
 	float scale = std::min(scaleX, scaleY);
-
-	std::cout << "width " <<  WINDOW_WIDTH / 38 << std::endl;
 
 	collisionMaps.emplace(LocationType::Town, CollisionMap("../res/collisionMap/town.txt", WINDOW_WIDTH / 38, WINDOW_HEIGHT / 32));
 	collisionMaps.emplace(LocationType::Forest, CollisionMap("../res/collisionMap/forest.txt", WINDOW_WIDTH / 38, WINDOW_HEIGHT / 32));
