@@ -21,6 +21,8 @@ void initGameEntities(EntityManager* em) {
 	initTrainer(em);
 }
 
+std::array<std::vector<sf::Texture>, 4> getPlayerTextures();
+
 void initPlayer(EntityManager* em) {
 	auto player = em->createEntity();
 	player->addComponent<PositionComponent>(
@@ -31,6 +33,17 @@ void initPlayer(EntityManager* em) {
 		PLAYER_WIDTH,
 		PLAYER_HEIGHT
 	);
+	sf::Texture playerSprites;
+	if (playerSprites.loadFromFile("../res/playerSprites(204x24).png")) {
+		player->addComponent<AnimationComponent>(
+			playerSprites,
+			playerSprites.getSize().x / 12,
+			playerSprites.getSize().y,
+			5.0f
+		);
+	}
+	player->getComponent<AnimationComponent>()->currentFrameIndex = 1;
+	player->getComponent<AnimationComponent>()->currentDirection = 1;
 	player->addComponent<SpeedComponent>(PLAYER_SPEED);
     player->addComponent<GameTypeEntityComponent>();
 	player->addComponent<RenderLayerComponent>(1);
@@ -131,4 +144,25 @@ void initTrainerPokemons(EntityManager *em, TrainerPokemonsComponent *pokemons) 
 	auto charmander = em->createEntity();
 	charmander->addComponent<PokemonComponent>("charmander");
 	pokemons->addPokemon(charmander->getId());
+}
+
+std::array<std::vector<sf::Texture>, 4> getPlayerTextures() {
+	return {
+		std::vector<sf::Texture> {
+			sf::Texture(),
+			sf::Texture()
+		},
+		std::vector<sf::Texture> {
+			sf::Texture(),
+			sf::Texture()
+		},
+		std::vector<sf::Texture> {
+			sf::Texture(),
+			sf::Texture()
+		},
+		std::vector<sf::Texture> {
+			sf::Texture(),
+			sf::Texture()
+		}
+	};
 }

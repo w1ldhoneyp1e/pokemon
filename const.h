@@ -1,10 +1,10 @@
 #pragma once
 #include <cmath>
 
-const int WINDOW_WIDTH = 383;
-const int WINDOW_HEIGHT = 320;
-int SCREEN_WIDTH = 383;
-int SCREEN_HEIGHT = 320;
+const float WINDOW_WIDTH = 383;
+const float WINDOW_HEIGHT = 320;
+float SCREEN_WIDTH = 383;
+float SCREEN_HEIGHT = 320;
 
 const float PI = std::acos(-1.0);
 
@@ -15,7 +15,7 @@ const int PLAYER_START_POSITION_X = 170;
 const int PLAYER_START_POSITION_Y = 120;
 const int PLAYER_WIDTH = 16;
 const int PLAYER_HEIGHT = 32;
-const int PLAYER_SPEED = 100;
+const int PLAYER_SPEED = 50;
 
 const int BACKGROUND_MENU_WIDTH = 62;
 const int BACKGROUND_MENU_HEIGHT = 46;

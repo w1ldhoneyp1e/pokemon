@@ -53,8 +53,8 @@ void update(Controller* controller, float deltaTime, sf::RenderWindow* window) {
 	}
 
 	case GameState::Game:
-		if (keys.empty()) return;
 		playerMovementSystem(controller, deltaTime, window);
+		if (keys.empty()) return;
 		backToMenu(controller);
 		openInventory(controller);
 		pokemonCollision(controller);
@@ -111,8 +111,8 @@ int main() {
     RECT rect;
     GetWindowRect(hwnd, &rect);
 
-	SCREEN_WIDTH = rect.right - rect.left;
-	SCREEN_HEIGHT = rect.bottom - rect.top;
+	SCREEN_WIDTH = window->getSize().x;
+	SCREEN_HEIGHT = window->getSize().y;
 
 	EntityManager entityManager;
 	RenderSystem renderSystem(window, &entityManager);
@@ -127,6 +127,7 @@ int main() {
 
 	collisionMaps.emplace(LocationType::Town, CollisionMap("../res/collisionMap/town.txt", WINDOW_WIDTH / 38, WINDOW_HEIGHT / 32));
 	collisionMaps.emplace(LocationType::Forest, CollisionMap("../res/collisionMap/forest.txt", WINDOW_WIDTH / 38, WINDOW_HEIGHT / 32));
+	std::cout << "WINDOW_WIDTH / 38" << (WINDOW_WIDTH / 38) << std::endl; 
 	Controller controller(&entityManager, &inputSystem, &renderSystem, &state, &battleContext, &collisionMaps, LocationType::Town);
 
 	initMenu(&entityManager, &renderSystem);

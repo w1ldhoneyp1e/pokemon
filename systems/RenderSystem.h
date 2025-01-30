@@ -59,6 +59,7 @@ public:
             auto sizeComp = entity->getComponent<SizeComponent>();
             auto originComp = entity->getComponent<OriginComponent>();
             auto healthComp = entity->getComponent<HealthComponent>();
+            auto animationComp = entity->getComponent<AnimationComponent>();
 
             float scaleX = SCREEN_WIDTH / WINDOW_WIDTH;
             float scaleY = SCREEN_HEIGHT / WINDOW_HEIGHT;
@@ -79,13 +80,13 @@ public:
 
                 if (sizeComp) {
                     textureComp->sprite.setScale(
-                        sizeComp->getWidth() / textureComp->sprite.getLocalBounds().width,
-                        sizeComp->getHeight() / textureComp->sprite.getLocalBounds().height
+                        sizeComp->getWidth() * scale / textureComp->sprite.getLocalBounds().width,
+                        sizeComp->getHeight() * scale / textureComp->sprite.getLocalBounds().height
                     );
                 }
                 
-                auto currScale = textureComp->sprite.getScale();
-                textureComp->sprite.setScale(scale * currScale.x, scale * currScale.y);
+                // auto currScale = textureComp->sprite.getScale();
+                // textureComp->sprite.setScale(scale * currScale.x, scale * currScale.y);
 
                 textureComp->sprite.setPosition(posX * scale + offsetX, posY * scale);
 
@@ -101,6 +102,22 @@ public:
                         healthComp, positionComp,
                         scale
                     );
+                }
+                if (animationComp) {
+                    int baseIndex = 0;
+                    switch (animationComp->currentDirection) {
+                        case 1: baseIndex = 0; break;
+                        case 2: baseIndex = 3; break;
+                        case 3: baseIndex = 6; break;
+                        case 4: baseIndex = 9; break;
+                        default: baseIndex = 1; break;
+                    }
+
+                    int textureX = (baseIndex + animationComp->currentFrameIndex) * animationComp->frameWidth;
+                    int textureY = 0;
+
+                    textureComp->sprite.setTexture(animationComp->texture);
+                    textureComp->sprite.setTextureRect(sf::IntRect(textureX, textureY, animationComp->frameWidth, animationComp->frameHeight));
                 }
 
                 window->draw(textureComp->sprite);

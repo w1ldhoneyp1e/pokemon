@@ -185,3 +185,17 @@ private:
         sprite.setOrigin(originX, originY);
     }
 };
+
+class AnimationComponent : public Component {
+public:
+    AnimationComponent(sf::Texture texture, int frameWidth, int frameHeight, float animationSpeed)
+        : texture(texture), frameWidth(frameWidth), frameHeight(frameHeight), animationSpeed(animationSpeed) {}
+
+    sf::Texture texture;
+    int frameWidth;
+    int frameHeight;
+    int currentFrameIndex = 0;
+    int currentDirection = 0;
+    float animationSpeed = 10.0f;
+    float animationTimer = 0.0f;
+};
