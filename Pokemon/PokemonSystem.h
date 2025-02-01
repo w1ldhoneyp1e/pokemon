@@ -72,11 +72,8 @@ void generatePokemon(Controller* controller) {
 	float y = std::rand() % (mapHeight - POKEMON_INVENTORY_HEIGHT);
 	
 	bool validPosition = false;
-	
 	int attempts = 0;
 	const int maxAttempts = 100;
-	
-	std::cout << "Start generating pokemon" << std::endl;
 	
 	while (!validPosition && attempts < maxAttempts) {
 		if (attempts > 0) {
@@ -88,7 +85,6 @@ void generatePokemon(Controller* controller) {
 		
 		if (!hasCollision) {
 			validPosition = true;
-			std::cout << "Position found" << std::endl;
 			auto pokemon = em->createEntity();
 			pokemon->addComponent<PositionComponent>(x, y);
 			pokemon->addComponent<SizeComponent>(POKEMON_INVENTORY_WIDTH, POKEMON_INVENTORY_HEIGHT);
@@ -98,15 +94,14 @@ void generatePokemon(Controller* controller) {
 			pokemon->addComponent<PokemonComponent>("Bulbasour");
 			pokemon->addComponent<GameTypeEntityComponent>();
 			
-			sf::Texture pokemonTexture;
-			if (pokemonTexture.loadFromFile("../res/bulbasour(64x64).png")) {
+			auto texture = new sf::Texture();
+			if (texture->loadFromFile("../res/bulbasour(64x64).png")) {
 				pokemon->addComponent<TextureComponent>(
-					pokemonTexture,
+					*texture,
 					64,
 					64
 				);
 			}
-			std::cout << "Pokemon generated" << std::endl;
 			render->addEntity(pokemon);
 		}
 		attempts++;
