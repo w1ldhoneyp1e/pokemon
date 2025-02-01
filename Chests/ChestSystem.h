@@ -146,7 +146,7 @@ void initChestButtonCollect(EntityManager *em) {
 	);
 	button->addComponent<ChestInterfaceComponent>();
 	sf::Texture buttonTexture;
-    if (buttonTexture.loadFromFile("../res/backButton(32x13).png")) {
+    if (buttonTexture.loadFromFile("../res/okButton(32x13).png")) {
         button->addComponent<TextureComponent>(
 			buttonTexture,
 			32, 

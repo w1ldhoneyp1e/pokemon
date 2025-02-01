@@ -40,11 +40,11 @@ void createInventory(EntityManager* em) {
 	inventory->addComponent<RenderLayerComponent>(3);
     inventory->addComponent<InventoryTypeEntityComponent>();
 	sf::Texture inventoryTexture;
-	if (inventoryTexture.loadFromFile("../res/inventory(80x102).png")) {
+	if (inventoryTexture.loadFromFile("../res/inventory(80x156).png")) {
 		inventory->addComponent<TextureComponent>(
 			inventoryTexture, 
 			80, 
-			102
+			156
 		);
 	}
 
