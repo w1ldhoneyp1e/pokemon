@@ -92,40 +92,41 @@ void generateRandomItem(EntityManager *em, int index, int chestId) {
 }
 
 Entity* createHealingPotion(EntityManager *em) {
-	auto healingPotion = em->createEntity();
-	healingPotion->addComponent<RenderLayerComponent>(2);
-	healingPotion->addComponent<SizeComponent>(
-		ITEM_SIDE,
-		ITEM_SIDE
-	);
-	sf::Texture healingPotionTexture;
+    auto healingPotion = em->createEntity();
+    healingPotion->addComponent<HealingPotionComponent>();
+    healingPotion->addComponent<RenderLayerComponent>(2);
+    healingPotion->addComponent<SizeComponent>(
+        ITEM_SIDE,
+        ITEM_SIDE
+    );
+    sf::Texture healingPotionTexture;
     if (healingPotionTexture.loadFromFile("../res/healingPotion(500x500).png")) {
         healingPotion->addComponent<TextureComponent>(
-			healingPotionTexture,
-			500, 
-			500
-		);
+            healingPotionTexture,
+            500, 
+            500
+        );
     }
-	return healingPotion;
+    return healingPotion;
 }
 
 Entity* createCoin(EntityManager *em) {
-	auto coin = em->createEntity();
-	coin->addComponent<ItemComponent>();
-	coin->addComponent<RenderLayerComponent>(2);
-	coin->addComponent<SizeComponent>(
-		ITEM_SIDE,
-		ITEM_SIDE
-	);
-	sf::Texture coinTexture;
+    auto coin = em->createEntity();
+    coin->addComponent<CoinComponent>();
+    coin->addComponent<RenderLayerComponent>(2);
+    coin->addComponent<SizeComponent>(
+        ITEM_SIDE,
+        ITEM_SIDE
+    );
+    sf::Texture coinTexture;
     if (coinTexture.loadFromFile("../res/Coin(12x12).png")) {
         coin->addComponent<TextureComponent>(
-			coinTexture,
-			12, 
-			12
-		);
+            coinTexture,
+            12, 
+            12
+        );
     }
-	return coin;
+    return coin;
 }
 
 void initChestContent(EntityManager *em, RenderSystem* render) {
@@ -226,18 +227,28 @@ void collectChest(Controller* controller) {
 		button == nullptr
 		|| !isClickOnEntity(input->getMouseClick(), button)
 	) return;
+	
 	input->clear();
+	auto player = em->getEntitiesWithComponent<PlayerControlComponent>()[0];
+	auto inventory = player->getComponent<PlayersInventoryComponent>();
+	
 	auto entities = em->getEntitiesWithComponent<ChestContentComponent>();
-	auto interface = em->getEntitiesWithComponent<ChestInterfaceComponent>();
 	for(auto entity : entities) {
 		render->removeEntity(entity->getId());
-		entity->addComponent<ItemComponent>();
-		entity->removeComponent<ChestContentComponent>();
-	} 
+		if (entity->getComponent<CoinComponent>() != nullptr) {
+			inventory->addCoins(1);
+		} else if (entity->getComponent<HealingPotionComponent>() != nullptr) {
+			inventory->addPotions(1);
+		}
+		em->removeEntity(entity);
+	}
+	
+	auto interface = em->getEntitiesWithComponent<ChestInterfaceComponent>();
 	for(auto interfaceComp : interface) {
 		render->removeEntity(interfaceComp->getId());
 		em->removeEntity(interfaceComp);
 	}
+	
 	*state = GameState::Game;
 }
 

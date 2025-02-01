@@ -70,14 +70,92 @@ void createInventory(EntityManager* em) {
 		);
 	}
 
-	// Покемоны в инвентаре
 	auto player = em->getEntitiesWithComponent<PlayerControlComponent>()[0];
+	auto playerInventory = player->getComponent<PlayersInventoryComponent>();
+
+	auto coinCounter = em->createEntity();
+	coinCounter->addComponent<TextComponent>(
+		std::to_string(playerInventory->getCoinCount()),
+		INVENTORY_ICON_X + 30,
+		INVENTORY_ICON_Y + 1,
+		52,
+		sf::Color(68, 68, 68)
+
+	);
+	coinCounter->addComponent<InventoryTypeEntityComponent>();
+	coinCounter->addComponent<RenderLayerComponent>(4);
+
+	auto coinIcon = em->createEntity();
+	coinIcon->addComponent<InventoryTypeEntityComponent>();
+	coinIcon->addComponent<RenderLayerComponent>(4);
+	coinIcon->addComponent<SizeComponent>(16, 16);
+	coinIcon->addComponent<PositionComponent>(
+		INVENTORY_ICON_X,
+		INVENTORY_ICON_Y
+	);
+	sf::Texture coinIconTexture;
+
+	if (coinIconTexture.loadFromFile("../res/Coin(12x12).png")) {
+		coinIcon->addComponent<TextureComponent>(coinIconTexture, 12, 12);
+	}
+
+	auto potionCounter = em->createEntity();
+	potionCounter->addComponent<TextComponent>(
+		std::to_string(playerInventory->getPotionCount()),
+		INVENTORY_ICON_X + 30,
+		INVENTORY_ICON_Y + 21,
+		52,
+		sf::Color(68, 68, 68)
+
+	);
+	potionCounter->addComponent<InventoryTypeEntityComponent>();
+	potionCounter->addComponent<RenderLayerComponent>(4);
+
+	auto potionIcon = em->createEntity();
+	potionIcon->addComponent<InventoryTypeEntityComponent>();
+	potionIcon->addComponent<RenderLayerComponent>(4);
+	potionIcon->addComponent<SizeComponent>(16, 16);
+	potionIcon->addComponent<PositionComponent>(
+		INVENTORY_ICON_X,
+		INVENTORY_ICON_Y + 20
+	);
+	sf::Texture potionIconTexture;
+
+	if (potionIconTexture.loadFromFile("../res/healingPotion(12x12).png")) {
+		potionIcon->addComponent<TextureComponent>(potionIconTexture, 12, 12);
+	}
+
+	auto pokeballCounter = em->createEntity();
+	pokeballCounter->addComponent<TextComponent>(
+		std::to_string(playerInventory->getPokeballCount()),
+		INVENTORY_ICON_X + 30,
+		INVENTORY_ICON_Y + 42,
+		52,
+		sf::Color(68, 68, 68)
+
+	);
+	pokeballCounter->addComponent<InventoryTypeEntityComponent>();
+	pokeballCounter->addComponent<RenderLayerComponent>(4);
+
+	auto pokeballIcon = em->createEntity();
+	pokeballIcon->addComponent<InventoryTypeEntityComponent>();
+	pokeballIcon->addComponent<RenderLayerComponent>(4);
+	pokeballIcon->addComponent<SizeComponent>(16, 16);
+	pokeballIcon->addComponent<PositionComponent>(
+		INVENTORY_ICON_X,
+		INVENTORY_ICON_Y + 40
+	);
+	sf::Texture pokeballIconTexture;
+
+	if (pokeballIconTexture.loadFromFile("../res/pokeball(12x12).png")) {
+		pokeballIcon->addComponent<TextureComponent>(pokeballIconTexture, 12, 12);
+	}
+
 	auto pokemons = em->getEntitiesWithComponent<PokemonComponent>();
-	auto ids = player->getComponent<PlayersInventoryComponent>()->getPokemons();
+	auto ids = playerInventory->getPokemons();
 	int i = 0;
 	int j = 0;
 	for (auto pokemon : pokemons) {
-		// auto pokemon = em->getEntity(id);
 		if (!pokemon->getComponent<PokemonComponent>()->isCollected()) continue;
 		pokemon->getComponent<PositionComponent>()->setPos(
 			INVENTORY_CELLS_POSITION_START_X + i * 7 * SCALE,
@@ -114,6 +192,7 @@ void closeInventory(Controller* controller) {
 		auto menuEntities = em->getEntitiesWithComponent<InventoryTypeEntityComponent>();
 		for (Entity* entity : menuEntities) {
 			render->removeEntity(entity->getId());
+			em->removeEntity(entity);
 		}
 
 		auto pokemons = em->getEntitiesWithComponent<PokemonComponent>();

@@ -1,6 +1,7 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include "ParentComponent.h"
+#include "../const.h"
 
 class PositionComponent : public Component {
 private:
@@ -198,4 +199,33 @@ public:
     int currentDirection = 0;
     float animationSpeed = 10.0f;
     float animationTimer = 0.0f;
+};
+
+class TextComponent : public Component {
+private:
+    sf::Text text;
+    sf::Font font;
+    sf::Color color;
+public:
+
+    TextComponent(const std::string& value, float x, float y, int size = 24, sf::Color color = sf::Color::Black)
+        : color(color), text(value, font, size) {
+        if (font.loadFromFile("../res/fonts/font.ttf")) {
+            float offsetX = SCREEN_WIDTH / 2 - SCALE * WINDOW_WIDTH / 2;
+            text.setFont(font);
+            text.setString(value);
+            text.setCharacterSize(size);
+            text.setFillColor(color);
+
+            text.setPosition(x * SCALE + offsetX, y * SCALE);
+        }
+    }
+
+    sf::Text& getText() {
+        return text;
+    }
+
+    void setCount(const std::string& value) {
+        text.setString(value);
+    }
 };

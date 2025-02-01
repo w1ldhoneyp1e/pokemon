@@ -7,6 +7,7 @@
 #include "../Health/Health.h"
 #include <iostream>
 #include "../const.h"
+#include "../Inventory/InventoryComponents.h"
 
 class RenderSystem {
 public:
@@ -60,6 +61,7 @@ public:
             auto originComp = entity->getComponent<OriginComponent>();
             auto healthComp = entity->getComponent<HealthComponent>();
             auto animationComp = entity->getComponent<AnimationComponent>();
+            auto textComp = entity->getComponent<TextComponent>();
 
             float offsetX = SCREEN_WIDTH / 2 - SCALE * WINDOW_WIDTH / 2;
 
@@ -81,9 +83,6 @@ public:
                     );
                 }
                 
-                // auto currScale = textureComp->sprite.getScale();
-                // textureComp->sprite.setScale(SCALE * currScale.x, SCALE * currScale.y);
-
                 textureComp->sprite.setPosition(posX * SCALE + offsetX, posY * SCALE);
 
                 if (rotationComp) {
@@ -117,6 +116,9 @@ public:
                 }
 
                 window->draw(textureComp->sprite);
+            }
+            if (textComp) {
+                window->draw(textComp->getText());
             }
         }
 
