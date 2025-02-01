@@ -63,13 +63,6 @@ private:
         }
 
         file.close();
-
-        for (const auto& row : collisionMap) {
-            for (bool cell : row) {
-                std::cout << (cell ? '#' : '-') << ' ';
-            }
-            std::cout << '\n';
-        }
     }
     
 private:
