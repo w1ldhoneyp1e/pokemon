@@ -72,11 +72,13 @@ void createInventory(EntityManager* em) {
 
 	// Покемоны в инвентаре
 	auto player = em->getEntitiesWithComponent<PlayerControlComponent>()[0];
+	auto pokemons = em->getEntitiesWithComponent<PokemonComponent>();
 	auto ids = player->getComponent<PlayersInventoryComponent>()->getPokemons();
 	int i = 0;
 	int j = 0;
-	for (auto id : ids) {
-		auto pokemon = em->getEntity(id);
+	for (auto pokemon : pokemons) {
+		// auto pokemon = em->getEntity(id);
+		if (!pokemon->getComponent<PokemonComponent>()->isCollected()) continue;
 		pokemon->getComponent<PositionComponent>()->setPos(
 			INVENTORY_CELLS_POSITION_START_X + i * 7 * SCALE,
 			INVENTORY_CELLS_POSITION_START_Y + j * 7 * SCALE
