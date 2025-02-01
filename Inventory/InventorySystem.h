@@ -78,8 +78,8 @@ void createInventory(EntityManager* em) {
 	for (auto id : ids) {
 		auto pokemon = em->getEntity(id);
 		pokemon->getComponent<PositionComponent>()->setPos(
-			INVENTORY_CELLS_POSITION_START_X + i * 7,
-			INVENTORY_CELLS_POSITION_START_Y + j * 7
+			INVENTORY_CELLS_POSITION_START_X + i * 7 * SCALE,
+			INVENTORY_CELLS_POSITION_START_Y + j * 7 * SCALE
 		);
 		pokemon->getComponent<SizeComponent>()->setSize(
 			POKEMON_INVENTORY_WIDTH,

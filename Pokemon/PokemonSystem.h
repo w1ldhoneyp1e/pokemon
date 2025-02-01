@@ -115,7 +115,7 @@ void generatePokemon(Controller* controller) {
 
 void pokemonGenerating(Controller* controller, float deltaTime) {
 	static float timeSinceLastGeneration = 0.0f;
-	static const float generationInterval = 60.0f;
+	static const float generationInterval = 5.0f;
 	
 	auto [em, input, render, state, battleContext, collisionMaps, currentLocation] = controller->getAll();
 	
