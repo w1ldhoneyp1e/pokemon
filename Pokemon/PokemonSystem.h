@@ -7,6 +7,7 @@
 #include "../Catching/CatchingSystem.h"
 #include "../GameState.h"
 #include "../const.h"
+#include <ctime>
 
 struct PokemonConditionProps {
 	Entity* pokemon;
@@ -20,7 +21,6 @@ bool isPokemonCollected(Entity* pokemon);
 bool doesConditionSatisfy(PokemonConditionProps props);
 
 void pokemonCollision(Controller* controller) {
-	// Селектим покемонов. Для каждого проверяем, не было ли коллизии
 	auto [input, em, render, state, battleContext, maps, currentLocation] = controller->getAll();
 
 	auto pokemons = em->getEntitiesWithComponent<PokemonComponent>();
@@ -59,4 +59,70 @@ bool isInventoryFull(PlayersInventoryComponent *inventory) {
 
 bool isPokemonCollected(Entity* pokemon) {
 	return !pokemon->getComponent<PokemonComponent>()->isCollected();
+}
+
+void generatePokemon(Controller* controller) {
+	auto [input, em, render, state, battleContext, collisionMaps, currentLocation] = controller->getAll();
+	
+	auto currentMap = collisionMaps->at(currentLocation);
+	int mapWidth = currentMap.getWidth() * currentMap.getCellWidth();
+	int mapHeight = currentMap.getHeight() * currentMap.getCellHeight();
+	
+	float x = std::rand() % (mapWidth - POKEMON_INVENTORY_WIDTH);
+	float y = std::rand() % (mapHeight - POKEMON_INVENTORY_HEIGHT);
+	
+	bool validPosition = false;
+	
+	int attempts = 0;
+	const int maxAttempts = 100;
+	
+	std::cout << "Start generating pokemon" << std::endl;
+	
+	while (!validPosition && attempts < maxAttempts) {
+		if (attempts > 0) {
+			x = std::rand() % (mapWidth - POKEMON_INVENTORY_WIDTH);
+			y = std::rand() % (mapHeight - POKEMON_INVENTORY_HEIGHT);
+		}
+		
+		bool hasCollision = currentMap.isCollision(x, y);
+		
+		if (!hasCollision) {
+			validPosition = true;
+			std::cout << "Position found" << std::endl;
+			auto pokemon = em->createEntity();
+			pokemon->addComponent<PositionComponent>(x, y);
+			pokemon->addComponent<SizeComponent>(POKEMON_INVENTORY_WIDTH, POKEMON_INVENTORY_HEIGHT);
+			pokemon->addComponent<RenderLayerComponent>(1);
+			pokemon->addComponent<HealthComponent>(100, 100);
+			pokemon->addComponent<DamageComponent>(20, 30);
+			pokemon->addComponent<PokemonComponent>("Bulbasour");
+			pokemon->addComponent<GameTypeEntityComponent>();
+			
+			sf::Texture pokemonTexture;
+			if (pokemonTexture.loadFromFile("../res/bulbasour(64x64).png")) {
+				pokemon->addComponent<TextureComponent>(
+					pokemonTexture,
+					64,
+					64
+				);
+			}
+			std::cout << "Pokemon generated" << std::endl;
+			render->addEntity(pokemon);
+		}
+		attempts++;
+	}
+}
+
+void pokemonGenerating(Controller* controller, float deltaTime) {
+	static float timeSinceLastGeneration = 0.0f;
+	static const float generationInterval = 60.0f;
+	
+	auto [em, input, render, state, battleContext, collisionMaps, currentLocation] = controller->getAll();
+	
+	timeSinceLastGeneration += deltaTime;
+	
+	if (timeSinceLastGeneration >= generationInterval) {
+		timeSinceLastGeneration = 0.0f;
+		generatePokemon(controller);
+	}
 }

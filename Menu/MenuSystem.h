@@ -12,7 +12,7 @@ void onStartGameButtonPress(Controller* controller) {
 	if (!input->hasMouseClick()) return;
 	if (!isClickOnEntity(input->getMouseClick(), button)) return;
 	*state = GameState::Game;
-	initGameEntities(em);
+	initGameEntities(controller);
 	render->removeEntities();
 
 	render->addEntities(em->getEntitiesWithComponent<GameTypeEntityComponent>());

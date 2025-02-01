@@ -1,6 +1,7 @@
 #pragma once
 #include "../systems/EntityManager.h"
 #include "../systems/RenderSystem.h"
+#include "../Pokemon/PokemonSystem.h"
 #include <SFML/Graphics.hpp>
 #include "../Entity.h"
 #include "../const.h"
@@ -13,12 +14,16 @@ void initChest(EntityManager* em);
 void initTrainer(EntityManager* em);
 void initTrainerPokemons(EntityManager *em, TrainerPokemonsComponent *pokemons);
 
-void initGameEntities(EntityManager* em) {
+void initGameEntities(Controller* controller	) {
+    auto [input, em, render, state, battleContext, collisionMaps, currentLocation] = controller->getAll();
     initPlayer(em);
     initGameLocation(em);
-    initBulbasour(em);
+	
+    for(int i = 0; i < 3; ++i) {
+        generatePokemon(controller);
+    }
     initChest(em);
-	initTrainer(em);
+    initTrainer(em);
 }
 
 std::array<std::vector<sf::Texture>, 4> getPlayerTextures();

@@ -54,6 +54,7 @@ void update(Controller* controller, float deltaTime, sf::RenderWindow* window) {
 
 	case GameState::Game:
 		playerMovementSystem(controller, deltaTime, window);
+		pokemonGenerating(controller, deltaTime);
 		if (keys.empty()) return;
 		backToMenu(controller);
 		openInventory(controller);
@@ -101,6 +102,8 @@ void gameLoop(sf::RenderWindow* window, Controller* controller) {
 }
 
 int main() {
+	setlocale(LC_ALL, "RU");
+	std::srand(std::time(0));
 	GameState state = GameState::Menu;
 
 	WindowManager windowManager;
@@ -127,7 +130,6 @@ int main() {
 
 	collisionMaps.emplace(LocationType::Town, CollisionMap("../res/collisionMap/town.txt", WINDOW_WIDTH / 76, WINDOW_HEIGHT / 64));
 	collisionMaps.emplace(LocationType::Forest, CollisionMap("../res/collisionMap/forest.txt", WINDOW_WIDTH / 38, WINDOW_HEIGHT / 32));
-	std::cout << "WINDOW_WIDTH / 38" << (WINDOW_WIDTH / 38) << std::endl; 
 	Controller controller(&entityManager, &inputSystem, &renderSystem, &state, &battleContext, &collisionMaps, LocationType::Town);
 
 	initMenu(&entityManager, &renderSystem);

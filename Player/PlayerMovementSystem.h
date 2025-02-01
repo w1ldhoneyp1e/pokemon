@@ -78,8 +78,6 @@ void playerMovementSystem(Controller* controller, float deltaTime, sf::RenderWin
         }
     }
 
-    std::cout << "Frame: " << animation->currentFrameIndex << std::endl;
-    std::cout << "Direction: " << animation->currentDirection << std::endl;
     if (moved) {
         animation->animationTimer += deltaTime;
         if (animation->animationTimer >= 1.0f / animation->animationSpeed) {
