@@ -6,6 +6,8 @@ const float WINDOW_HEIGHT = 320;
 float SCREEN_WIDTH = 383;
 float SCREEN_HEIGHT = 320;
 
+float SCALE = 1.0;
+
 const float PI = std::acos(-1.0);
 
 const int START_BUTTON_WIDTH = 54;

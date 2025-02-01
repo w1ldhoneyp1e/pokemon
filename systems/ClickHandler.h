@@ -28,15 +28,10 @@ bool isClickOnEntity(const sf::Event::MouseButtonEvent& mouseEvent, Entity* enti
     float centerX = left + originX;
     float centerY = top + originY;
 
-    sf::Vector2u baseSize(WINDOW_WIDTH, WINDOW_HEIGHT);
-    float scaleX = SCREEN_WIDTH / baseSize.x;
-    float scaleY = SCREEN_HEIGHT / baseSize.y;
-    float scale = std::min(scaleX, scaleY);
+    float offsetX = SCREEN_WIDTH / 2 - SCALE * WINDOW_WIDTH / 2;
 
-    float offsetX = SCREEN_WIDTH / 2 - scale * WINDOW_WIDTH / 2;
-
-    float dx = (mouseEvent.x - offsetX) / scale - centerX;
-    float dy = mouseEvent.y / scale - centerY;
+    float dx = (mouseEvent.x - offsetX) / SCALE - centerX;
+    float dy = mouseEvent.y / SCALE - centerY;
 
     float cosAngle = std::cos(-angle);
     float sinAngle = std::sin(-angle);

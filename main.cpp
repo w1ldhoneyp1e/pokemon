@@ -126,7 +126,7 @@ int main() {
 	sf::Vector2u baseSize(WINDOW_WIDTH, WINDOW_HEIGHT);
 	float scaleX = SCREEN_WIDTH / baseSize.x;
 	float scaleY = SCREEN_HEIGHT / baseSize.y;
-	float scale = std::min(scaleX, scaleY);
+	SCALE = std::min(scaleX, scaleY);
 
 	collisionMaps.emplace(LocationType::Town, CollisionMap("../res/collisionMap/town.txt", WINDOW_WIDTH / 76, WINDOW_HEIGHT / 64));
 	collisionMaps.emplace(LocationType::Forest, CollisionMap("../res/collisionMap/forest.txt", WINDOW_WIDTH / 38, WINDOW_HEIGHT / 32));

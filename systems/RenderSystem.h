@@ -61,11 +61,7 @@ public:
             auto healthComp = entity->getComponent<HealthComponent>();
             auto animationComp = entity->getComponent<AnimationComponent>();
 
-            float scaleX = SCREEN_WIDTH / WINDOW_WIDTH;
-            float scaleY = SCREEN_HEIGHT / WINDOW_HEIGHT;
-            float scale = std::min(scaleX, scaleY);
-
-            float offsetX = SCREEN_WIDTH / 2 - scale * WINDOW_WIDTH / 2;
+            float offsetX = SCREEN_WIDTH / 2 - SCALE * WINDOW_WIDTH / 2;
 
             if (textureComp && positionComp) {
                 auto posX = positionComp->getX();
@@ -73,22 +69,22 @@ public:
 
                 if (originComp) {
                     textureComp->sprite.setOrigin(
-                        originComp->getX() * scale,
-                        originComp->getY() * scale
+                        originComp->getX() * SCALE,
+                        originComp->getY() * SCALE
                     );
                 }
 
                 if (sizeComp) {
                     textureComp->sprite.setScale(
-                        sizeComp->getWidth() * scale / textureComp->sprite.getLocalBounds().width,
-                        sizeComp->getHeight() * scale / textureComp->sprite.getLocalBounds().height
+                        sizeComp->getWidth() * SCALE / textureComp->sprite.getLocalBounds().width,
+                        sizeComp->getHeight() * SCALE / textureComp->sprite.getLocalBounds().height
                     );
                 }
                 
                 // auto currScale = textureComp->sprite.getScale();
-                // textureComp->sprite.setScale(scale * currScale.x, scale * currScale.y);
+                // textureComp->sprite.setScale(SCALE * currScale.x, SCALE * currScale.y);
 
-                textureComp->sprite.setPosition(posX * scale + offsetX, posY * scale);
+                textureComp->sprite.setPosition(posX * SCALE + offsetX, posY * SCALE);
 
                 if (rotationComp) {
                     textureComp->sprite.setRotation(rotationComp->angle * 180 / PI);
@@ -97,10 +93,10 @@ public:
                 if (healthComp && healthComp->isVisible()) {
                     showHealth(
                         window,
-                        sizeComp->getWidth() * scale,
-                        sizeComp->getHeight() * scale,
+                        sizeComp->getWidth() * SCALE,
+                        sizeComp->getHeight() * SCALE,
                         healthComp, positionComp,
-                        scale
+                        SCALE
                     );
                 }
                 if (animationComp) {
