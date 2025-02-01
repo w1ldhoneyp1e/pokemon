@@ -125,7 +125,7 @@ int main() {
 	float scaleY = SCREEN_HEIGHT / baseSize.y;
 	float scale = std::min(scaleX, scaleY);
 
-	collisionMaps.emplace(LocationType::Town, CollisionMap("../res/collisionMap/town.txt", WINDOW_WIDTH / 38, WINDOW_HEIGHT / 32));
+	collisionMaps.emplace(LocationType::Town, CollisionMap("../res/collisionMap/town.txt", WINDOW_WIDTH / 76, WINDOW_HEIGHT / 64));
 	collisionMaps.emplace(LocationType::Forest, CollisionMap("../res/collisionMap/forest.txt", WINDOW_WIDTH / 38, WINDOW_HEIGHT / 32));
 	std::cout << "WINDOW_WIDTH / 38" << (WINDOW_WIDTH / 38) << std::endl; 
 	Controller controller(&entityManager, &inputSystem, &renderSystem, &state, &battleContext, &collisionMaps, LocationType::Town);
