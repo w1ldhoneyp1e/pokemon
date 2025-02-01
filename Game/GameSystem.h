@@ -34,7 +34,7 @@ void initPlayer(EntityManager* em) {
 		PLAYER_HEIGHT
 	);
 	sf::Texture playerSprites;
-	if (playerSprites.loadFromFile("../res/playerSprites(204x24).png")) {
+	if (playerSprites.loadFromFile("../res/playerSprites(204x20).png")) {
 		player->addComponent<AnimationComponent>(
 			playerSprites,
 			playerSprites.getSize().x / 12,
