@@ -13,8 +13,8 @@ const int START_BUTTON_HEIGHT = 20;
 
 const int PLAYER_START_POSITION_X = 170;
 const int PLAYER_START_POSITION_Y = 120;
-const int PLAYER_WIDTH = 16;
-const int PLAYER_HEIGHT = 32;
+const int PLAYER_WIDTH = 17;
+const int PLAYER_HEIGHT = 20;
 const int PLAYER_SPEED = 50;
 
 const int BACKGROUND_MENU_WIDTH = 62;
