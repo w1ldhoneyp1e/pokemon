@@ -130,8 +130,3 @@ private:
     EntityManager* entityManager;
     std::vector<Entity*> entities;
 };
-
-
-
-
-

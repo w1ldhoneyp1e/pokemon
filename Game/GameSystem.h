@@ -113,7 +113,7 @@ void initChest(EntityManager* em) {
     chest->addComponent<ChestComponent>();
     chest->addComponent<GameTypeEntityComponent>();
     sf::Texture chestTexture;
-    if (chestTexture.loadFromFile("../res/chestClosed(24x23).png")) {
+    if (chestTexture.loadFromFile("../res/chestClosedOpasity(24x23).png")) {
         chest->addComponent<TextureComponent>(
 			chestTexture,
 			CHEST_WIDTH, 
