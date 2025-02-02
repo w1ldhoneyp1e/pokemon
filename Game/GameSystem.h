@@ -2,9 +2,11 @@
 #include "../systems/EntityManager.h"
 #include "../systems/RenderSystem.h"
 #include "../Pokemon/PokemonSystem.h"
+#include "../Shop/ShopSystem.h"
 #include <SFML/Graphics.hpp>
 #include "../Entity.h"
 #include "../const.h"
+
 
 void initPlayer(EntityManager* em);
 void initGameLocation(EntityManager* em);
@@ -22,7 +24,9 @@ void initGameEntities(Controller* controller	) {
         generatePokemon(controller);
     }
     initTrainer(em);
+	initShop(em);
 }
+
 
 std::array<std::vector<sf::Texture>, 4> getPlayerTextures();
 
