@@ -10,8 +10,9 @@ private:
     bool _isOpened;
     int id;
     static int idCounter;
+    float timeAfterOpening;
 public:
-    ChestComponent() : _isOpened(false), id(idCounter++) {}
+    ChestComponent() : _isOpened(false), id(idCounter++), timeAfterOpening(0.0f) {}
 
     void setOpened() {
         _isOpened = true;
@@ -23,6 +24,14 @@ public:
 
     int getId() const {
         return id;
+    }
+
+    float getTimeAfterOpening() const {
+        return timeAfterOpening;
+    }
+
+    void addTimeAfterOpening(float deltaTime) { 
+        timeAfterOpening += deltaTime; 
     }
 };
 int ChestComponent::idCounter = 0;

@@ -55,6 +55,7 @@ void update(Controller* controller, float deltaTime, sf::RenderWindow* window) {
 	case GameState::Game:
 		playerMovementSystem(controller, deltaTime, window);
 		pokemonGenerating(controller, deltaTime);
+		chestsGenerating(controller, deltaTime);
 		if (keys.empty()) return;
 		backToMenu(controller);
 		openInventory(controller);

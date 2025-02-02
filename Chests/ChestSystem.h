@@ -26,10 +26,14 @@ void closeChest(Controller* controller);
 bool doesChestConditionSatisfy(Entity *chest, Entity *player, std::vector<sf::Keyboard::Key> keys);
 bool isEnterPressed(std::vector<sf::Keyboard::Key> keys);
 
+void generateChests(Controller* controller, float deltaTime);
+
 void updateChests(Controller* controller) {
 	closeChest(controller);
 	collectChest(controller);
 }
+
+void handleOpenedChests(Controller* controller, std::vector<Entity*> chests, float deltaTime);
 
 void chestInit(
 	EntityManager* em,
@@ -45,10 +49,6 @@ void chestInit(
 	auto interface = em->getEntitiesWithComponent<ChestInterfaceComponent>();
 	render->addEntities(entities);
 	render->addEntities(interface);
-}
-
-void chestCollisionHandler(Controller* controller) {
-
 }
 
 void generateChestContent(EntityManager *em, int chestId) {
@@ -213,9 +213,18 @@ void chestOpening(Controller* controller) {
 			input->clear();
 			chestInit(em, render, chestId);
 			chest->getComponent<ChestComponent>()->setOpened();
+			chest->getComponent<SizeComponent>()->setSize(26, 27);
+			sf::Texture openedTexture;
+			if (openedTexture.loadFromFile("../res/chestOpened(26x27).png")) {
+				auto texture = chest->getComponent<TextureComponent>();
+				texture->setTexture(openedTexture);
+				texture->setWidth(26);
+				texture->setHeight(27);
+			}
 		}
 	}
 }
+
 
 void collectChest(Controller* controller) {
 	auto [input, em, render, state, battleContext, maps, currentLocation] = controller->getAll();
@@ -244,13 +253,14 @@ void collectChest(Controller* controller) {
 	}
 	
 	auto interface = em->getEntitiesWithComponent<ChestInterfaceComponent>();
-	for(auto interfaceComp : interface) {
-		render->removeEntity(interfaceComp->getId());
-		em->removeEntity(interfaceComp);
+	for(auto interfaceElem : interface) {
+		render->removeEntity(interfaceElem->getId());
+		em->removeEntity(interfaceElem);
 	}
-	
+
 	*state = GameState::Game;
 }
+
 
 void closeChest(Controller* controller) {
 	auto [input, em, render, state, battleContext, maps, currentLocation] = controller->getAll();
@@ -278,4 +288,94 @@ bool doesChestConditionSatisfy(Entity *chest, Entity *player, std::vector<sf::Ke
 	return isEnterPressed(keys)
 	&& isCollision(chest, player)
 	&& !chest->getComponent<ChestComponent>()->isOpened();
+}
+
+void generateChest(Controller* controller) {
+    auto [input, em, render, state, battleContext, collisionMaps, currentLocation] = controller->getAll();
+
+    auto currentMap = collisionMaps->at(currentLocation);
+    int mapWidth = currentMap.getWidth() * currentMap.getCellWidth();
+    int mapHeight = currentMap.getHeight() * currentMap.getCellHeight();
+    
+    float x = std::rand() % (mapWidth - CHEST_WIDTH);
+    float y = std::rand() % (mapHeight - CHEST_HEIGHT);
+    
+    bool validPosition = false;
+    int attempts = 0;
+    const int maxAttempts = 100;
+    
+    while (!validPosition && attempts < maxAttempts) {
+        if (attempts > 0) {
+            x = std::rand() % (mapWidth - CHEST_WIDTH);
+            y = std::rand() % (mapHeight - CHEST_HEIGHT);
+        }
+        
+        bool hasCollision = currentMap.isCollision(x, y);
+        
+        if (!hasCollision) {
+            auto chest = em->createEntity();
+            chest->addComponent<PositionComponent>(x, y);
+            chest->addComponent<SizeComponent>(CHEST_WIDTH, CHEST_HEIGHT);
+            chest->addComponent<RenderLayerComponent>(1);
+            chest->addComponent<ChestComponent>();
+            chest->addComponent<GameTypeEntityComponent>();
+            
+            sf::Texture chestTexture;
+            if (chestTexture.loadFromFile("../res/chestClosedOpasity(24x23).png")) {
+                chest->addComponent<TextureComponent>(
+					chestTexture,
+					24,
+					23
+				);
+            }
+            render->addEntity(chest);
+            validPosition = true;
+
+        }
+        attempts++;
+    }
+}
+
+void chestsGenerating(Controller* controller, float deltaTime) {
+    static float timeSinceLastChest = 0.0f;
+    const float chestGenerationInterval = 5.0f;
+
+    auto [input, em, render, state, battleContext, maps, currentLocation] = controller->getAll();
+    auto chests = em->getEntitiesWithComponent<ChestComponent>();
+    
+	if (!chests.empty()) {
+		handleOpenedChests(controller, chests, deltaTime);
+	}
+
+    bool hasClosedChest = false;
+    for (auto chest : chests) {
+        if (!chest->getComponent<ChestComponent>()->isOpened()) {
+            hasClosedChest = true;
+            break;
+        }
+    }
+    
+    if (!hasClosedChest) {
+        timeSinceLastChest += deltaTime;
+        if (timeSinceLastChest >= chestGenerationInterval) {
+            timeSinceLastChest = 0.0f;
+            generateChest(controller);
+        }
+    }
+}
+
+void handleOpenedChests(Controller* controller, std::vector<Entity*> chests, float deltaTime) {
+	auto em = controller->getEntityManager();
+	auto render = controller->getRenderSystem();
+
+	for (auto chest : chests) {
+        if (chest->getComponent<ChestComponent>()->isOpened()) {
+            chest->getComponent<ChestComponent>()->addTimeAfterOpening(deltaTime);
+            
+            if (chest->getComponent<ChestComponent>()->getTimeAfterOpening() >= 30.0f) {
+                render->removeEntity(chest->getId());
+                em->removeEntity(chest);
+            }
+        }
+    }
 }

@@ -9,7 +9,6 @@
 void initPlayer(EntityManager* em);
 void initGameLocation(EntityManager* em);
 void initBulbasour(EntityManager* em);
-void initChest(EntityManager* em);
 
 void initTrainer(EntityManager* em);
 void initTrainerPokemons(EntityManager *em, TrainerPokemonsComponent *pokemons);
@@ -22,7 +21,6 @@ void initGameEntities(Controller* controller	) {
     for(int i = 0; i < 3; ++i) {
         generatePokemon(controller);
     }
-    initChest(em);
     initTrainer(em);
 }
 
@@ -98,26 +96,6 @@ void initBulbasour(EntityManager* em) {
 			bulbasourTexture,
 			64, 
 			64
-		);
-    }
-}
-
-void initChest(EntityManager* em) {
-	auto chest = em->createEntity();
-    chest->addComponent<PositionComponent>(
-		PLAYER_START_POSITION_X - 100, 
-		PLAYER_START_POSITION_Y
-	);
-    chest->addComponent<SizeComponent>(CHEST_WIDTH, CHEST_HEIGHT);
-	chest->addComponent<RenderLayerComponent>(1);
-    chest->addComponent<ChestComponent>();
-    chest->addComponent<GameTypeEntityComponent>();
-    sf::Texture chestTexture;
-    if (chestTexture.loadFromFile("../res/chestClosedOpasity(24x23).png")) {
-        chest->addComponent<TextureComponent>(
-			chestTexture,
-			CHEST_WIDTH, 
-			CHEST_HEIGHT
 		);
     }
 }
