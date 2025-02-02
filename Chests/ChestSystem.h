@@ -26,15 +26,14 @@ void closeChest(Controller* controller);
 bool doesChestConditionSatisfy(Entity *chest, Entity *player, std::vector<sf::Keyboard::Key> keys);
 bool isEnterPressed(std::vector<sf::Keyboard::Key> keys);
 
-void generateChests(Controller* controller, float deltaTime);
+void generateChest(Controller* controller);
+void handleOpenedChests(Controller* controller, std::vector<Entity*> chests, float deltaTime);
+bool hasClosedChests(std::vector<Entity*> chests);
 
 void updateChests(Controller* controller) {
 	closeChest(controller);
 	collectChest(controller);
 }
-
-void handleOpenedChests(Controller* controller, std::vector<Entity*> chests, float deltaTime);
-bool hasClosedChests(std::vector<Entity*> chests);
 
 void chestInit(
 	EntityManager* em,
@@ -46,6 +45,7 @@ void chestInit(
 	initChestButtonCollect(em);
 	initChestButtonClose(em);
 	initChestInterface(em, render);
+	
 	auto entities = em->getEntitiesWithComponent<ChestContentComponent>();
 	auto interface = em->getEntitiesWithComponent<ChestInterfaceComponent>();
 	render->addEntities(entities);
@@ -53,17 +53,13 @@ void chestInit(
 }
 
 void generateChestContent(EntityManager *em, int chestId) {
-	std::srand(std::time(0));
     int amountOfItems = 1 + std::rand() % 7;
-	for (int i=1; i <= amountOfItems; ++i) {
-		generateRandomItem(em, i, chestId);
-	}
-	// Сгенерить число до 7
-	// В цикле создавать сущность рандомно, добавлять в стор
+    for (int i=1; i <= amountOfItems; ++i) {
+        generateRandomItem(em, i, chestId);
+    }
 }
 
 void generateRandomItem(EntityManager *em, int index, int chestId) {
-	std::srand(std::time(0));
     int typeIdOfItem = std::rand() % 2; // 0 => Healing Potion, 1 => Coin
 	switch (typeIdOfItem)
 	{
@@ -95,7 +91,7 @@ void generateRandomItem(EntityManager *em, int index, int chestId) {
 Entity* createHealingPotion(EntityManager *em) {
     auto healingPotion = em->createEntity();
     healingPotion->addComponent<HealingPotionComponent>();
-    healingPotion->addComponent<RenderLayerComponent>(2);
+    healingPotion->addComponent<RenderLayerComponent>(5);
     healingPotion->addComponent<SizeComponent>(
         ITEM_SIDE,
         ITEM_SIDE
@@ -114,7 +110,7 @@ Entity* createHealingPotion(EntityManager *em) {
 Entity* createCoin(EntityManager *em) {
     auto coin = em->createEntity();
     coin->addComponent<CoinComponent>();
-    coin->addComponent<RenderLayerComponent>(2);
+    coin->addComponent<RenderLayerComponent>(5);
     coin->addComponent<SizeComponent>(
         ITEM_SIDE,
         ITEM_SIDE
@@ -141,7 +137,7 @@ void initChestButtonCollect(EntityManager *em) {
 			CHEST_INTERFACE_BUTTON_GET_X,
 			CHEST_INTERFACE_BUTTON_GET_Y
 		);
-	button->addComponent<RenderLayerComponent>(2);
+	button->addComponent<RenderLayerComponent>(5);
 	button->addComponent<SizeComponent>(
 		CHEST_INTERFACE_BUTTON_WIDTH,
 		CHEST_INTERFACE_BUTTON_HEIGHT
@@ -163,11 +159,12 @@ void initChestButtonClose(EntityManager *em) {
 			CHEST_INTERFACE_BUTTON_CLOSE_X,
 			CHEST_INTERFACE_BUTTON_CLOSE_Y
 		);
-	button->addComponent<RenderLayerComponent>(2);
+	button->addComponent<RenderLayerComponent>(5);
 	button->addComponent<SizeComponent>(
 		CHEST_INTERFACE_BUTTON_WIDTH,
 		CHEST_INTERFACE_BUTTON_HEIGHT
 	);
+
 	button->addComponent<ChestInterfaceComponent>();
 	sf::Texture buttonTexture;
     if (buttonTexture.loadFromFile("../res/backButton(32x13).png")) {
@@ -181,7 +178,7 @@ void initChestButtonClose(EntityManager *em) {
 void initChestInterface(EntityManager *em, RenderSystem* render) {
 	auto inventoryInterface = em->createEntity();
 	inventoryInterface->addComponent<ItemComponent>();
-	inventoryInterface->addComponent<RenderLayerComponent>(1);
+	inventoryInterface->addComponent<RenderLayerComponent>(4);
 	inventoryInterface->addComponent<PositionComponent>(
 		CHEST_INTERFACE_X,
 		CHEST_INTERFACE_Y
@@ -202,87 +199,118 @@ void initChestInterface(EntityManager *em, RenderSystem* render) {
 }
 
 void chestOpening(Controller* controller) {
-	auto [input, em, render, state, battleContext, maps, currentLocation] = controller->getAll();
+    auto [input, em, render, state, battleContext, maps, currentLocation] = controller->getAll();
 
-	auto chests = em->getEntitiesWithComponent<ChestComponent>();
-	auto player = em->getEntitiesWithComponent<PlayerControlComponent>()[0];
-	auto keys = input->getPressedKeys();
-	for (auto chest : chests) {
-		if (doesChestConditionSatisfy(chest, player, keys)) {
-			int chestId = chest->getComponent<ChestComponent>()->getId();
-			*state = GameState::Chest;
-			input->clear();
-			chestInit(em, render, chestId);
-			chest->getComponent<ChestComponent>()->setOpened();
-			chest->getComponent<SizeComponent>()->setSize(26, 27);
-			sf::Texture openedTexture;
-			if (openedTexture.loadFromFile("../res/chestOpened(26x27).png")) {
-				auto texture = chest->getComponent<TextureComponent>();
-				texture->setTexture(openedTexture);
-				texture->setWidth(26);
-				texture->setHeight(27);
-			}
-		}
-	}
+    auto chests = em->getEntitiesWithComponent<ChestComponent>();
+    auto player = em->getEntitiesWithComponent<PlayerControlComponent>()[0];
+    auto keys = input->getPressedKeys();
+    
+    for (auto chest : chests) {
+        if (doesChestConditionSatisfy(chest, player, keys)) {
+            int chestId = chest->getComponent<ChestComponent>()->getId();
+            *state = GameState::Chest;
+            input->clear();
+            
+            chestInit(em, render, chestId);
+            
+            chest->getComponent<ChestComponent>()->setOpened();
+            chest->getComponent<SizeComponent>()->setSize(26, 27);
+            
+            sf::Texture openedTexture;
+            if (openedTexture.loadFromFile("../res/chestOpened(26x27).png")) {
+                auto texture = chest->getComponent<TextureComponent>();
+                texture->setTexture(openedTexture);
+                texture->setWidth(26);
+                texture->setHeight(27);
+            }
+            break;
+        }
+    }
 }
 
-
 void collectChest(Controller* controller) {
-	auto [input, em, render, state, battleContext, maps, currentLocation] = controller->getAll();
+    auto [input, em, render, state, battleContext, maps, currentLocation] = controller->getAll();
+    
+    auto button = em->getEntitiesWithComponent<ChestButtonGetComponent>().empty()
+        ? nullptr
+        : em->getEntitiesWithComponent<ChestButtonGetComponent>()[0];
+        
+    if (button == nullptr) {
+        return;
+    }
+    
+    if (!input->hasMouseClick() || !isClickOnEntity(input->getMouseClick(), button)) {
+        return;
+    }
+    
+    input->clear();
+    auto player = em->getEntitiesWithComponent<PlayerControlComponent>()[0];
+    auto inventory = player->getComponent<PlayersInventoryComponent>();
+    
+    auto entities = em->getEntitiesWithComponent<ChestContentComponent>();
+    for(auto entity : entities) {
+        render->removeEntity(entity->getId());
+        if (entity->getComponent<CoinComponent>() != nullptr) {
+            inventory->addCoins(1);
+        } else if (entity->getComponent<HealingPotionComponent>() != nullptr) {
+            inventory->addPotions(1);
+        }
+        em->removeEntity(entity);
+    }
+    
+    auto interface = em->getEntitiesWithComponent<ChestInterfaceComponent>();
+    for(auto interfaceElem : interface) {
+        render->removeEntity(interfaceElem->getId());
+        em->removeEntity(interfaceElem);
+    }
 
-	auto button = em->getEntitiesWithComponent<ChestButtonGetComponent>().empty()
-		? nullptr
-		: em->getEntitiesWithComponent<ChestButtonGetComponent>()[0];
-	if (
-		button == nullptr
-		|| !isClickOnEntity(input->getMouseClick(), button)
-	) return;
-	
-	input->clear();
-	auto player = em->getEntitiesWithComponent<PlayerControlComponent>()[0];
-	auto inventory = player->getComponent<PlayersInventoryComponent>();
-	
-	auto entities = em->getEntitiesWithComponent<ChestContentComponent>();
-	for(auto entity : entities) {
-		render->removeEntity(entity->getId());
-		if (entity->getComponent<CoinComponent>() != nullptr) {
-			inventory->addCoins(1);
-		} else if (entity->getComponent<HealingPotionComponent>() != nullptr) {
-			inventory->addPotions(1);
-		}
-		em->removeEntity(entity);
-	}
-	
-	auto interface = em->getEntitiesWithComponent<ChestInterfaceComponent>();
-	for(auto interfaceElem : interface) {
-		render->removeEntity(interfaceElem->getId());
-		em->removeEntity(interfaceElem);
-	}
-
-	*state = GameState::Game;
+    *state = GameState::Game;
 }
 
 
 void closeChest(Controller* controller) {
-	auto [input, em, render, state, battleContext, maps, currentLocation] = controller->getAll();
+    auto [input, em, render, state, battleContext, maps, currentLocation] = controller->getAll();
+    
+    if (*state != GameState::Chest) {
+        return;
+    }
 
-	auto button = em->getEntitiesWithComponent<ChestButtonCloseComponent>()[0];
-	if (
-		!isEscapePressed(input->getPressedKeys())
-		&& !isClickOnEntity(input->getMouseClick(), button)
-	) return;
-	input->clear();
-	auto entities = em->getEntitiesWithComponent<ChestContentComponent>();
-	auto interface = em->getEntitiesWithComponent<ChestInterfaceComponent>();
-	for(auto entity : entities) {
-		render->removeEntity(entity->getId());
-		em->removeEntity(entity);
-	} 
-	for(auto interfaceComp : interface) {
-		render->removeEntity(interfaceComp->getId());
-		em->removeEntity(interfaceComp);
-	}
-	*state = GameState::Game;
+    auto button = em->getEntitiesWithComponent<ChestButtonCloseComponent>().empty() 
+        ? nullptr 
+        : em->getEntitiesWithComponent<ChestButtonCloseComponent>()[0];
+
+    if (button == nullptr) {
+        return;
+    }
+
+    bool shouldClose = false;
+    
+    if (input->hasMouseClick() && isClickOnEntity(input->getMouseClick(), button)) {
+        shouldClose = true;
+    }
+    
+    auto keys = input->getPressedKeys();
+    if (!keys.empty() && std::find(keys.begin(), keys.end(), sf::Keyboard::Escape) != keys.end()) {
+        shouldClose = true;
+    }
+
+    if (shouldClose) {
+        auto chestEntities = em->getEntitiesWithComponent<ChestContentComponent>();
+        auto interfaceEntities = em->getEntitiesWithComponent<ChestInterfaceComponent>();
+        
+        for (auto entity : chestEntities) {
+            render->removeEntity(entity->getId());
+            em->removeEntity(entity);
+        }
+        
+        for (auto entity : interfaceEntities) {
+            render->removeEntity(entity->getId());
+            em->removeEntity(entity);
+        }
+        
+        *state = GameState::Game;
+        input->clear();
+    }
 }
 
 bool doesChestConditionSatisfy(Entity *chest, Entity *player, std::vector<sf::Keyboard::Key> keys) {
