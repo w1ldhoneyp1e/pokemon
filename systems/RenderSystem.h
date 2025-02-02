@@ -62,6 +62,7 @@ public:
             auto healthComp = entity->getComponent<HealthComponent>();
             auto animationComp = entity->getComponent<AnimationComponent>();
             auto textComp = entity->getComponent<TextComponent>();
+            auto shapeComp = entity->getComponent<ShapeComponent>();
 
             float offsetX = SCREEN_WIDTH / 2 - SCALE * WINDOW_WIDTH / 2;
 
@@ -120,10 +121,20 @@ public:
             if (textComp) {
                 window->draw(textComp->getText());
             }
+
+            if (shapeComp) {
+                sf::CircleShape* ellipse = static_cast<sf::CircleShape*>(shapeComp->getShape());
+                ellipse->setPosition(positionComp->getX() * SCALE + offsetX, positionComp->getY() * SCALE);
+                ellipse->setRadius(sizeComp->getWidth() / 2);
+                ellipse->setFillColor(shapeComp->getColor());
+                ellipse->setScale(SCALE, float(sizeComp->getHeight()) / float(sizeComp->getWidth()) * SCALE);
+                window->draw(*ellipse);
+            }
         }
 
         window->display();
     }
+
 
 private:
     sf::RenderWindow* window;
