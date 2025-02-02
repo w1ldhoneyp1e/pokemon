@@ -62,6 +62,7 @@ void update(Controller* controller, float deltaTime, sf::RenderWindow* window) {
 		pokemonCollision(controller);
 		chestOpening(controller);
 		trainerCollision(controller);
+		shopCollision(controller);
 	break;
 
 	case GameState::Inventory: {
@@ -81,6 +82,11 @@ void update(Controller* controller, float deltaTime, sf::RenderWindow* window) {
 
 	case GameState::Battle: {
 		updateBattle(controller);
+		break;
+	}
+
+	case GameState::Shop: {
+		handleShopInput(controller);
 		break;
 	}
 	

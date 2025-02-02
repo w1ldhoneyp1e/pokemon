@@ -135,3 +135,13 @@ const int BATTLE_ENEMY_POKEMON_X = WINDOW_WIDTH * 3 / 4 - BATTLE_POKEMON_WIDTH /
 const int BATTLE_ENEMY_POKEMON_Y = WINDOW_HEIGHT / 2 - BATTLE_POKEMON_HEIGHT / 2;
 
 const AttackDir ATTACK_DIR_ARR[3] = {AttackDir::Head, AttackDir::Body, AttackDir::Feet};
+
+// Shop
+const float SHOP_POS_X = 256.0f;
+const float SHOP_POS_Y = 223.0f;
+const float SHOP_INTERFACE_WIDTH = 300.0f;
+const float SHOP_INTERFACE_HEIGHT = 400.0f;
+const float SHOP_ITEM_HEIGHT = 40.0f;
+const float SHOP_AVATAR_SIZE = 64.0f;
+const int POKEBALL_PRICE = 100;
+const int POTION_PRICE = 150;
