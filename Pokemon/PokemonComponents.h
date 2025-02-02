@@ -2,6 +2,45 @@
 #include <string>
 #include "../Components/ParentComponent.h"
 
+struct PokemonStats {
+    std::string name;
+    int baseHealth;
+    int minDamage;
+    int maxDamage;
+    std::string texturePath;
+};
+
+const std::vector<PokemonStats> POKEMON_TYPES = {
+    {
+        "Bulbasaur", 
+        100, 
+        20, 
+        30, 
+        "../res/bulbasour(64x64).png"
+    },
+    {
+        "Charmander", 
+        90, 
+        25, 
+        35, 
+        "../res/charmander(64x64).png"
+    },
+    {
+        "Squirtle", 
+        110, 
+        15, 
+        25, 
+        "../res/squirtle(64x64).png"
+    },
+    {
+        "Pikachu", 
+        85, 
+        30, 
+        40, 
+        "../res/pikachu(64x64).png"
+    }
+};
+
 class PokemonComponent : public Component {
 private:
     std::string name;

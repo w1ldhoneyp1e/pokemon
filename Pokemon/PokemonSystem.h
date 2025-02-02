@@ -86,16 +86,20 @@ void generatePokemon(Controller* controller) {
 		if (!hasCollision) {
 			validPosition = true;
 			auto pokemon = em->createEntity();
+			
+			int pokemonTypeIndex = std::rand() % POKEMON_TYPES.size();
+			const auto& stats = POKEMON_TYPES[pokemonTypeIndex];
+			
 			pokemon->addComponent<PositionComponent>(x, y);
 			pokemon->addComponent<SizeComponent>(POKEMON_INVENTORY_WIDTH, POKEMON_INVENTORY_HEIGHT);
 			pokemon->addComponent<RenderLayerComponent>(1);
-			pokemon->addComponent<HealthComponent>(100, 100);
-			pokemon->addComponent<DamageComponent>(20, 30);
-			pokemon->addComponent<PokemonComponent>("Bulbasour");
+			pokemon->addComponent<HealthComponent>(stats.baseHealth, stats.baseHealth);
+			pokemon->addComponent<DamageComponent>(stats.minDamage, stats.maxDamage);
+			pokemon->addComponent<PokemonComponent>(stats.name);
 			pokemon->addComponent<GameTypeEntityComponent>();
 			
 			auto texture = new sf::Texture();
-			if (texture->loadFromFile("../res/bulbasour(64x64).png")) {
+			if (texture->loadFromFile(stats.texturePath)) {
 				pokemon->addComponent<TextureComponent>(
 					*texture,
 					64,
@@ -110,7 +114,7 @@ void generatePokemon(Controller* controller) {
 
 void pokemonGenerating(Controller* controller, float deltaTime) {
 	static float timeSinceLastGeneration = 0.0f;
-	static const float generationInterval = 500.0f;
+	static const float generationInterval = 5.0f;
 	
 	auto [em, input, render, state, battleContext, collisionMaps, currentLocation] = controller->getAll();
 	
