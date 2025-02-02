@@ -34,6 +34,7 @@ void updateChests(Controller* controller) {
 }
 
 void handleOpenedChests(Controller* controller, std::vector<Entity*> chests, float deltaTime);
+bool hasClosedChests(std::vector<Entity*> chests);
 
 void chestInit(
 	EntityManager* em,
@@ -338,7 +339,7 @@ void generateChest(Controller* controller) {
 
 void chestsGenerating(Controller* controller, float deltaTime) {
     static float timeSinceLastChest = 0.0f;
-    const float chestGenerationInterval = 5.0f;
+    const float chestGenerationInterval = 6.0f;
 
     auto [input, em, render, state, battleContext, maps, currentLocation] = controller->getAll();
     auto chests = em->getEntitiesWithComponent<ChestComponent>();
@@ -347,15 +348,7 @@ void chestsGenerating(Controller* controller, float deltaTime) {
 		handleOpenedChests(controller, chests, deltaTime);
 	}
 
-    bool hasClosedChest = false;
-    for (auto chest : chests) {
-        if (!chest->getComponent<ChestComponent>()->isOpened()) {
-            hasClosedChest = true;
-            break;
-        }
-    }
-    
-    if (!hasClosedChest) {
+    if (!hasClosedChests(chests)) {
         timeSinceLastChest += deltaTime;
         if (timeSinceLastChest >= chestGenerationInterval) {
             timeSinceLastChest = 0.0f;
@@ -363,6 +356,7 @@ void chestsGenerating(Controller* controller, float deltaTime) {
         }
     }
 }
+
 
 void handleOpenedChests(Controller* controller, std::vector<Entity*> chests, float deltaTime) {
 	auto em = controller->getEntityManager();
@@ -372,10 +366,32 @@ void handleOpenedChests(Controller* controller, std::vector<Entity*> chests, flo
         if (chest->getComponent<ChestComponent>()->isOpened()) {
             chest->getComponent<ChestComponent>()->addTimeAfterOpening(deltaTime);
             
-            if (chest->getComponent<ChestComponent>()->getTimeAfterOpening() >= 30.0f) {
+            if (chest->getComponent<ChestComponent>()->getTimeAfterOpening() >= 3.0f) {
                 render->removeEntity(chest->getId());
                 em->removeEntity(chest);
             }
         }
     }
+}
+
+bool hasClosedChests(std::vector<Entity*> chests) {
+    if (chests.empty()) {
+        return false;
+    }
+    
+    for (auto chest : chests) {
+        if (chest == nullptr) {
+            continue;
+        }
+        auto chestComponent = chest->getComponent<ChestComponent>();
+        if (chestComponent == nullptr) {
+            continue;
+        }
+        
+        if (!chestComponent->isOpened()) {
+            return true;
+        }
+    }
+    
+    return false;
 }
