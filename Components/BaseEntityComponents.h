@@ -229,3 +229,40 @@ public:
         text.setString(value);
     }
 };
+
+enum class ShapeType {
+    Rectangle,
+    Circle,
+    Ellipse
+};
+
+class ShapeComponent : public Component {
+private:
+    ShapeType type;
+    sf::Color color;
+    sf::Shape* shape;
+
+public:
+    ShapeComponent(ShapeType type, sf::Color color) : type(type), color(color) {
+        switch (type) {
+            case ShapeType::Rectangle:
+                shape = new sf::RectangleShape();
+                break;
+            case ShapeType::Circle:
+                shape = new sf::CircleShape();
+                break;
+            case ShapeType::Ellipse:
+                shape = new sf::CircleShape();
+                break;
+        }
+        shape->setFillColor(color);
+    }
+
+    ~ShapeComponent() {
+        delete shape;
+    }
+
+    ShapeType getType() const { return type; }
+    sf::Color getColor() const { return color; }
+    sf::Shape* getShape() const { return shape; }
+};
