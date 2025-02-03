@@ -123,12 +123,21 @@ public:
             }
 
             if (shapeComp) {
-                sf::CircleShape* ellipse = static_cast<sf::CircleShape*>(shapeComp->getShape());
-                ellipse->setPosition(positionComp->getX() * SCALE + offsetX, positionComp->getY() * SCALE);
-                ellipse->setRadius(sizeComp->getWidth() / 2);
-                ellipse->setFillColor(shapeComp->getColor());
-                ellipse->setScale(SCALE, float(sizeComp->getHeight()) / float(sizeComp->getWidth()) * SCALE);
-                window->draw(*ellipse);
+                if (shapeComp->getType() == ShapeType::Ellipse) {
+                    sf::CircleShape* ellipse = static_cast<sf::CircleShape*>(shapeComp->getShape());
+                    ellipse->setPosition(positionComp->getX() * SCALE + offsetX, positionComp->getY() * SCALE);
+                    ellipse->setRadius(sizeComp->getWidth() / 2);
+                    ellipse->setFillColor(shapeComp->getColor());
+                    ellipse->setScale(SCALE, float(sizeComp->getHeight()) / float(sizeComp->getWidth()) * SCALE);
+                    window->draw(*ellipse);
+                }
+                if (shapeComp->getType() == ShapeType::Rectangle) {
+                    sf::RectangleShape* rectangle = static_cast<sf::RectangleShape*>(shapeComp->getShape());
+                    rectangle->setPosition(positionComp->getX() * SCALE + offsetX, positionComp->getY() * SCALE);
+                    rectangle->setSize(sf::Vector2f(sizeComp->getWidth() * SCALE, sizeComp->getHeight() * SCALE));
+                    rectangle->setFillColor(shapeComp->getColor());
+                    window->draw(*rectangle);
+                }
             }
         }
 

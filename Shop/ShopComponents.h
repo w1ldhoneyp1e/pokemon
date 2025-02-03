@@ -8,6 +8,7 @@ class ShopButtonBackComponent : public Component {};
 class ShopButtonOkComponent : public Component {};
 class ShopAvatarComponent : public Component {};
 class PlayerAvatarComponent : public Component {};
+class ShopSelectedBackgroundComponent : public Component {};
 class ShopItemComponent : public Component {
 private:
     std::string name;

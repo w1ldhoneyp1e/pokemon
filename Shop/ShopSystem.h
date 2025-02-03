@@ -29,6 +29,8 @@ void createShopRow(EntityManager* em, const ShopItemInfo& itemInfo, float yPos);
 PlayersInventoryComponent* getPlayerInventory(EntityManager* em);
 int getItemCount(PlayersInventoryComponent* inventory, const std::string& itemName);
 
+void updateRowHighlighting(EntityManager* em);
+
 Entity* getSelectedItem(EntityManager* em) {
     auto items = em->getEntitiesWithComponent<ShopItemComponent>();
     for (auto item : items) {
@@ -96,6 +98,7 @@ void selectPreviousItem(EntityManager* em) {
     
     int newIndex = (currentIndex - 1 + items.size()) % items.size();
     items[newIndex]->getComponent<ShopItemComponent>()->setSelected(true);
+    updateRowHighlighting(em);
 }
 
 void selectNextItem(EntityManager* em) {
@@ -112,6 +115,7 @@ void selectNextItem(EntityManager* em) {
     
     int newIndex = (currentIndex + 1) % items.size();
     items[newIndex]->getComponent<ShopItemComponent>()->setSelected(true);
+    updateRowHighlighting(em);
 }
 
 void tryToBuy(EntityManager* em) {
@@ -303,6 +307,20 @@ void createShopAvatar(EntityManager* em) {
 }
 
 void createShopItems(EntityManager* em) {
+    auto selectionBackground = em->createEntity();
+    selectionBackground->addComponent<ShopTypeEntityComponent>();
+    selectionBackground->addComponent<ShopSelectedBackgroundComponent>();
+    selectionBackground->addComponent<PositionComponent>(
+        SHOW_HEADER_START_X,
+        SHOP_ITEM_POS_Y
+    );
+    selectionBackground->addComponent<SizeComponent>(
+        SHOP_COLUMN_WIDTH_SMALL + SHOP_COLUMN_WIDTH_BIG + SHOP_COLUMN_WIDTH_MEDIUM * 2 + SHOP_COLUMN_WIDTH_SMALL * 2,
+        SHOP_ITEM_HEIGHT
+    );
+    selectionBackground->addComponent<RenderLayerComponent>(6);
+    selectionBackground->addComponent<ShapeComponent>(ShapeType::Rectangle, sf::Color(52, 52, 52, 150));
+
     std::vector<ShopItemInfo> items = {
         {"Pokeball", POKEBALL_PRICE, "../res/pokeball(12x12).png", false},
         {"Potion", POTION_PRICE, "../res/healingPotion(12x12).png", false}
@@ -317,6 +335,7 @@ void createShopItems(EntityManager* em) {
     auto shopItems = em->getEntitiesWithComponent<ShopItemComponent>();
     if (!shopItems.empty()) {
         shopItems[0]->getComponent<ShopItemComponent>()->setSelected(true);
+        updateRowHighlighting(em);
     }
 }
 
@@ -332,7 +351,7 @@ void createShopRow(EntityManager* em, const ShopItemInfo& itemInfo, float yPos) 
         SHOP_TEXT_HEIGHT / 2
     );
     countText->addComponent<ShopTypeEntityComponent>();
-    countText->addComponent<RenderLayerComponent>(6);
+    countText->addComponent<RenderLayerComponent>(7);
 
     auto item = em->createEntity();
     item->addComponent<ShopItemComponent>(itemInfo.name, itemInfo.price, itemInfo.isPokemon);
@@ -341,7 +360,7 @@ void createShopRow(EntityManager* em, const ShopItemInfo& itemInfo, float yPos) 
         SHOW_HEADER_START_X + SHOP_COLUMN_WIDTH_MEDIUM,
         yPos
     );
-    item->addComponent<RenderLayerComponent>(6);
+    item->addComponent<RenderLayerComponent>(7);
     item->addComponent<SizeComponent>(SHOP_ITEM_WIDTH, SHOP_ITEM_HEIGHT);
 
     sf::Texture itemTexture;
@@ -357,7 +376,7 @@ void createShopRow(EntityManager* em, const ShopItemInfo& itemInfo, float yPos) 
         SHOP_TEXT_HEIGHT / 2
     );
     nameText->addComponent<ShopTypeEntityComponent>();
-    nameText->addComponent<RenderLayerComponent>(6);
+    nameText->addComponent<RenderLayerComponent>(7);
 
     auto sellPriceText = em->createEntity();
     sellPriceText->addComponent<TextComponent>(
@@ -368,7 +387,7 @@ void createShopRow(EntityManager* em, const ShopItemInfo& itemInfo, float yPos) 
 
     );
     sellPriceText->addComponent<ShopTypeEntityComponent>();
-    sellPriceText->addComponent<RenderLayerComponent>(6);
+    sellPriceText->addComponent<RenderLayerComponent>(7);
 
     auto buyPriceText = em->createEntity();
     buyPriceText->addComponent<TextComponent>(
@@ -379,7 +398,7 @@ void createShopRow(EntityManager* em, const ShopItemInfo& itemInfo, float yPos) 
 
     );
     buyPriceText->addComponent<ShopTypeEntityComponent>();
-    buyPriceText->addComponent<RenderLayerComponent>(6);
+    buyPriceText->addComponent<RenderLayerComponent>(7);
 
     auto sellText = em->createEntity();
     sellText->addComponent<TextComponent>(
@@ -390,7 +409,7 @@ void createShopRow(EntityManager* em, const ShopItemInfo& itemInfo, float yPos) 
 
     );
     sellText->addComponent<ShopTypeEntityComponent>();
-    sellText->addComponent<RenderLayerComponent>(6);
+    sellText->addComponent<RenderLayerComponent>(7);
 
     auto buyText = em->createEntity();
     buyText->addComponent<TextComponent>(
@@ -400,7 +419,7 @@ void createShopRow(EntityManager* em, const ShopItemInfo& itemInfo, float yPos) 
         SHOP_TEXT_HEIGHT / 2
     );
     buyText->addComponent<ShopTypeEntityComponent>();
-    buyText->addComponent<RenderLayerComponent>(6);
+    buyText->addComponent<RenderLayerComponent>(7);
 }
 
 void createShopButtons(EntityManager* em) {
@@ -529,4 +548,13 @@ void updateItemCounts(EntityManager* em) {
         buyText->addComponent<ShopTypeEntityComponent>();
         buyText->addComponent<RenderLayerComponent>(6);
     }
+}
+
+void updateRowHighlighting(EntityManager* em) {
+    auto selectedItem = getSelectedItem(em);
+    if (!selectedItem) return;
+
+    auto background = em->getEntitiesWithComponent<ShopSelectedBackgroundComponent>()[0];
+    auto pos = selectedItem->getComponent<PositionComponent>();
+    background->getComponent<PositionComponent>()->setPos(pos->getX() - SHOP_COLUMN_WIDTH_MEDIUM, pos->getY());
 }
