@@ -170,6 +170,9 @@ void tryToSell(EntityManager* em) {
 float selectionCooldown = 0.0f;
 const float SELECTION_DELAY = 0.5f;
 
+float buySellCooldown = 0.0f;
+const float BUYSELL_DELAY = 0.2f;
+
 void handleShopInput(Controller* controller, float deltaTime) {
     auto [input, em, render, state, battleContext, maps, currentLocation] = controller->getAll();
     auto keys = input->getPressedKeys();
@@ -182,6 +185,7 @@ void handleShopInput(Controller* controller, float deltaTime) {
     auto backButton = em->getEntitiesWithComponent<ShopButtonBackComponent>()[0];
 
     selectionCooldown = std::max(0.0f, selectionCooldown - deltaTime);
+    buySellCooldown = std::max(0.0f, buySellCooldown - deltaTime);
     
     if (selectionCooldown <= 0) {
         if (std::find(keys.begin(), keys.end(), sf::Keyboard::Up) != keys.end()) {
@@ -194,6 +198,41 @@ void handleShopInput(Controller* controller, float deltaTime) {
             selectNextItem(em);
             selectionCooldown = SELECTION_DELAY;
             return;
+        }
+    }
+    
+    auto selectedItem = getSelectedItem(em);
+    if (selectedItem && buySellCooldown <= 0) {
+        auto shopItem = selectedItem->getComponent<ShopItemComponent>();
+        auto inventory = getPlayerInventory(em);
+        
+        if (std::find(keys.begin(), keys.end(), sf::Keyboard::Left) != keys.end()) {
+            std::cout << "shopItem->getBuyCount(): " << shopItem->getBuyCount() << std::endl;
+            std::cout << "shopItem->getSellCount(): " << shopItem->getSellCount() << std::endl;
+            if (shopItem->getBuyCount() > 0) {
+                shopItem->setBuyCount(shopItem->getBuyCount() - 1);
+            } else {
+
+                int maxSell = getItemCount(inventory, shopItem->getName());
+                if (shopItem->getSellCount() < maxSell) {
+                    shopItem->setSellCount(shopItem->getSellCount() + 1);
+                }
+            }
+            buySellCooldown = BUYSELL_DELAY;
+        }
+        
+        if (std::find(keys.begin(), keys.end(), sf::Keyboard::Right) != keys.end()) {
+            std::cout << "shopItem->getBuyCount(): " << shopItem->getBuyCount() << std::endl;
+            std::cout << "shopItem->getSellCount(): " << shopItem->getSellCount() << std::endl;
+            if (shopItem->getSellCount() > 0) {
+                shopItem->setSellCount(shopItem->getSellCount() - 1);
+            } else {
+                int maxBuy = inventory->getCoinCount() / shopItem->getPrice();
+                if (shopItem->getBuyCount() < maxBuy) {
+                    shopItem->setBuyCount(shopItem->getBuyCount() + 1);
+                }
+            }
+            buySellCooldown = BUYSELL_DELAY;
         }
     }
     
@@ -218,40 +257,20 @@ void handleShopInput(Controller* controller, float deltaTime) {
                 } else if (shopItem->getSellCount() > 0) {
                     tryToSell(em);
                 }
+                
+                *state = GameState::Game;
+                auto shopEntities = em->getEntitiesWithComponent<ShopTypeEntityComponent>();
+                for (auto entity : shopEntities) {
+                    render->removeEntity(entity->getId());
+                    em->removeEntity(entity);
+                }
+                input->clear();
             }
             return;
         }
     }
     
-    if (std::find(keys.begin(), keys.end(), sf::Keyboard::Left) != keys.end()) {
-        auto selectedItem = getSelectedItem(em);
-        if (selectedItem) {
-            auto shopItem = selectedItem->getComponent<ShopItemComponent>();
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)) {
-                shopItem->setSellCount(std::max(0, shopItem->getSellCount() - 1));
-            } else {
-                shopItem->setBuyCount(std::max(0, shopItem->getBuyCount() - 1));
-            }
-        }
-    }
-    
-    if (std::find(keys.begin(), keys.end(), sf::Keyboard::Right) != keys.end()) {
-        auto selectedItem = getSelectedItem(em);
-        if (selectedItem) {
-            auto shopItem = selectedItem->getComponent<ShopItemComponent>();
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)) {
-                auto inventory = getPlayerInventory(em);
-                int maxSell = getItemCount(inventory, shopItem->getName());
-                shopItem->setSellCount(std::min(maxSell, shopItem->getSellCount() + 1));
-            } else {
-                auto inventory = getPlayerInventory(em);
-                int maxBuy = inventory->getCoinCount() / shopItem->getPrice();
-                shopItem->setBuyCount(std::min(maxBuy, shopItem->getBuyCount() + 1));
-            }
-        }
-    }
-
-	if (
+    if (
         std::find(keys.begin(), keys.end(), sf::Keyboard::Escape) != keys.end() 
         || (std::find(keys.begin(), keys.end(), sf::Keyboard::Enter) != keys.end() 
         && !em->getEntitiesWithComponent<ShopButtonBackComponent>().empty())

@@ -98,7 +98,6 @@ void update(Controller* controller, float deltaTime, sf::RenderWindow* window) {
 
 void gameLoop(sf::RenderWindow* window, Controller* controller) {
     auto startTime = std::chrono::high_resolution_clock::now();
-    sf::Clock clock;
 
     while (window->isOpen()) {
         const float deltaTime = updateTime(&startTime);
