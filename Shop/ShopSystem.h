@@ -18,7 +18,7 @@ void createShopAvatar(EntityManager* em);
 void createShopButtons(EntityManager* em);
 void createShopItems(EntityManager* em);
 void createShop(EntityManager* em, RenderSystem* render);
-void handleShopInput(Controller* controller);
+void handleShopInput(Controller* controller, float deltaTime);
 
 void createOkButton(EntityManager* em);
 void createBackButton(EntityManager* em);
@@ -167,7 +167,10 @@ void tryToSell(EntityManager* em) {
     }
 }
 
-void handleShopInput(Controller* controller) {
+float selectionCooldown = 0.0f;
+const float SELECTION_DELAY = 0.5f;
+
+void handleShopInput(Controller* controller, float deltaTime) {
     auto [input, em, render, state, battleContext, maps, currentLocation] = controller->getAll();
     auto keys = input->getPressedKeys();
     auto mouseClick = input->getMouseClick();
@@ -178,6 +181,22 @@ void handleShopInput(Controller* controller) {
     auto okButton = em->getEntitiesWithComponent<ShopButtonOkComponent>()[0];
     auto backButton = em->getEntitiesWithComponent<ShopButtonBackComponent>()[0];
 
+    selectionCooldown = std::max(0.0f, selectionCooldown - deltaTime);
+    
+    if (selectionCooldown <= 0) {
+        if (std::find(keys.begin(), keys.end(), sf::Keyboard::Up) != keys.end()) {
+            selectPreviousItem(em);
+            selectionCooldown = SELECTION_DELAY;
+            return;
+        }
+        
+        if (std::find(keys.begin(), keys.end(), sf::Keyboard::Down) != keys.end()) {
+            selectNextItem(em);
+            selectionCooldown = SELECTION_DELAY;
+            return;
+        }
+    }
+    
     if (mouseClicked) {
         if (isClickOnEntity(mouseClick, backButton)) {
             *state = GameState::Game;
@@ -202,16 +221,6 @@ void handleShopInput(Controller* controller) {
             }
             return;
         }
-    }
-    
-    if (std::find(keys.begin(), keys.end(), sf::Keyboard::Up) != keys.end()) {
-        selectPreviousItem(em);
-        return;
-    }
-    
-    if (std::find(keys.begin(), keys.end(), sf::Keyboard::Down) != keys.end()) {
-        selectNextItem(em);
-        return;
     }
     
     if (std::find(keys.begin(), keys.end(), sf::Keyboard::Left) != keys.end()) {

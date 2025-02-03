@@ -86,7 +86,7 @@ void update(Controller* controller, float deltaTime, sf::RenderWindow* window) {
 	}
 
 	case GameState::Shop: {
-		handleShopInput(controller);
+		handleShopInput(controller, deltaTime);
 		break;
 	}
 	
