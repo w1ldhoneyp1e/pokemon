@@ -14,9 +14,12 @@ private:
     int price;
     bool isSelected;
     bool isPokemon;
+    int buyCount;
+    int sellCount;
 public:
     ShopItemComponent(const std::string& name, int price, bool isPokemon) 
-        : name(name), price(price), isSelected(false), isPokemon(isPokemon) {}
+        : name(name), price(price), isSelected(false), isPokemon(isPokemon),
+          buyCount(0), sellCount(0) {}
     
     const std::string& getName() const { return name; }
     int getPrice() const { return price; }
@@ -24,4 +27,9 @@ public:
     bool getIsPokemon() const { return isPokemon; }
     
     void setSelected(bool selected) { isSelected = selected; }
+    
+    int getBuyCount() const { return buyCount; }
+    int getSellCount() const { return sellCount; }
+    void setBuyCount(int count) { buyCount = count; }
+    void setSellCount(int count) { sellCount = count; }
 }; 

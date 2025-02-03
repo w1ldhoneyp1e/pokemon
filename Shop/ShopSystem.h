@@ -5,6 +5,13 @@
 #include "../systems/CollisionSystem.h"
 #include "../const.h"
 
+struct ShopItemInfo {
+    std::string name;
+    int price;
+    std::string texturePath;
+    bool isPokemon;
+};
+
 void createShopInterface(EntityManager* em);
 void createPlayerAvatar(EntityManager* em);
 void createShopAvatar(EntityManager* em);
@@ -15,9 +22,23 @@ void handleShopInput(Controller* controller);
 
 void createOkButton(EntityManager* em);
 void createBackButton(EntityManager* em);
+void createShopHeader(EntityManager* em);
 
-void createPokeballShopItem(EntityManager* em);
-void createPotionShopItem(EntityManager* em);
+void createShopRow(EntityManager* em, const ShopItemInfo& itemInfo, float yPos);
+
+PlayersInventoryComponent* getPlayerInventory(EntityManager* em);
+int getItemCount(PlayersInventoryComponent* inventory, const std::string& itemName);
+
+Entity* getSelectedItem(EntityManager* em) {
+    auto items = em->getEntitiesWithComponent<ShopItemComponent>();
+    for (auto item : items) {
+        auto shopItem = item->getComponent<ShopItemComponent>();
+        if (shopItem->getIsSelected()) {
+            return item;
+        }
+    }
+    return nullptr;
+}
 
 void shopCollision(Controller* controller) {
     auto [input, em, render, state, battleContext, maps, currentLocation] = controller->getAll();
@@ -58,6 +79,7 @@ void createShop(EntityManager* em, RenderSystem* render) {
 
     createShopItems(em);
     createShopButtons(em);
+    createShopHeader(em);
 }
 
 void selectPreviousItem(EntityManager* em) {
@@ -144,21 +166,76 @@ void tryToSell(EntityManager* em) {
 void handleShopInput(Controller* controller) {
     auto [input, em, render, state, battleContext, maps, currentLocation] = controller->getAll();
     auto keys = input->getPressedKeys();
+    auto mouseClick = input->getMouseClick();
+    bool mouseClicked = input->hasMouseClick();
     
-    if (keys.empty()) return;
+    if (keys.empty() && !mouseClicked) return;
+    
+    auto okButton = em->getEntitiesWithComponent<ShopButtonOkComponent>()[0];
+    auto backButton = em->getEntitiesWithComponent<ShopButtonBackComponent>()[0];
+
+    if (mouseClicked) {
+        if (isClickOnEntity(mouseClick, backButton)) {
+            *state = GameState::Game;
+            auto shopEntities = em->getEntitiesWithComponent<ShopTypeEntityComponent>();
+            for (auto entity : shopEntities) {
+                render->removeEntity(entity->getId());
+                em->removeEntity(entity);
+            }
+            input->clear();
+            return;
+        }
+        
+        if (isClickOnEntity(mouseClick, okButton)) {
+            auto selectedItem = getSelectedItem(em);
+            if (selectedItem) {
+                auto shopItem = selectedItem->getComponent<ShopItemComponent>();
+                if (shopItem->getBuyCount() > 0) {
+                    tryToBuy(em);
+                } else if (shopItem->getSellCount() > 0) {
+                    tryToSell(em);
+                }
+            }
+            return;
+        }
+    }
     
     if (std::find(keys.begin(), keys.end(), sf::Keyboard::Up) != keys.end()) {
         selectPreviousItem(em);
+        return;
     }
+    
     if (std::find(keys.begin(), keys.end(), sf::Keyboard::Down) != keys.end()) {
         selectNextItem(em);
+        return;
     }
     
     if (std::find(keys.begin(), keys.end(), sf::Keyboard::Left) != keys.end()) {
-        tryToBuy(em);
+        auto selectedItem = getSelectedItem(em);
+        if (selectedItem) {
+            auto shopItem = selectedItem->getComponent<ShopItemComponent>();
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)) {
+                shopItem->setSellCount(std::max(0, shopItem->getSellCount() - 1));
+            } else {
+                shopItem->setBuyCount(std::max(0, shopItem->getBuyCount() - 1));
+            }
+        }
     }
+    
     if (std::find(keys.begin(), keys.end(), sf::Keyboard::Right) != keys.end()) {
-        tryToSell(em);
+        auto selectedItem = getSelectedItem(em);
+        if (selectedItem) {
+            auto shopItem = selectedItem->getComponent<ShopItemComponent>();
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)) {
+                auto inventory = getPlayerInventory(em);
+                int maxSell = getItemCount(inventory, shopItem->getName());
+                shopItem->setSellCount(std::min(maxSell, shopItem->getSellCount() + 1));
+            } else {
+                auto inventory = getPlayerInventory(em);
+                int maxBuy = inventory->getCoinCount() / shopItem->getPrice();
+                shopItem->setBuyCount(std::min(maxBuy, shopItem->getBuyCount() + 1));
+            }
+        }
     }
 
 	if (
@@ -174,7 +251,7 @@ void handleShopInput(Controller* controller) {
         }
         input->clear();
     }
-} 
+}
 
 void createShopInterface(EntityManager* em) {
     auto shopInterface = em->createEntity();
@@ -226,60 +303,104 @@ void createShopAvatar(EntityManager* em) {
 }
 
 void createShopItems(EntityManager* em) {
-    createPokeballShopItem(em);
-    createPotionShopItem(em);
-}
+    std::vector<ShopItemInfo> items = {
+        {"Pokeball", POKEBALL_PRICE, "../res/pokeball(12x12).png", false},
+        {"Potion", POTION_PRICE, "../res/healingPotion(12x12).png", false}
+    };
 
-void createPokeballShopItem(EntityManager* em) {
-    auto pokeballItem = em->createEntity();
-    pokeballItem->addComponent<ShopItemComponent>("Pokeball", POKEBALL_PRICE, false);
-    pokeballItem->addComponent<ShopTypeEntityComponent>();
-    pokeballItem->addComponent<PositionComponent>(
-        SHOP_ITEM_POS_X,
-        SHOP_ITEM_POS_Y
-    );
-    pokeballItem->addComponent<RenderLayerComponent>(6);
-    pokeballItem->addComponent<SizeComponent>(SHOP_ITEM_WIDTH, SHOP_ITEM_HEIGHT);
-    sf::Texture pokeballTexture;
-    if (pokeballTexture.loadFromFile("../res/pokeball(12x12).png")) {
-        pokeballItem->addComponent<TextureComponent>(pokeballTexture, 12, 12);
-    }   
-
-    auto pokeballText = em->createEntity();
-    pokeballText->addComponent<TextComponent>(
-        "Pokeball - " + std::to_string(POKEBALL_PRICE) + " coins",
-        SHOP_ITEM_POS_X + SHOP_ITEM_WIDTH + 10,
-        SHOP_ITEM_POS_Y + SHOP_ITEM_HEIGHT / 2 - SHOP_TEXT_HEIGHT / 4,
-        SHOP_TEXT_HEIGHT
-    );
-    pokeballText->addComponent<ShopTypeEntityComponent>();
-    pokeballText->addComponent<RenderLayerComponent>(6);
-}
-
-void createPotionShopItem(EntityManager* em) {
-    auto potionItem = em->createEntity();
-    potionItem->addComponent<ShopItemComponent>("Potion", POTION_PRICE, false);
-    potionItem->addComponent<ShopTypeEntityComponent>();
-    potionItem->addComponent<PositionComponent>(
-        SHOP_ITEM_POS_X,
-        SHOP_ITEM_POS_Y + SHOP_ITEM_HEIGHT + SHOP_ITEM_GAP
-    );
-    potionItem->addComponent<RenderLayerComponent>(6);
-    potionItem->addComponent<SizeComponent>(SHOP_ITEM_WIDTH, SHOP_ITEM_HEIGHT);
-    sf::Texture potionTexture;
-    if (potionTexture.loadFromFile("../res/healingPotion(12x12).png")) {
-        potionItem->addComponent<TextureComponent>(potionTexture, 12, 12);
+    float yOffset = SHOP_ITEM_POS_Y;
+    for (const auto& itemInfo : items) {
+        createShopRow(em, itemInfo, yOffset);
+        yOffset += SHOP_ITEM_HEIGHT + SHOP_ITEM_GAP;
     }
 
-    auto potionText = em->createEntity();
-    potionText->addComponent<TextComponent>(
-        "Potion - " + std::to_string(POTION_PRICE) + " coins",
-        SHOP_ITEM_POS_X + SHOP_ITEM_WIDTH + 10,
-        SHOP_ITEM_POS_Y + SHOP_ITEM_HEIGHT + SHOP_ITEM_GAP + SHOP_ITEM_HEIGHT / 2 - SHOP_TEXT_HEIGHT / 4,
-        SHOP_TEXT_HEIGHT
+    auto shopItems = em->getEntitiesWithComponent<ShopItemComponent>();
+    if (!shopItems.empty()) {
+        shopItems[0]->getComponent<ShopItemComponent>()->setSelected(true);
+    }
+}
+
+void createShopRow(EntityManager* em, const ShopItemInfo& itemInfo, float yPos) {
+    auto inventory = getPlayerInventory(em);
+    auto itemCount = getItemCount(inventory, itemInfo.name);
+    
+    auto countText = em->createEntity();
+    countText->addComponent<TextComponent>(
+        std::to_string(itemCount),
+        SHOW_HEADER_START_X,
+        yPos + SHOP_ITEM_HEIGHT / 2 - SHOP_TEXT_HEIGHT / 8,
+        SHOP_TEXT_HEIGHT / 2
     );
-    potionText->addComponent<ShopTypeEntityComponent>();
-    potionText->addComponent<RenderLayerComponent>(6);
+    countText->addComponent<ShopTypeEntityComponent>();
+    countText->addComponent<RenderLayerComponent>(6);
+
+    auto item = em->createEntity();
+    item->addComponent<ShopItemComponent>(itemInfo.name, itemInfo.price, itemInfo.isPokemon);
+    item->addComponent<ShopTypeEntityComponent>();
+    item->addComponent<PositionComponent>(
+        SHOW_HEADER_START_X + SHOP_COLUMN_WIDTH_MEDIUM,
+        yPos
+    );
+    item->addComponent<RenderLayerComponent>(6);
+    item->addComponent<SizeComponent>(SHOP_ITEM_WIDTH, SHOP_ITEM_HEIGHT);
+
+    sf::Texture itemTexture;
+    if (itemTexture.loadFromFile(itemInfo.texturePath)) {
+        item->addComponent<TextureComponent>(itemTexture, 12, 12);
+    }
+
+    auto nameText = em->createEntity();
+    nameText->addComponent<TextComponent>(
+        itemInfo.name,
+        SHOW_HEADER_START_X + SHOP_COLUMN_WIDTH_MEDIUM + SHOP_ITEM_WIDTH + 10,
+        yPos + SHOP_ITEM_HEIGHT / 2 - SHOP_TEXT_HEIGHT / 8,
+        SHOP_TEXT_HEIGHT / 2
+    );
+    nameText->addComponent<ShopTypeEntityComponent>();
+    nameText->addComponent<RenderLayerComponent>(6);
+
+    auto sellPriceText = em->createEntity();
+    sellPriceText->addComponent<TextComponent>(
+        std::to_string(itemInfo.price / 2),
+        SHOW_HEADER_START_X + SHOP_COLUMN_WIDTH_MEDIUM + SHOP_COLUMN_WIDTH_BIG,
+        yPos + SHOP_ITEM_HEIGHT / 2 - SHOP_TEXT_HEIGHT / 8,
+        SHOP_TEXT_HEIGHT / 2
+
+    );
+    sellPriceText->addComponent<ShopTypeEntityComponent>();
+    sellPriceText->addComponent<RenderLayerComponent>(6);
+
+    auto buyPriceText = em->createEntity();
+    buyPriceText->addComponent<TextComponent>(
+        std::to_string(itemInfo.price),
+        SHOW_HEADER_START_X + SHOP_COLUMN_WIDTH_BIG + SHOP_COLUMN_WIDTH_MEDIUM * 2,
+        yPos + SHOP_ITEM_HEIGHT / 2 - SHOP_TEXT_HEIGHT / 8,
+        SHOP_TEXT_HEIGHT / 2
+
+    );
+    buyPriceText->addComponent<ShopTypeEntityComponent>();
+    buyPriceText->addComponent<RenderLayerComponent>(6);
+
+    auto sellText = em->createEntity();
+    sellText->addComponent<TextComponent>(
+        "0",
+        SHOW_HEADER_START_X + SHOP_COLUMN_WIDTH_BIG + SHOP_COLUMN_WIDTH_MEDIUM * 3,
+        yPos + SHOP_ITEM_HEIGHT / 2 - SHOP_TEXT_HEIGHT / 8,
+        SHOP_TEXT_HEIGHT / 2
+
+    );
+    sellText->addComponent<ShopTypeEntityComponent>();
+    sellText->addComponent<RenderLayerComponent>(6);
+
+    auto buyText = em->createEntity();
+    buyText->addComponent<TextComponent>(
+        "0",
+        SHOW_HEADER_START_X + SHOP_COLUMN_WIDTH_BIG + SHOP_COLUMN_WIDTH_MEDIUM * 3 + SHOP_COLUMN_WIDTH_SMALL,
+        yPos + SHOP_ITEM_HEIGHT / 2 - SHOP_TEXT_HEIGHT / 8,
+        SHOP_TEXT_HEIGHT / 2
+    );
+    buyText->addComponent<ShopTypeEntityComponent>();
+    buyText->addComponent<RenderLayerComponent>(6);
 }
 
 void createShopButtons(EntityManager* em) {
@@ -316,5 +437,96 @@ void createBackButton(EntityManager* em) {
     sf::Texture backTexture;
     if (backTexture.loadFromFile("../res/backButton(32x13).png")) {
         backButton->addComponent<TextureComponent>(backTexture, 32, 13);
+    }
+}
+
+void createShopHeader(EntityManager* em) {    
+    std::vector<std::string> headers = {
+        "Amount", "Item", "Price -", "Price +", "Sell", "Buy"
+    };
+    
+    float xOffset = SHOW_HEADER_START_X;
+    for (const auto& header : headers) {
+        auto text = em->createEntity();
+        text->addComponent<TextComponent>(
+            header,
+            xOffset,
+            SHOP_ITEM_POS_Y - SHOP_HEADER_HEIGHT,
+            16
+        );
+        text->addComponent<ShopTypeEntityComponent>();
+        text->addComponent<RenderLayerComponent>(6);
+        if (header == "Amount") {
+            xOffset += SHOP_COLUMN_WIDTH_MEDIUM;
+        } else if (header == "Item") {
+            xOffset += SHOP_COLUMN_WIDTH_BIG;
+        } else if (header == "Price -") {
+
+            xOffset += SHOP_COLUMN_WIDTH_MEDIUM;
+        } else if (header == "Price +") {
+            xOffset += SHOP_COLUMN_WIDTH_MEDIUM;
+        } else if (header == "Sell") {
+                xOffset += SHOP_COLUMN_WIDTH_SMALL;
+        } else if (header == "Buy") {
+            xOffset += SHOP_COLUMN_WIDTH_SMALL;
+        }
+    }
+}
+
+PlayersInventoryComponent* getPlayerInventory(EntityManager* em) {
+    auto players = em->getEntitiesWithComponent<PlayerControlComponent>();
+    if (players.empty()) return nullptr;
+    return players[0]->getComponent<PlayersInventoryComponent>();
+}
+
+int getItemCount(PlayersInventoryComponent* inventory, const std::string& itemName) {
+    if (!inventory) return 0;
+    
+    if (itemName == "Pokeball") {
+        return inventory->getPokeballCount();
+    } else if (itemName == "Potion") {
+        return inventory->getPotionCount();
+    } else {
+        return inventory->getPokemonCount();
+    }
+}
+
+void updateItemCounts(EntityManager* em) {
+    auto inventory = getPlayerInventory(em);
+    auto items = em->getEntitiesWithComponent<ShopItemComponent>();
+    
+    for (auto item : items) {
+        auto shopItem = item->getComponent<ShopItemComponent>();
+        auto itemCount = getItemCount(inventory, shopItem->getName());
+        
+        auto countText = em->createEntity();
+        countText->addComponent<TextComponent>(
+            std::to_string(itemCount),
+            SHOW_HEADER_START_X,
+            item->getComponent<PositionComponent>()->getY() + SHOP_ITEM_HEIGHT / 2 - SHOP_TEXT_HEIGHT / 4,
+            SHOP_TEXT_HEIGHT
+        );
+        countText->addComponent<ShopTypeEntityComponent>();
+        countText->addComponent<RenderLayerComponent>(6);
+        
+        auto sellText = em->createEntity();
+        sellText->addComponent<TextComponent>(
+            std::to_string(shopItem->getSellCount()),
+            SHOW_HEADER_START_X + SHOP_COLUMN_WIDTH_SMALL + SHOP_COLUMN_WIDTH_BIG + SHOP_COLUMN_WIDTH_MEDIUM * 2,
+            item->getComponent<PositionComponent>()->getY() + SHOP_ITEM_HEIGHT / 2 - SHOP_TEXT_HEIGHT / 4,
+            SHOP_TEXT_HEIGHT
+        );
+        sellText->addComponent<ShopTypeEntityComponent>();
+        sellText->addComponent<RenderLayerComponent>(6);
+        
+        auto buyText = em->createEntity();
+        buyText->addComponent<TextComponent>(
+            std::to_string(shopItem->getBuyCount()),
+            SHOW_HEADER_START_X + SHOP_COLUMN_WIDTH_SMALL + SHOP_COLUMN_WIDTH_BIG + SHOP_COLUMN_WIDTH_MEDIUM * 2 + SHOP_COLUMN_WIDTH_SMALL,
+            item->getComponent<PositionComponent>()->getY() + SHOP_ITEM_HEIGHT / 2 - SHOP_TEXT_HEIGHT / 4,
+            SHOP_TEXT_HEIGHT
+        );
+        buyText->addComponent<ShopTypeEntityComponent>();
+        buyText->addComponent<RenderLayerComponent>(6);
     }
 }
