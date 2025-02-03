@@ -225,9 +225,10 @@ public:
         return text;
     }
 
-    void setCount(const std::string& value) {
+    void setText(const std::string& value) {
         text.setString(value);
     }
+
 };
 
 enum class ShapeType {

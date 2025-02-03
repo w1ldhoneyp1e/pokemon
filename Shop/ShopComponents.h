@@ -9,9 +9,12 @@ class ShopButtonOkComponent : public Component {};
 class ShopAvatarComponent : public Component {};
 class PlayerAvatarComponent : public Component {};
 class ShopSelectedBackgroundComponent : public Component {};
+class ShopItemSellTextComponent : public Component {};
+class ShopItemBuyTextComponent : public Component {};
 class ShopItemComponent : public Component {
 private:
     std::string name;
+
     int price;
     bool isSelected;
     bool isPokemon;

@@ -31,6 +31,9 @@ int getItemCount(PlayersInventoryComponent* inventory, const std::string& itemNa
 
 void updateRowHighlighting(EntityManager* em);
 
+void updateBuyText(EntityManager* em, Entity* selectedItem);
+void updateSellText(EntityManager* em, Entity* selectedItem);
+
 Entity* getSelectedItem(EntityManager* em) {
     auto items = em->getEntitiesWithComponent<ShopItemComponent>();
     for (auto item : items) {
@@ -207,29 +210,28 @@ void handleShopInput(Controller* controller, float deltaTime) {
         auto inventory = getPlayerInventory(em);
         
         if (std::find(keys.begin(), keys.end(), sf::Keyboard::Left) != keys.end()) {
-            std::cout << "shopItem->getBuyCount(): " << shopItem->getBuyCount() << std::endl;
-            std::cout << "shopItem->getSellCount(): " << shopItem->getSellCount() << std::endl;
             if (shopItem->getBuyCount() > 0) {
                 shopItem->setBuyCount(shopItem->getBuyCount() - 1);
+                updateBuyText(em, selectedItem);
             } else {
-
                 int maxSell = getItemCount(inventory, shopItem->getName());
                 if (shopItem->getSellCount() < maxSell) {
                     shopItem->setSellCount(shopItem->getSellCount() + 1);
+                    updateSellText(em, selectedItem);
                 }
             }
             buySellCooldown = BUYSELL_DELAY;
         }
         
         if (std::find(keys.begin(), keys.end(), sf::Keyboard::Right) != keys.end()) {
-            std::cout << "shopItem->getBuyCount(): " << shopItem->getBuyCount() << std::endl;
-            std::cout << "shopItem->getSellCount(): " << shopItem->getSellCount() << std::endl;
             if (shopItem->getSellCount() > 0) {
                 shopItem->setSellCount(shopItem->getSellCount() - 1);
+                updateSellText(em, selectedItem);
             } else {
                 int maxBuy = inventory->getCoinCount() / shopItem->getPrice();
                 if (shopItem->getBuyCount() < maxBuy) {
                     shopItem->setBuyCount(shopItem->getBuyCount() + 1);
+                    updateBuyText(em, selectedItem);
                 }
             }
             buySellCooldown = BUYSELL_DELAY;
@@ -434,10 +436,15 @@ void createShopRow(EntityManager* em, const ShopItemInfo& itemInfo, float yPos) 
         SHOW_HEADER_START_X + SHOP_COLUMN_WIDTH_BIG + SHOP_COLUMN_WIDTH_MEDIUM * 3,
         yPos + SHOP_ITEM_HEIGHT / 2 - SHOP_TEXT_HEIGHT / 8,
         SHOP_TEXT_HEIGHT / 2
-
+    );
+    sellText->addComponent<PositionComponent>(
+        SHOW_HEADER_START_X + SHOP_COLUMN_WIDTH_BIG + SHOP_COLUMN_WIDTH_MEDIUM * 3,
+        yPos + SHOP_ITEM_HEIGHT / 2 - SHOP_TEXT_HEIGHT / 8
     );
     sellText->addComponent<ShopTypeEntityComponent>();
+    sellText->addComponent<ShopItemSellTextComponent>();
     sellText->addComponent<RenderLayerComponent>(7);
+
 
     auto buyText = em->createEntity();
     buyText->addComponent<TextComponent>(
@@ -446,8 +453,14 @@ void createShopRow(EntityManager* em, const ShopItemInfo& itemInfo, float yPos) 
         yPos + SHOP_ITEM_HEIGHT / 2 - SHOP_TEXT_HEIGHT / 8,
         SHOP_TEXT_HEIGHT / 2
     );
+    buyText->addComponent<PositionComponent>(
+        SHOW_HEADER_START_X + SHOP_COLUMN_WIDTH_BIG + SHOP_COLUMN_WIDTH_MEDIUM * 3 + SHOP_COLUMN_WIDTH_SMALL,
+        yPos + SHOP_ITEM_HEIGHT / 2 - SHOP_TEXT_HEIGHT / 8
+    );
     buyText->addComponent<ShopTypeEntityComponent>();
+    buyText->addComponent<ShopItemBuyTextComponent>();
     buyText->addComponent<RenderLayerComponent>(7);
+
 }
 
 void createShopButtons(EntityManager* em) {
@@ -554,7 +567,7 @@ void updateItemCounts(EntityManager* em) {
             SHOP_TEXT_HEIGHT
         );
         countText->addComponent<ShopTypeEntityComponent>();
-        countText->addComponent<RenderLayerComponent>(6);
+        countText->addComponent<RenderLayerComponent>(7);
         
         auto sellText = em->createEntity();
         sellText->addComponent<TextComponent>(
@@ -564,7 +577,7 @@ void updateItemCounts(EntityManager* em) {
             SHOP_TEXT_HEIGHT
         );
         sellText->addComponent<ShopTypeEntityComponent>();
-        sellText->addComponent<RenderLayerComponent>(6);
+        sellText->addComponent<RenderLayerComponent>(7);
         
         auto buyText = em->createEntity();
         buyText->addComponent<TextComponent>(
@@ -574,7 +587,7 @@ void updateItemCounts(EntityManager* em) {
             SHOP_TEXT_HEIGHT
         );
         buyText->addComponent<ShopTypeEntityComponent>();
-        buyText->addComponent<RenderLayerComponent>(6);
+        buyText->addComponent<RenderLayerComponent>(7);
     }
 }
 
@@ -585,4 +598,33 @@ void updateRowHighlighting(EntityManager* em) {
     auto background = em->getEntitiesWithComponent<ShopSelectedBackgroundComponent>()[0];
     auto pos = selectedItem->getComponent<PositionComponent>();
     background->getComponent<PositionComponent>()->setPos(pos->getX() - SHOP_COLUMN_WIDTH_MEDIUM, pos->getY());
+}
+
+void updateBuyText(EntityManager* em, Entity* selectedItem) {
+    auto shopItem = selectedItem->getComponent<ShopItemComponent>();
+    auto pos = selectedItem->getComponent<PositionComponent>();
+    auto buyTexts = em->getEntitiesWithComponent<ShopItemBuyTextComponent>();
+    for (auto entity : buyTexts) {
+        auto textPos = entity->getComponent<PositionComponent>();
+        if (textPos->getY() == pos->getY()) {
+            entity->getComponent<TextComponent>()->setText(std::to_string(shopItem->getBuyCount()));
+            return;
+        }
+    }
+}
+
+void updateSellText(EntityManager* em, Entity* selectedItem) {
+    auto shopItem = selectedItem->getComponent<ShopItemComponent>();
+    auto pos = selectedItem->getComponent<PositionComponent>();
+
+    auto sellTexts = em->getEntitiesWithComponent<ShopItemSellTextComponent>();
+    for (auto entity : sellTexts) {
+        auto textPos = entity->getComponent<PositionComponent>();
+
+        if (textPos->getY() == pos->getY()) {
+            entity->getComponent<TextComponent>()->setText(std::to_string(shopItem->getSellCount()));
+            return;
+        }
+    }
+
 }
