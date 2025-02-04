@@ -11,8 +11,24 @@ class PlayerAvatarComponent : public Component {};
 class ShopSelectedBackgroundComponent : public Component {};
 class ShopItemSellTextComponent : public Component {};
 class ShopItemBuyTextComponent : public Component {};
+class ShopItemAmountTextComponent : public Component {};
+class ShopItemChangeableComponent : public Component {
+private:
+    std::string name;
+public:
+    ShopItemChangeableComponent(const std::string& name) : name(name) {}
+    
+    void setName(const std::string& name) { 
+        this->name = name; 
+    }
+
+    const std::string& getName() const { 
+        return name; 
+    }
+};
 class ShopItemComponent : public Component {
 private:
+
     std::string name;
 
     int price;

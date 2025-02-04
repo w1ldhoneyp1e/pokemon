@@ -34,6 +34,8 @@ void updateRowHighlighting(EntityManager* em);
 void updateBuyText(EntityManager* em, Entity* selectedItem);
 void updateSellText(EntityManager* em, Entity* selectedItem);
 
+void updateShopRowValues(EntityManager* em);
+
 Entity* getSelectedItem(EntityManager* em) {
     auto items = em->getEntitiesWithComponent<ShopItemComponent>();
     for (auto item : items) {
@@ -212,12 +214,10 @@ void handleShopInput(Controller* controller, float deltaTime) {
         if (std::find(keys.begin(), keys.end(), sf::Keyboard::Left) != keys.end()) {
             if (shopItem->getBuyCount() > 0) {
                 shopItem->setBuyCount(shopItem->getBuyCount() - 1);
-                updateBuyText(em, selectedItem);
             } else {
                 int maxSell = getItemCount(inventory, shopItem->getName());
                 if (shopItem->getSellCount() < maxSell) {
                     shopItem->setSellCount(shopItem->getSellCount() + 1);
-                    updateSellText(em, selectedItem);
                 }
             }
             buySellCooldown = BUYSELL_DELAY;
@@ -226,18 +226,18 @@ void handleShopInput(Controller* controller, float deltaTime) {
         if (std::find(keys.begin(), keys.end(), sf::Keyboard::Right) != keys.end()) {
             if (shopItem->getSellCount() > 0) {
                 shopItem->setSellCount(shopItem->getSellCount() - 1);
-                updateSellText(em, selectedItem);
             } else {
                 int maxBuy = inventory->getCoinCount() / shopItem->getPrice();
                 if (shopItem->getBuyCount() < maxBuy) {
                     shopItem->setBuyCount(shopItem->getBuyCount() + 1);
-                    updateBuyText(em, selectedItem);
                 }
             }
             buySellCooldown = BUYSELL_DELAY;
         }
+		updateShopRowValues(em);
     }
     
+
     if (mouseClicked) {
         if (isClickOnEntity(mouseClick, backButton)) {
             *state = GameState::Game;
@@ -381,10 +381,18 @@ void createShopRow(EntityManager* em, const ShopItemInfo& itemInfo, float yPos) 
         SHOP_TEXT_HEIGHT / 2
     );
     countText->addComponent<ShopTypeEntityComponent>();
+    countText->addComponent<ShopItemAmountTextComponent>();
+    countText->addComponent<ShopItemChangeableComponent>(itemInfo.name);
+    countText->addComponent<PositionComponent>(
+        SHOW_HEADER_START_X,
+        yPos + SHOP_ITEM_HEIGHT / 2 - SHOP_TEXT_HEIGHT / 8
+    );
     countText->addComponent<RenderLayerComponent>(7);
+
 
     auto item = em->createEntity();
     item->addComponent<ShopItemComponent>(itemInfo.name, itemInfo.price, itemInfo.isPokemon);
+    auto shopItem = item->getComponent<ShopItemComponent>();
     item->addComponent<ShopTypeEntityComponent>();
     item->addComponent<PositionComponent>(
         SHOW_HEADER_START_X + SHOP_COLUMN_WIDTH_MEDIUM,
@@ -406,7 +414,12 @@ void createShopRow(EntityManager* em, const ShopItemInfo& itemInfo, float yPos) 
         SHOP_TEXT_HEIGHT / 2
     );
     nameText->addComponent<ShopTypeEntityComponent>();
+    nameText->addComponent<PositionComponent>(
+        SHOW_HEADER_START_X + SHOP_COLUMN_WIDTH_MEDIUM + SHOP_ITEM_WIDTH + 10,
+        yPos + SHOP_ITEM_HEIGHT / 2 - SHOP_TEXT_HEIGHT / 8
+    );
     nameText->addComponent<RenderLayerComponent>(7);
+
 
     auto sellPriceText = em->createEntity();
     sellPriceText->addComponent<TextComponent>(
@@ -417,7 +430,12 @@ void createShopRow(EntityManager* em, const ShopItemInfo& itemInfo, float yPos) 
 
     );
     sellPriceText->addComponent<ShopTypeEntityComponent>();
+    sellPriceText->addComponent<PositionComponent>(
+        SHOW_HEADER_START_X + SHOP_COLUMN_WIDTH_MEDIUM + SHOP_COLUMN_WIDTH_BIG,
+        yPos + SHOP_ITEM_HEIGHT / 2 - SHOP_TEXT_HEIGHT / 8
+    );
     sellPriceText->addComponent<RenderLayerComponent>(7);
+
 
     auto buyPriceText = em->createEntity();
     buyPriceText->addComponent<TextComponent>(
@@ -428,11 +446,16 @@ void createShopRow(EntityManager* em, const ShopItemInfo& itemInfo, float yPos) 
 
     );
     buyPriceText->addComponent<ShopTypeEntityComponent>();
+    buyPriceText->addComponent<PositionComponent>(
+        SHOW_HEADER_START_X + SHOP_COLUMN_WIDTH_BIG + SHOP_COLUMN_WIDTH_MEDIUM * 2,
+        yPos + SHOP_ITEM_HEIGHT / 2 - SHOP_TEXT_HEIGHT / 8
+    );
     buyPriceText->addComponent<RenderLayerComponent>(7);
+
 
     auto sellText = em->createEntity();
     sellText->addComponent<TextComponent>(
-        "0",
+        std::to_string(shopItem->getSellCount()),
         SHOW_HEADER_START_X + SHOP_COLUMN_WIDTH_BIG + SHOP_COLUMN_WIDTH_MEDIUM * 3,
         yPos + SHOP_ITEM_HEIGHT / 2 - SHOP_TEXT_HEIGHT / 8,
         SHOP_TEXT_HEIGHT / 2
@@ -443,12 +466,12 @@ void createShopRow(EntityManager* em, const ShopItemInfo& itemInfo, float yPos) 
     );
     sellText->addComponent<ShopTypeEntityComponent>();
     sellText->addComponent<ShopItemSellTextComponent>();
+    sellText->addComponent<ShopItemChangeableComponent>(shopItem->getName());
     sellText->addComponent<RenderLayerComponent>(7);
-
 
     auto buyText = em->createEntity();
     buyText->addComponent<TextComponent>(
-        "0",
+        std::to_string(shopItem->getBuyCount()),
         SHOW_HEADER_START_X + SHOP_COLUMN_WIDTH_BIG + SHOP_COLUMN_WIDTH_MEDIUM * 3 + SHOP_COLUMN_WIDTH_SMALL,
         yPos + SHOP_ITEM_HEIGHT / 2 - SHOP_TEXT_HEIGHT / 8,
         SHOP_TEXT_HEIGHT / 2
@@ -459,8 +482,8 @@ void createShopRow(EntityManager* em, const ShopItemInfo& itemInfo, float yPos) 
     );
     buyText->addComponent<ShopTypeEntityComponent>();
     buyText->addComponent<ShopItemBuyTextComponent>();
+    buyText->addComponent<ShopItemChangeableComponent>(shopItem->getName());
     buyText->addComponent<RenderLayerComponent>(7);
-
 }
 
 void createShopButtons(EntityManager* em) {
@@ -515,7 +538,12 @@ void createShopHeader(EntityManager* em) {
             16
         );
         text->addComponent<ShopTypeEntityComponent>();
+        text->addComponent<PositionComponent>(
+            xOffset,
+            SHOP_ITEM_POS_Y - SHOP_HEADER_HEIGHT
+        );
         text->addComponent<RenderLayerComponent>(6);
+
         if (header == "Amount") {
             xOffset += SHOP_COLUMN_WIDTH_MEDIUM;
         } else if (header == "Item") {
@@ -548,46 +576,6 @@ int getItemCount(PlayersInventoryComponent* inventory, const std::string& itemNa
         return inventory->getPotionCount();
     } else {
         return inventory->getPokemonCount();
-    }
-}
-
-void updateItemCounts(EntityManager* em) {
-    auto inventory = getPlayerInventory(em);
-    auto items = em->getEntitiesWithComponent<ShopItemComponent>();
-    
-    for (auto item : items) {
-        auto shopItem = item->getComponent<ShopItemComponent>();
-        auto itemCount = getItemCount(inventory, shopItem->getName());
-        
-        auto countText = em->createEntity();
-        countText->addComponent<TextComponent>(
-            std::to_string(itemCount),
-            SHOW_HEADER_START_X,
-            item->getComponent<PositionComponent>()->getY() + SHOP_ITEM_HEIGHT / 2 - SHOP_TEXT_HEIGHT / 4,
-            SHOP_TEXT_HEIGHT
-        );
-        countText->addComponent<ShopTypeEntityComponent>();
-        countText->addComponent<RenderLayerComponent>(7);
-        
-        auto sellText = em->createEntity();
-        sellText->addComponent<TextComponent>(
-            std::to_string(shopItem->getSellCount()),
-            SHOW_HEADER_START_X + SHOP_COLUMN_WIDTH_SMALL + SHOP_COLUMN_WIDTH_BIG + SHOP_COLUMN_WIDTH_MEDIUM * 2,
-            item->getComponent<PositionComponent>()->getY() + SHOP_ITEM_HEIGHT / 2 - SHOP_TEXT_HEIGHT / 4,
-            SHOP_TEXT_HEIGHT
-        );
-        sellText->addComponent<ShopTypeEntityComponent>();
-        sellText->addComponent<RenderLayerComponent>(7);
-        
-        auto buyText = em->createEntity();
-        buyText->addComponent<TextComponent>(
-            std::to_string(shopItem->getBuyCount()),
-            SHOW_HEADER_START_X + SHOP_COLUMN_WIDTH_SMALL + SHOP_COLUMN_WIDTH_BIG + SHOP_COLUMN_WIDTH_MEDIUM * 2 + SHOP_COLUMN_WIDTH_SMALL,
-            item->getComponent<PositionComponent>()->getY() + SHOP_ITEM_HEIGHT / 2 - SHOP_TEXT_HEIGHT / 4,
-            SHOP_TEXT_HEIGHT
-        );
-        buyText->addComponent<ShopTypeEntityComponent>();
-        buyText->addComponent<RenderLayerComponent>(7);
     }
 }
 
@@ -626,5 +614,40 @@ void updateSellText(EntityManager* em, Entity* selectedItem) {
             return;
         }
     }
+}
 
+void updateShopRowValues(EntityManager* em) {
+    auto selectedItem = getSelectedItem(em);
+    if (!selectedItem) return;
+    
+    auto shopItem = selectedItem->getComponent<ShopItemComponent>();
+    auto pos = selectedItem->getComponent<PositionComponent>();
+    auto inventory = getPlayerInventory(em);
+
+    if (!shopItem || !pos || !inventory) return;
+    auto texts = em->getEntitiesWithComponent<TextComponent>();
+    for (auto entity : texts) {
+        if (!entity->getComponent<ShopTypeEntityComponent>()) continue;
+        auto itemComponent = entity->getComponent<ShopItemChangeableComponent>();
+        if (!itemComponent) continue;
+        if (itemComponent->getName() == shopItem->getName()) {
+
+            if (entity->getComponent<ShopItemAmountTextComponent>()) {
+                entity->getComponent<TextComponent>()->setText(
+                    std::to_string(getItemCount(inventory, shopItem->getName()) - shopItem->getSellCount())
+                );
+
+            }
+            else if (entity->getComponent<ShopItemSellTextComponent>()) {
+                entity->getComponent<TextComponent>()->setText(
+                    std::to_string(shopItem->getSellCount())
+                );
+            }
+            else if (entity->getComponent<ShopItemBuyTextComponent>()) {
+                entity->getComponent<TextComponent>()->setText(
+                    std::to_string(shopItem->getBuyCount())
+                );
+            }
+        }
+    }
 }
