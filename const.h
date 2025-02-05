@@ -190,3 +190,6 @@ const float SHOP_HEADER_HEIGHT = 10.0f;
 const float SHOP_COLUMN_WIDTH_SMALL = 30.0f;
 const float SHOP_COLUMN_WIDTH_MEDIUM = 40.0f;
 const float SHOP_COLUMN_WIDTH_BIG = 80.0f;
+
+const float BUYSELL_DELAY = 0.2f;
+const float SELECTION_DELAY = 0.2f;
