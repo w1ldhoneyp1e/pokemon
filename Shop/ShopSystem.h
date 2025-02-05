@@ -36,6 +36,9 @@ void updateSellText(EntityManager* em, Entity* selectedItem);
 
 void updateShopRowValues(EntityManager* em);
 
+void doTransaction(Controller* controller);
+
+
 Entity* getSelectedItem(EntityManager* em) {
     auto items = em->getEntitiesWithComponent<ShopItemComponent>();
     for (auto item : items) {
@@ -134,11 +137,11 @@ void tryToBuy(EntityManager* em) {
             if (inventory->getCoinCount() >= shopItem->getPrice()) {
                 if (!shopItem->getIsPokemon()) {
                     if (shopItem->getName() == "Potion") {
-                        inventory->addPotions(1);
+                        inventory->addPotions(shopItem->getBuyCount());
                     } else if (shopItem->getName() == "Pokeball") {
-                        inventory->addPokeballs(1);
+                        inventory->addPokeballs(shopItem->getBuyCount());
                     }
-                    inventory->removeCoins(shopItem->getPrice());
+                    inventory->removeCoins(shopItem->getPrice() * shopItem->getBuyCount());
                 }
             }
             break;
@@ -160,11 +163,11 @@ void tryToSell(EntityManager* em) {
                 }
             } else {
                 if (shopItem->getName() == "Potion" && inventory->getPotionCount() > 0) {
-                    inventory->removePotions(1);
-                    inventory->addCoins(shopItem->getPrice() / 2);
+                    inventory->removePotions(shopItem->getSellCount());
+                    inventory->addCoins(shopItem->getPrice() * shopItem->getSellCount() / 2);
                 } else if (shopItem->getName() == "Pokeball" && inventory->getPokeballCount() > 0) {
-                    inventory->removePokeballs(1);
-                    inventory->addCoins(shopItem->getPrice() / 2);
+                    inventory->removePokeballs(shopItem->getSellCount());
+                    inventory->addCoins(shopItem->getPrice() * shopItem->getSellCount() / 2);
                 }
             }
             break;
@@ -173,10 +176,7 @@ void tryToSell(EntityManager* em) {
 }
 
 float selectionCooldown = 0.0f;
-const float SELECTION_DELAY = 0.5f;
-
 float buySellCooldown = 0.0f;
-const float BUYSELL_DELAY = 0.2f;
 
 void handleShopInput(Controller* controller, float deltaTime) {
     auto [input, em, render, state, battleContext, maps, currentLocation] = controller->getAll();
@@ -211,7 +211,7 @@ void handleShopInput(Controller* controller, float deltaTime) {
         auto shopItem = selectedItem->getComponent<ShopItemComponent>();
         auto inventory = getPlayerInventory(em);
         
-        if (std::find(keys.begin(), keys.end(), sf::Keyboard::Left) != keys.end()) {
+        if (std::find(keys.begin(), keys.end(), sf::Keyboard::Right) != keys.end()) {
             if (shopItem->getBuyCount() > 0) {
                 shopItem->setBuyCount(shopItem->getBuyCount() - 1);
             } else {
@@ -223,7 +223,7 @@ void handleShopInput(Controller* controller, float deltaTime) {
             buySellCooldown = BUYSELL_DELAY;
         }
         
-        if (std::find(keys.begin(), keys.end(), sf::Keyboard::Right) != keys.end()) {
+        if (std::find(keys.begin(), keys.end(), sf::Keyboard::Left) != keys.end()) {
             if (shopItem->getSellCount() > 0) {
                 shopItem->setSellCount(shopItem->getSellCount() - 1);
             } else {
@@ -251,31 +251,19 @@ void handleShopInput(Controller* controller, float deltaTime) {
         }
         
         if (isClickOnEntity(mouseClick, okButton)) {
-            auto selectedItem = getSelectedItem(em);
-            if (selectedItem) {
-                auto shopItem = selectedItem->getComponent<ShopItemComponent>();
-                if (shopItem->getBuyCount() > 0) {
-                    tryToBuy(em);
-                } else if (shopItem->getSellCount() > 0) {
-                    tryToSell(em);
-                }
-                
-                *state = GameState::Game;
-                auto shopEntities = em->getEntitiesWithComponent<ShopTypeEntityComponent>();
-                for (auto entity : shopEntities) {
-                    render->removeEntity(entity->getId());
-                    em->removeEntity(entity);
-                }
-                input->clear();
-            }
+            doTransaction(controller);
             return;
         }
     }
     
+    if (std::find(keys.begin(), keys.end(), sf::Keyboard::Enter) != keys.end()) {
+        doTransaction(controller);
+        return;
+    }
+
     if (
         std::find(keys.begin(), keys.end(), sf::Keyboard::Escape) != keys.end() 
-        || (std::find(keys.begin(), keys.end(), sf::Keyboard::Enter) != keys.end() 
-        && !em->getEntitiesWithComponent<ShopButtonBackComponent>().empty())
+        && !em->getEntitiesWithComponent<ShopButtonBackComponent>().empty()
     ) {
         *state = GameState::Game;
         auto shopEntities = em->getEntitiesWithComponent<ShopTypeEntityComponent>();
@@ -649,5 +637,27 @@ void updateShopRowValues(EntityManager* em) {
                 );
             }
         }
+    }
+}
+
+void doTransaction(Controller* controller) {
+    auto [input, em, render, state, battleContext, maps, currentLocation] = controller->getAll();
+
+    auto selectedItem = getSelectedItem(em);
+    if (selectedItem) {
+        auto shopItem = selectedItem->getComponent<ShopItemComponent>();
+        if (shopItem->getBuyCount() > 0) {
+            tryToBuy(em);
+        } else if (shopItem->getSellCount() > 0) {
+            tryToSell(em);
+        }
+        
+        *state = GameState::Game;
+        auto shopEntities = em->getEntitiesWithComponent<ShopTypeEntityComponent>();
+        for (auto entity : shopEntities) {
+            render->removeEntity(entity->getId());
+            em->removeEntity(entity);
+        }
+        input->clear();
     }
 }
