@@ -66,4 +66,20 @@ public:
     }
 };
 
+class PokemonSellComponent : public Component {
+private:
+    int id;
+    int price;
+public:
+    PokemonSellComponent(int id, int price) : id(id), price(price) {}
+
+    const int& getId() const {
+        return id;
+    }
+
+    int getPrice() const {
+        return price;
+    }
+};
+
 class AttackedPokemonComponent : public Component {};

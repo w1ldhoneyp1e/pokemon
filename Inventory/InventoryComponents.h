@@ -5,6 +5,7 @@
 
 class InventoryButtonCloseComponent : public Component {};
 class InventoryTypeEntityComponent : public Component {};
+class InventoryCoinsAmountComponent : public Component {};
 
 class PlayersInventoryComponent : public Component {
 private:

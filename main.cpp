@@ -69,6 +69,7 @@ void update(Controller* controller, float deltaTime, sf::RenderWindow* window) {
 
 	case GameState::Inventory: {
 		closeInventory(controller);
+		onPokemonSellButtonClick(controller);
 		break;
 	}
 

@@ -9,6 +9,7 @@
 #include <SFML/Graphics.hpp>
 
 void createInventory(EntityManager* em);
+void createSellLable(EntityManager* em, int id, float x, float y);
 
 void openInventory(Controller* controller) {
 	auto [input, em, render, state, battleContext, maps, currentLocation] = controller->getAll();
@@ -74,6 +75,7 @@ void createInventory(EntityManager* em) {
 	auto playerInventory = player->getComponent<PlayersInventoryComponent>();
 
 	auto coinCounter = em->createEntity();
+	coinCounter->addComponent<InventoryCoinsAmountComponent>();
 	coinCounter->addComponent<TextComponent>(
 		std::to_string(playerInventory->getCoinCount()),
 		INVENTORY_ICON_X + 30,
@@ -156,10 +158,12 @@ void createInventory(EntityManager* em) {
 	int i = 0;
 	int j = 0;
 	for (auto pokemon : pokemons) {
+		float x = INVENTORY_CELLS_POSITION_START_X + i * 7 * SCALE;
+		float y = INVENTORY_CELLS_POSITION_START_Y + j * 7 * SCALE;
 		if (!pokemon->getComponent<PokemonComponent>()->isCollected()) continue;
 		pokemon->getComponent<PositionComponent>()->setPos(
-			INVENTORY_CELLS_POSITION_START_X + i * 7 * SCALE,
-			INVENTORY_CELLS_POSITION_START_Y + j * 7 * SCALE
+			x,
+			y
 		);
 		pokemon->getComponent<SizeComponent>()->setSize(
 			POKEMON_INVENTORY_WIDTH,
@@ -170,13 +174,27 @@ void createInventory(EntityManager* em) {
 		if (i / INVENTORY_CELLS_PER_ROW) {
 			j++;
 			i = 0;
-		} 
+		}
+		createSellLable(em, pokemon->getId(), x, y);
+	}
+}
+
+void createSellLable(EntityManager* em, int id, float x, float y) {
+	auto sellLable = em->createEntity();
+	sellLable->addComponent<InventoryTypeEntityComponent>();
+	sellLable->addComponent<PositionComponent>(x + POKEMON_INVENTORY_WIDTH - 10, y + POKEMON_INVENTORY_HEIGHT - 10);
+	sellLable->addComponent<SizeComponent>(8, 8);
+	sellLable->addComponent<RenderLayerComponent>(5);
+	sellLable->addComponent<PokemonSellComponent>(id, POKEMON_SELL_PRICE);
+	sf::Texture sellLableTexture;
+
+	if (sellLableTexture.loadFromFile("../res/sell-pokemon(32x32).png")) {
+		sellLable->addComponent<TextureComponent>(sellLableTexture, 32, 32);
 	}
 }
 
 void closeInventory(Controller* controller) {
 	auto [input, em, render, state, battleContext, maps, currentLocation] = controller->getAll();
-
 	auto keys = input->getPressedKeys();
 	auto button = em->getEntitiesWithComponent<InventoryButtonCloseComponent>()[0];
 	if (

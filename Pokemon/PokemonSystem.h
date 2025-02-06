@@ -19,6 +19,9 @@ struct PokemonConditionProps {
 bool isInventoryFull(PlayersInventoryComponent *inventory);
 bool isPokemonCollected(Entity* pokemon);
 bool doesConditionSatisfy(PokemonConditionProps props);
+Entity* findPokemonByID(std::vector<Entity*> pokemons, int id);
+void sellPokemon(Controller* controller, Entity* pokemon);
+void updateCoins(Controller* controller);
 
 void pokemonCollision(Controller* controller) {
 	auto [input, em, render, state, battleContext, maps, currentLocation] = controller->getAll();
@@ -125,3 +128,67 @@ void pokemonGenerating(Controller* controller, float deltaTime) {
 		generatePokemon(controller);
 	}
 }
+
+void onPokemonSellButtonClick(Controller* controller) {
+	auto input = controller->getInputSystem();
+	if (!input->hasMouseClick()) return;
+
+	auto em = controller->getEntityManager();
+
+	auto sellButtons = em->getEntitiesWithComponent<PokemonSellComponent>();
+	for (auto sellButton : sellButtons) {
+		if (!isClickOnEntity(input->getMouseClick(), sellButton)) continue;
+
+		int id = sellButton->getComponent<PokemonSellComponent>()->getId();
+		auto pokemons = em->getEntitiesWithComponent<PokemonComponent>();
+		auto pokemon = findPokemonByID(pokemons, id);
+		if (pokemon) {
+			sellPokemon(controller, pokemon);
+			em->removeEntity(sellButton);
+			updateCoins(controller);
+		}
+		input->clear();
+		return;
+	}
+}
+
+Entity* findPokemonByID(std::vector<Entity*> pokemons, int id) {
+	for (auto pokemon : pokemons) {
+		if (pokemon->getId() == id) {
+			return pokemon;
+		}
+	}
+	return nullptr;
+}
+
+void sellPokemon(Controller* controller, Entity* pokemon) {
+	auto em = controller->getEntityManager();
+	auto player = em->getEntitiesWithComponent<PlayerControlComponent>()[0];
+
+	auto inventory = player->getComponent<PlayersInventoryComponent>();
+	inventory->addCoins(POKEMON_SELL_PRICE);
+	
+	auto render = controller->getRenderSystem();
+	render->removeEntity(pokemon->getId());
+	em->removeEntity(pokemon);
+}
+
+void updateCoins(Controller* controller) {
+	auto em = controller->getEntityManager();
+
+	auto coinsAmount = em->getEntitiesWithComponent<InventoryCoinsAmountComponent>();
+	if (coinsAmount.empty()) return;
+
+	auto text = coinsAmount[0]->getComponent<TextComponent>();
+	if (!text) return;
+
+	auto player = em->getEntitiesWithComponent<PlayerControlComponent>()[0];
+	if (!player) return;
+
+	auto inventory = player->getComponent<PlayersInventoryComponent>();
+	if (!inventory) return;
+
+	text->setText(std::to_string(inventory->getCoinCount()));
+}
+
+
