@@ -45,8 +45,16 @@ public:
         }
     }
 
+    void clear() {
+        for (auto& pair : entities) {
+            delete pair.second;
+        }
+        entities.clear();
+    }
+
     ~EntityManager() {
         for (auto& pair : entities) {
+
             delete pair.second;
         }
         entities.clear();

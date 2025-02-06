@@ -15,3 +15,4 @@
 #include "../Trainer/TrainerComponents.h"
 #include "../Damage/DamageComponents.h"
 #include "../Shop/ShopComponents.h"
+#include "../TheEnd/TheEndComponents.h"

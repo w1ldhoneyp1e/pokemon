@@ -16,11 +16,13 @@
 #include "./Catching/CatchingSystem.h"
 #include "./Location/LocationType.h"
 #include "GameState.h"
+#include "TheEnd/TheEnd.h"
 #include "Entity.h"
 #include <iostream>
 #include <windows.h>
 #include <chrono>
 #include <random>
+
 
 
 void pollEvents(sf::RenderWindow* window, InputSystem* inputSystem) {
@@ -89,7 +91,12 @@ void update(Controller* controller, float deltaTime, sf::RenderWindow* window) {
 		handleShopInput(controller, deltaTime);
 		break;
 	}
-	
+
+	case GameState::TheEnd: {
+		onGameEnd(controller, deltaTime);
+		break;
+	}
+
 	default:
 		break;
 	}

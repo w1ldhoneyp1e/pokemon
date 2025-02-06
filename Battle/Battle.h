@@ -4,6 +4,7 @@
 #include "../systems/RenderSystem.h"
 #include "../systems/ClickHandler.h"
 #include "../Game/GameSystem.h"
+#include "../TheEnd/TheEnd.h"
 #include "../const.h"
 #include <random>
 #include <thread>
@@ -41,8 +42,11 @@ void updateBattle(Controller *controller) {
 
     case BattleState::PlayerWon:
 		closeBattle(em, render);
-		*state = GameState::Game;
+		clearGameEntities(em, render);
+		createTheEnd(controller);
+		*state = GameState::TheEnd;
         break;
+
 
     case BattleState::EnemyWon:
 		closeBattle(em, render);

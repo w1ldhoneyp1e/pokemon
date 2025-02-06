@@ -193,3 +193,18 @@ const float SHOP_COLUMN_WIDTH_BIG = 80.0f;
 
 const float BUYSELL_DELAY = 0.2f;
 const float SELECTION_DELAY = 0.2f;
+
+// The End
+
+const float THE_END_TIMER = 4.0f;
+
+const int THE_END_TEXT_SIZE = 100;
+const int THE_END_TEXT_X = WINDOW_WIDTH / 2 - 100;
+const int THE_END_TEXT_Y = WINDOW_HEIGHT / 2 - THE_END_TEXT_SIZE / 2;
+
+const int THE_END_BACK_TO_MENU_TEXT_X = THE_END_TEXT_X + THE_END_TEXT_SIZE * 1 / 3 + 5;
+const int THE_END_BACK_TO_MENU_TEXT_Y = THE_END_TEXT_Y + 50;
+
+
+const int THE_END_BACK_TO_MENU_TEXT_SIZE = THE_END_TEXT_SIZE / 3;
+

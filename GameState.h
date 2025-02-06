@@ -6,5 +6,6 @@ enum GameState {
     Catching,
     Chest,
     Battle,
-	Shop
+	Shop,
+	TheEnd
 };
