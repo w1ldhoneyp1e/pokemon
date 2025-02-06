@@ -55,6 +55,8 @@ void initPlayer(EntityManager* em) {
     player->addComponent<GameTypeEntityComponent>();
 	player->addComponent<RenderLayerComponent>(1);
 	player->addComponent<PlayersInventoryComponent>();
+	auto inventory = player->getComponent<PlayersInventoryComponent>();
+	inventory->addPokeballs(3);
 	player->addComponent<PlayerControlComponent>(true);
 	sf::Texture playerTexture;
     if (playerTexture.loadFromFile("../res/Ash_sprite(16x32).png")) {

@@ -26,9 +26,11 @@ void updateCoins(Controller* controller);
 void pokemonCollision(Controller* controller) {
 	auto [input, em, render, state, battleContext, maps, currentLocation] = controller->getAll();
 
-	auto pokemons = em->getEntitiesWithComponent<PokemonComponent>();
 	auto player = em->getEntitiesWithComponent<PlayerControlComponent>()[0];
 	auto inventory = player->getComponent<PlayersInventoryComponent>();
+	auto pokeballs = inventory->getPokeballCount();
+	if (pokeballs == 0) return;
+	auto pokemons = em->getEntitiesWithComponent<PokemonComponent>();
 	auto keys = input->getPressedKeys();
 	if (keys.empty()) return;
 	for (auto pokemon : pokemons) {
@@ -45,9 +47,11 @@ void pokemonCollision(Controller* controller) {
 			render->removeEntity(pokemon->getId());
 			pokemon->removeComponent<GameTypeEntityComponent>();
 			initCatching(em, render);
+			inventory->removePokeballs(1);
 		}
 	}
 }
+
 
 bool doesConditionSatisfy(PokemonConditionProps props) {
 	return isCollision(props.pokemon, props.player) 
