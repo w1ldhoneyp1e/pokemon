@@ -14,6 +14,7 @@ void generateRandomItem(EntityManager *em, int index, int chestId);
 void generateChestContent(EntityManager *em, int chestId);
 Entity* createHealingPotion(EntityManager *em);
 Entity* createCoin(EntityManager *em);
+Entity* createPokeball(EntityManager *em);
 void initChestContent(EntityManager *em, RenderSystem* render);
 void initChestButtonCollect(EntityManager *em);
 void initChestButtonClose(EntityManager *em);
@@ -53,14 +54,14 @@ void chestInit(
 }
 
 void generateChestContent(EntityManager *em, int chestId) {
-    int amountOfItems = 1 + std::rand() % 7;
+    int amountOfItems = 1 + std::rand() % 16;
     for (int i=1; i <= amountOfItems; ++i) {
         generateRandomItem(em, i, chestId);
     }
 }
 
 void generateRandomItem(EntityManager *em, int index, int chestId) {
-    int typeIdOfItem = std::rand() % 2; // 0 => Healing Potion, 1 => Coin
+    int typeIdOfItem = std::rand() % 3; // 0 => Healing Potion, 1 => Coin, 2 => Pokeball
 	switch (typeIdOfItem)
 	{
 	case 0:{
@@ -82,7 +83,16 @@ void generateRandomItem(EntityManager *em, int index, int chestId) {
 		);
 		break;
 	}
-	
+
+	case 2: {
+		auto pokeball = createPokeball(em);
+		pokeball->addComponent<ChestContentComponent>(chestId);
+		pokeball->addComponent<PositionComponent>(
+			CHEST_INTERFACE_X + 5 + (index % MAX_ITEMS_PER_ROW - 1) * 25,
+			CHEST_INTERFACE_Y + 5 + index / MAX_ITEMS_PER_ROW * 25
+		);
+		break;
+	}
 	default:
 		break;
 	}
@@ -124,6 +134,18 @@ Entity* createCoin(EntityManager *em) {
         );
     }
     return coin;
+}
+
+Entity* createPokeball(EntityManager *em) {
+	auto pokeball = em->createEntity();
+	pokeball->addComponent<PokeballComponent>();
+	pokeball->addComponent<RenderLayerComponent>(5);
+	pokeball->addComponent<SizeComponent>(ITEM_SIDE, ITEM_SIDE);
+	sf::Texture pokeballTexture;
+	if (pokeballTexture.loadFromFile("../res/pokeball(12x12).png")) {
+		pokeball->addComponent<TextureComponent>(pokeballTexture, 12, 12);
+	}
+	return pokeball;
 }
 
 void initChestContent(EntityManager *em, RenderSystem* render) {
@@ -254,10 +276,13 @@ void collectChest(Controller* controller) {
             inventory->addCoins(1);
         } else if (entity->getComponent<HealingPotionComponent>() != nullptr) {
             inventory->addPotions(1);
+        } else if (entity->getComponent<PokeballComponent>() != nullptr) {
+            inventory->addPokeballs(1);
         }
         em->removeEntity(entity);
     }
     
+
     auto interface = em->getEntitiesWithComponent<ChestInterfaceComponent>();
     for(auto interfaceElem : interface) {
         render->removeEntity(interfaceElem->getId());
@@ -266,7 +291,6 @@ void collectChest(Controller* controller) {
 
     *state = GameState::Game;
 }
-
 
 void closeChest(Controller* controller) {
     auto [input, em, render, state, battleContext, maps, currentLocation] = controller->getAll();
