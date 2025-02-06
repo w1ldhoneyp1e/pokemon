@@ -6,8 +6,12 @@
 #include "../Entity.h"
 #include "../const.h"
 
+void initButtonTextureGameStart(EntityManager* em);
+void initButtonTextGameStart(EntityManager* em);
+
 void onStartGameButtonPress(Controller* controller) {
 	auto [input, em, render, state, battleContext, maps, currentLocation] = controller->getAll();
+
 	auto button = em->getEntitiesWithComponent<StartButtonComponent>()[0];
 	if (!input->hasMouseClick()) return;
 	if (!isClickOnEntity(input->getMouseClick(), button)) return;
@@ -40,8 +44,14 @@ void initMenu(EntityManager* em, RenderSystem* render) {
 }
 
 void initButtonGameStart(EntityManager* em) {
+	initButtonTextureGameStart(em);
+	initButtonTextGameStart(em);
+	
+}
+
+void initButtonTextureGameStart(EntityManager* em) {
 	auto startButton = em->createEntity();
-	startButton->addComponent<StartButtonComponent>(); // Убрать
+	startButton->addComponent<StartButtonComponent>();
 	startButton->addComponent<PositionComponent>(
 		WINDOW_WIDTH / 2 - START_BUTTON_WIDTH * 2, 
 		WINDOW_HEIGHT / 2 - START_BUTTON_HEIGHT * 2
@@ -62,8 +72,31 @@ void initButtonGameStart(EntityManager* em) {
 	}
 }
 
+void initButtonTextGameStart(EntityManager* em) {
+	auto startButton = em->createEntity();
+	startButton->addComponent<TextComponent>(
+		"Start", 
+		WINDOW_WIDTH / 2 - START_BUTTON_WIDTH * 2 + 90,
+		WINDOW_HEIGHT / 2 - START_BUTTON_HEIGHT * 2 + 30,
+		70,
+		sf::Color::White
+	);
+	startButton->addComponent<PositionComponent>(
+		WINDOW_WIDTH / 2 - START_BUTTON_WIDTH * 2 + 5, 
+		WINDOW_HEIGHT / 2 - START_BUTTON_HEIGHT * 2 + 3
+	);
+	startButton->addComponent<SizeComponent>(
+		START_BUTTON_WIDTH, 
+		START_BUTTON_HEIGHT	
+	);
+	startButton->addComponent<RenderLayerComponent>(2);
+	startButton->addComponent<MenuTypeEntityComponent>();
+}
+
 void initBackgroundMenu(EntityManager* em) {
 	auto backgroundMenu = em->createEntity();
+
+
 	backgroundMenu->addComponent<PositionComponent>(0, 0);
 	backgroundMenu->addComponent<SizeComponent>(WINDOW_WIDTH, WINDOW_HEIGHT);
 	backgroundMenu->addComponent<RenderLayerComponent>(0);
