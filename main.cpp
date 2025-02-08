@@ -129,7 +129,7 @@ int main() {
     GetWindowRect(hwnd, &rect);
 
 	SCREEN_WIDTH = window->getSize().x;
-	SCREEN_HEIGHT = window->getSize().y;
+	SCREEN_HEIGHT = window->getSize().y - 71;
 
 	EntityManager entityManager;
 	RenderSystem renderSystem(window, &entityManager);
