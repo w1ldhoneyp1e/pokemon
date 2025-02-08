@@ -15,9 +15,13 @@ void initBattleLocation(EntityManager *em);
 void initArrows(EntityManager *em);
 void initMyPokemon(EntityManager *em);
 void initEnemyPokemon(EntityManager *em);
-
+void initPotionButton(EntityManager *em);
+void initPotionButtonTexture(EntityManager *em);
+void initPotionButtonTriggerKey(EntityManager *em);
+void initPotionButtonAmount(EntityManager *em);
 Entity *getEnemy(EntityManager *em);
 Entity *getPokemon(EntityManager *em, Entity *enemy);
+
 
 void onArrowClick(EntityManager *em, InputSystem *input, BattleContext *ctx);
 void damageHandler(EntityManager *em, BattleContext *ctx);
@@ -60,6 +64,7 @@ void initBattle(EntityManager *em, RenderSystem *render, BattleContext *ctx) {
 	initArrows(em);
 	initMyPokemon(em);
 	initEnemyPokemon(em);
+	initPotionButton(em);
 
 	render->removeEntities();
     render->addEntities(em->getEntitiesWithComponent<BattleTypeEntityComponent>());
@@ -167,6 +172,64 @@ Entity *getPokemon(EntityManager *em, Entity *enemy) {
     int index = std::rand() % pokemons->getPokemonCount();
 	int id = pokemons->getPokemons()[index];
 	return em->getEntity(id);
+}
+
+void initPotionButton(EntityManager *em) {
+	initPotionButtonTexture(em);
+	initPotionButtonTriggerKey(em);
+	initPotionButtonAmount(em);
+}
+
+void initPotionButtonTexture(EntityManager *em) {
+	auto potionButtonTexture = em->createEntity();
+	potionButtonTexture->addComponent<PositionComponent>(BATTLE_POTION_BUTTON_X, BATTLE_POTION_BUTTON_Y);
+	potionButtonTexture->addComponent<SizeComponent>(BATTLE_POTION_BUTTON_WIDTH, BATTLE_POTION_BUTTON_HEIGHT);
+	potionButtonTexture->addComponent<RenderLayerComponent>(1);
+	potionButtonTexture->addComponent<BattleTypeEntityComponent>();
+	potionButtonTexture->addComponent<PotionButtonComponent>();
+	sf::Texture texture;
+	if (texture.loadFromFile("../res/potion-button(67x64).png")) {
+		potionButtonTexture->addComponent<TextureComponent>(texture, 67, 64);
+	}
+}
+
+void initPotionButtonTriggerKey(EntityManager *em) {
+	auto potionButtonTriggerKey = em->createEntity();
+	potionButtonTriggerKey->addComponent<PositionComponent>(BATTLE_POTION_BUTTON_TEXT_X, BATTLE_POTION_BUTTON_UPPER_TEXT_Y);
+	potionButtonTriggerKey->addComponent<RenderLayerComponent>(2);
+	potionButtonTriggerKey->addComponent<BattleTypeEntityComponent>();
+	potionButtonTriggerKey->addComponent<PotionButtonComponent>();
+	potionButtonTriggerKey->addComponent<TextComponent>(
+		"1", 
+		BATTLE_POTION_BUTTON_TEXT_X, 
+		BATTLE_POTION_BUTTON_UPPER_TEXT_Y, 
+		28, 
+		sf::Color(68, 68, 68)
+	);
+}
+
+void initPotionButtonAmount(EntityManager *em) {
+	auto player = em->getEntitiesWithComponent<PlayerControlComponent>()[0];
+	if (!player) return;
+
+	auto inventory = player->getComponent<PlayersInventoryComponent>();
+	if (!inventory) return;
+
+	auto potionAmount = inventory->getPotionCount();
+
+	auto potionButtonAmount = em->createEntity();
+	potionButtonAmount->addComponent<PositionComponent>(BATTLE_POTION_BUTTON_TEXT_X, BATTLE_POTION_BUTTON_LOWER_TEXT_Y);
+	potionButtonAmount->addComponent<RenderLayerComponent>(2);
+	potionButtonAmount->addComponent<BattleTypeEntityComponent>();
+	potionButtonAmount->addComponent<PotionButtonComponent>();
+	potionButtonAmount->addComponent<TextComponent>(
+		std::to_string(potionAmount), 
+		BATTLE_POTION_BUTTON_TEXT_X, 
+		BATTLE_POTION_BUTTON_LOWER_TEXT_Y, 
+		28, 
+		sf::Color(68, 68, 68)
+
+	);
 }
 
 void onArrowClick(EntityManager *em, InputSystem *input, BattleContext  *ctx) {

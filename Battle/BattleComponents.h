@@ -3,6 +3,7 @@
 
 class BattleTypeEntityComponent : public Component {};
 class PlayerPokemonComponent : public Component {};
+class PotionButtonComponent : public Component {};
 
 enum AttackDir {
     Head,
