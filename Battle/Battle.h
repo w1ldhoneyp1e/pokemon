@@ -29,6 +29,11 @@ void enemyAttack(EntityManager *em, BattleContext *ctx);
 int getRandomDamage(int minDamage, int maxDamage);
 
 void onClickArrow(EntityManager *em, InputSystem *input, BattleContext *ctx);
+void onUsePotion(EntityManager *em, InputSystem *input);
+void healPlayerPokemon(EntityManager *em);
+bool isSomePotions(EntityManager *em);
+void decreasePotionCount(EntityManager *em);
+
 void closeBattle(EntityManager *em, RenderSystem *render);
 
 void updateBattle(Controller *controller) {
@@ -36,7 +41,7 @@ void updateBattle(Controller *controller) {
 
     switch (battleContext->state) {
     case BattleState::PlayerTurn: {
-        // onArrowClick(em, input, battleContext);
+		onUsePotion(em, input);
 		onClickArrow(em, input, battleContext);
         break;
 	}
@@ -187,6 +192,7 @@ void initPotionButtonTexture(EntityManager *em) {
 	potionButtonTexture->addComponent<RenderLayerComponent>(1);
 	potionButtonTexture->addComponent<BattleTypeEntityComponent>();
 	potionButtonTexture->addComponent<PotionButtonComponent>();
+	potionButtonTexture->addComponent<PotionButtonLayoutComponent>();
 	sf::Texture texture;
 	if (texture.loadFromFile("../res/potion-button(67x64).png")) {
 		potionButtonTexture->addComponent<TextureComponent>(texture, 67, 64);
@@ -310,4 +316,56 @@ void closeBattle(EntityManager *em, RenderSystem *render) {
 	render->addEntities(gameEntities);
 }
 
+void onUsePotion(EntityManager *em, InputSystem *input) {
+	if (!isSomePotions(em)) return;
 
+	if (!input->hasMouseClick() && input->getPressedKeys().empty()) return;
+
+	auto keys = input->getPressedKeys();
+	if (std::find(keys.begin(), keys.end(), sf::Keyboard::Num1) != keys.end()) {
+		input->clear();
+		healPlayerPokemon(em);
+		decreasePotionCount(em);
+	}
+
+	auto potionButton = em->getEntitiesWithComponent<PotionButtonLayoutComponent>()[0];
+	if (input->hasMouseClick() && isClickOnEntity(input->getMouseClick(), potionButton)) {
+		input->clear();
+		healPlayerPokemon(em);
+		decreasePotionCount(em);
+	}
+
+}
+
+void healPlayerPokemon(EntityManager *em) {
+	auto playerPokemon = em->getEntitiesWithComponent<PlayerPokemonComponent>().front();
+
+	auto healthComponent = playerPokemon->getComponent<HealthComponent>();
+	int const increasedHealth = healthComponent->getCurrent() + HEAL_POKEMON_HEALTH_POINTS;
+	int const healthPoints = increasedHealth > healthComponent->getTotal() 
+		? healthComponent->getTotal() 
+		: increasedHealth;
+	healthComponent->setCurrent(healthPoints);
+}
+
+void decreasePotionCount(EntityManager *em) {
+	auto player = em->getEntitiesWithComponent<PlayerControlComponent>().front();
+	if (!player) return;
+
+	auto inventory = player->getComponent<PlayersInventoryComponent>();
+	if (!inventory) return;
+
+	inventory->removePotions(1);
+}
+
+bool isSomePotions(EntityManager *em) {
+	auto player = em->getEntitiesWithComponent<PlayerControlComponent>().front();
+
+	if (!player) return false;
+
+	auto inventory = player->getComponent<PlayersInventoryComponent>();
+	if (!inventory) return false;
+
+	auto potionAmount = inventory->getPotionCount();
+	return potionAmount > 0;
+}

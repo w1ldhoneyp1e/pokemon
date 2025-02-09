@@ -55,6 +55,8 @@ const int POKEMON_INVENTORY_HEIGHT = 33;
 
 const int POKEMON_SELL_PRICE = 5;
 
+const int HEAL_POKEMON_HEALTH_POINTS = 10;
+
 // Catching
 
 
