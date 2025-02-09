@@ -30,6 +30,7 @@ void pokemonCollision(Controller* controller) {
 	auto inventory = player->getComponent<PlayersInventoryComponent>();
 	auto pokeballs = inventory->getPokeballCount();
 	if (pokeballs == 0) return;
+
 	auto pokemons = em->getEntitiesWithComponent<PokemonComponent>();
 	auto keys = input->getPressedKeys();
 	if (keys.empty()) return;
@@ -48,6 +49,7 @@ void pokemonCollision(Controller* controller) {
 			pokemon->removeComponent<GameTypeEntityComponent>();
 			initCatching(em, render);
 			inventory->removePokeballs(1);
+			return;
 		}
 	}
 }
