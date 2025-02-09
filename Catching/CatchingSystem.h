@@ -77,7 +77,6 @@ void initCatchingPokemon(EntityManager* em) {
     pokemon->addComponent<CatchingTypeEntityComponent>();
 }
 
-
 void initCatchingPokeball(EntityManager* em) {
     auto pokeball = em->createEntity();
     pokeball->addComponent<PokeballComponent>();
@@ -201,6 +200,7 @@ void handlePokeballOutOfMap(EntityManager* em, RenderSystem* render, GameState* 
 void handlePokeballPokemonCollision(EntityManager* em, RenderSystem* render, GameState* state) {
     auto pokemon = em->getEntitiesWithComponent<AttackedPokemonComponent>()[0];
     pokemon->removeComponent<CatchingTypeEntityComponent>();
+    pokemon->removeComponent<AttackedPokemonComponent>();
     auto player = em->getEntitiesWithComponent<PlayerControlComponent>()[0];
     auto inventory = player->getComponent<PlayersInventoryComponent>();
     inventory->addPokemon(pokemon->getId());
