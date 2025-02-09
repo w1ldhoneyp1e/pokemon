@@ -123,7 +123,7 @@ void generatePokemon(Controller* controller) {
 
 void pokemonGenerating(Controller* controller, float deltaTime) {
 	static float timeSinceLastGeneration = 0.0f;
-	static const float generationInterval = 500.0f;
+	static const float generationInterval = 5.0f;
 	
 	auto [em, input, render, state, battleContext, collisionMaps, currentLocation] = controller->getAll();
 	
@@ -136,10 +136,14 @@ void pokemonGenerating(Controller* controller, float deltaTime) {
 }
 
 void onPokemonSellButtonClick(Controller* controller) {
-	auto input = controller->getInputSystem();
-	if (!input->hasMouseClick()) return;
+	auto [input, em, render, state, battleContext, collisionMaps, currentLocation] = controller->getAll();
 
-	auto em = controller->getEntityManager();
+	auto player = controller->getEntityManager()->getEntitiesWithComponent<PlayerControlComponent>()[0];
+	if (!player) return;
+	auto inventory = player->getComponent<PlayersInventoryComponent>();
+	if (!inventory) return;
+
+	if (!input->hasMouseClick()) return;
 
 	auto sellButtons = em->getEntitiesWithComponent<PokemonSellComponent>();
 	for (auto sellButton : sellButtons) {
@@ -150,7 +154,12 @@ void onPokemonSellButtonClick(Controller* controller) {
 		auto pokemon = findPokemonByID(pokemons, id);
 		if (pokemon) {
 			sellPokemon(controller, pokemon);
+			inventory->removePokemon(id);
+			sellButtons.erase(std::remove(sellButtons.begin(), sellButtons.end(), sellButton), sellButtons.end());
+			render->removeEntity(sellButton->getId());
+			render->removeEntity(pokemon->getId());
 			em->removeEntity(sellButton);
+			em->removeEntity(pokemon);
 			updateCoins(controller);
 		}
 		input->clear();
