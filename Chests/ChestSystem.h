@@ -55,7 +55,7 @@ void chestInit(
 
 void generateChestContent(EntityManager *em, int chestId) {
     int amountOfItems = 1 + std::rand() % 16;
-    for (int i=1; i <= amountOfItems; ++i) {
+    for (int i=0; i < amountOfItems; ++i) {
         generateRandomItem(em, i, chestId);
     }
 }
@@ -64,11 +64,11 @@ void generateRandomItem(EntityManager *em, int index, int chestId) {
     int typeIdOfItem = std::rand() % 3; // 0 => Healing Potion, 1 => Coin, 2 => Pokeball
 	switch (typeIdOfItem)
 	{
-	case 0:{
+	case 0: {
 		auto healingPotion = createHealingPotion(em);
 		healingPotion->addComponent<ChestContentComponent>(chestId);
 		healingPotion->addComponent<PositionComponent>(
-			CHEST_INTERFACE_X + 5 + (index % MAX_ITEMS_PER_ROW - 1) * 25,
+			CHEST_INTERFACE_X + 5 + (index % MAX_ITEMS_PER_ROW) * 25,
 			CHEST_INTERFACE_Y + 5 + index / MAX_ITEMS_PER_ROW * 25
 		);
 		break;
@@ -78,7 +78,7 @@ void generateRandomItem(EntityManager *em, int index, int chestId) {
 		auto coin = createCoin(em);
 		coin->addComponent<ChestContentComponent>(chestId);
 		coin->addComponent<PositionComponent>(
-			CHEST_INTERFACE_X + 5 + (index % MAX_ITEMS_PER_ROW - 1) * 25,
+			CHEST_INTERFACE_X + 5 + (index % MAX_ITEMS_PER_ROW) * 25,
 			CHEST_INTERFACE_Y + 5 + index / MAX_ITEMS_PER_ROW * 25
 		);
 		break;
@@ -88,7 +88,7 @@ void generateRandomItem(EntityManager *em, int index, int chestId) {
 		auto pokeball = createPokeball(em);
 		pokeball->addComponent<ChestContentComponent>(chestId);
 		pokeball->addComponent<PositionComponent>(
-			CHEST_INTERFACE_X + 5 + (index % MAX_ITEMS_PER_ROW - 1) * 25,
+			CHEST_INTERFACE_X + 5 + (index % MAX_ITEMS_PER_ROW) * 25,
 			CHEST_INTERFACE_Y + 5 + index / MAX_ITEMS_PER_ROW * 25
 		);
 		break;
