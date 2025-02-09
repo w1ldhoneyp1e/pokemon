@@ -15,21 +15,14 @@ private:
 	int pokeballs = 0;
 
 public:
-    void addPokemon(int id) {
-        pokemonCollection.push_back(id);
-    }
+    void addPokemon(int id) { pokemonCollection.push_back(id); }
+    void removePokemon(int id) { pokemonCollection.erase(std::remove(pokemonCollection.begin(), pokemonCollection.end(), id), pokemonCollection.end()); }
 
-    void clearInventory() {
-        pokemonCollection.clear();
-    }
+    void clearInventory() { pokemonCollection.clear(); }
 
-    std::vector<int> getPokemons() {
-        return pokemonCollection;
-    }
+    std::vector<int> getPokemons() { return pokemonCollection; }
 
-    size_t getPokemonCount() const {
-        return pokemonCollection.size();
-    }
+    size_t getPokemonCount() const { return pokemonCollection.size(); }
 
     void addCoins(int amount) { coins += amount; }
     void removeCoins(int amount) { coins = std::max(0, coins - amount); }
