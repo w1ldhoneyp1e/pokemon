@@ -8,5 +8,6 @@ enum GameState {
     Battle,
 	Shop,
 	TheEnd,
-    Pause
+    Pause,
+	Dialog
 };

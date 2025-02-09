@@ -16,12 +16,14 @@
 #include "./Catching/CatchingSystem.h"
 #include "./Location/LocationType.h"
 #include "./Pause/PauseSystem.h"
+#include "./Quests/Quests.h"
 #include "GameState.h"
 #include "TheEnd/TheEnd.h"
 #include "Entity.h"
 #include <iostream>
 #include <windows.h>
 #include <chrono>
+
 #include <random>
 
 
@@ -64,7 +66,8 @@ void update(Controller* controller, float deltaTime, sf::RenderWindow* window) {
 		openInventory(controller);
 		pokemonCollision(controller);
 		chestOpening(controller);
-		trainerCollision(controller);
+		finalQuestCollision(controller);
+		// trainerCollision(controller);
 		shopCollision(controller);
 	break;
 
@@ -104,12 +107,13 @@ void update(Controller* controller, float deltaTime, sf::RenderWindow* window) {
 		break;
 	}
 
+	case GameState::Dialog: {
+		break;
+	}
 
 	default:
 		break;
 	}
-	
-
 }
 
 void gameLoop(sf::RenderWindow* window, Controller* controller) {

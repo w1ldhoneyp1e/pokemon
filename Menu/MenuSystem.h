@@ -2,6 +2,7 @@
 #include "../systems/EntityManager.h"
 #include "../systems/RenderSystem.h"
 #include "../Game/GameSystem.h"
+#include "../Quests/Quests.h"
 #include <SFML/Graphics.hpp>
 #include "../Entity.h"
 #include "../const.h"
@@ -17,6 +18,7 @@ void onStartGameButtonPress(Controller* controller) {
 	if (!isClickOnEntity(input->getMouseClick(), button)) return;
 	*state = GameState::Game;
 	initGameEntities(controller);
+	initAreaForFinalQuest(controller);
 	render->removeEntities();
 
 	render->addEntities(em->getEntitiesWithComponent<GameTypeEntityComponent>());

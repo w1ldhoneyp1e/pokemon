@@ -17,3 +17,4 @@
 #include "../Shop/ShopComponents.h"
 #include "../TheEnd/TheEndComponents.h"
 #include "../Pause/PauseComponents.h"
+#include "../Quests/QuestsComponents.h"
