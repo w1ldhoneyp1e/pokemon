@@ -334,7 +334,6 @@ void onUsePotion(EntityManager *em, InputSystem *input) {
 		healPlayerPokemon(em);
 		decreasePotionCount(em);
 	}
-
 }
 
 void healPlayerPokemon(EntityManager *em) {

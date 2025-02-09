@@ -7,5 +7,6 @@ enum GameState {
     Chest,
     Battle,
 	Shop,
-	TheEnd
+	TheEnd,
+    Pause
 };

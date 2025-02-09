@@ -15,6 +15,7 @@
 #include "./Time/TimeSystem.h"
 #include "./Catching/CatchingSystem.h"
 #include "./Location/LocationType.h"
+#include "./Pause/PauseSystem.h"
 #include "GameState.h"
 #include "TheEnd/TheEnd.h"
 #include "Entity.h"
@@ -59,7 +60,7 @@ void update(Controller* controller, float deltaTime, sf::RenderWindow* window) {
 		pokemonGenerating(controller, deltaTime);
 		chestsGenerating(controller, deltaTime);
 		if (keys.empty()) return;
-		backToMenu(controller);
+		onPauseGame(controller);
 		openInventory(controller);
 		pokemonCollision(controller);
 		chestOpening(controller);
@@ -98,10 +99,17 @@ void update(Controller* controller, float deltaTime, sf::RenderWindow* window) {
 		break;
 	}
 
+	case GameState::Pause: {
+		handlePauseGame(controller);
+		break;
+	}
+
+
 	default:
 		break;
 	}
 	
+
 }
 
 void gameLoop(sf::RenderWindow* window, Controller* controller) {

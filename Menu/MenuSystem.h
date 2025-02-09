@@ -23,17 +23,6 @@ void onStartGameButtonPress(Controller* controller) {
 	input->clear();
 }
 
-void backToMenu(Controller* controller) {
-	auto [input, em, render, state, battleContext, maps, currentLocation] = controller->getAll();
-	auto keys = input->getPressedKeys();
-
-	if (std::find(keys.begin(), keys.end(), sf::Keyboard::Escape) == keys.end()) return;
-	*state = GameState::Menu;
-	render->removeEntities();
-	render->addEntities(em->getEntitiesWithComponent<MenuTypeEntityComponent>());
-	input->clear();
-}
-
 void initButtonGameStart(EntityManager* em);
 void initBackgroundMenu(EntityManager* em);
 
