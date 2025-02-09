@@ -28,7 +28,7 @@ bool doesChestConditionSatisfy(Entity *chest, Entity *player, std::vector<sf::Ke
 bool isEnterPressed(std::vector<sf::Keyboard::Key> keys);
 
 void generateChest(Controller* controller);
-void handleOpenedChests(Controller* controller, std::vector<Entity*> chests, float deltaTime);
+void handleOpenedChests(Controller* controller, std::vector<Entity*>& chests, float deltaTime);
 bool hasClosedChests(std::vector<Entity*> chests);
 
 void updateChests(Controller* controller) {
@@ -395,9 +395,10 @@ void chestsGenerating(Controller* controller, float deltaTime) {
 
     auto [input, em, render, state, battleContext, maps, currentLocation] = controller->getAll();
     auto chests = em->getEntitiesWithComponent<ChestComponent>();
+    auto& chestLink = chests;
     
 	if (!chests.empty()) {
-		handleOpenedChests(controller, chests, deltaTime);
+		handleOpenedChests(controller, chestLink, deltaTime);
 	}
 
     if (!hasClosedChests(chests)) {
@@ -410,19 +411,23 @@ void chestsGenerating(Controller* controller, float deltaTime) {
 }
 
 
-void handleOpenedChests(Controller* controller, std::vector<Entity*> chests, float deltaTime) {
-	auto em = controller->getEntityManager();
-	auto render = controller->getRenderSystem();
+void handleOpenedChests(Controller* controller, std::vector<Entity*>& chests, float deltaTime) {
+    auto em = controller->getEntityManager();
+    auto render = controller->getRenderSystem();
 
-	for (auto chest : chests) {
+    for (size_t i = 0; i < chests.size();) {
+        auto chest = chests[i];
         if (chest->getComponent<ChestComponent>()->isOpened()) {
             chest->getComponent<ChestComponent>()->addTimeAfterOpening(deltaTime);
             
             if (chest->getComponent<ChestComponent>()->getTimeAfterOpening() >= 3.0f) {
                 render->removeEntity(chest->getId());
                 em->removeEntity(chest);
+                chests.erase(chests.begin() + i);
+                continue;
             }
         }
+        ++i;
     }
 }
 
@@ -432,11 +437,11 @@ bool hasClosedChests(std::vector<Entity*> chests) {
     }
     
     for (auto chest : chests) {
-        if (chest == nullptr) {
+        if (!chest) {
             continue;
         }
         auto chestComponent = chest->getComponent<ChestComponent>();
-        if (chestComponent == nullptr) {
+        if (!chestComponent) {
             continue;
         }
         
