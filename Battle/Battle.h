@@ -11,6 +11,7 @@
 #include <chrono>
 #include <ctime>
 
+void initBattle(EntityManager *em, RenderSystem *render, BattleContext *ctx);
 void initBattleLocation(EntityManager *em);
 void initArrows(EntityManager *em);
 void initMyPokemon(EntityManager *em);
@@ -35,6 +36,36 @@ bool isSomePotions(EntityManager *em);
 void decreasePotionCount(EntityManager *em);
 
 void closeBattle(EntityManager *em, RenderSystem *render);
+
+void handleDialog(Controller* controller) {
+	auto [input, em, render, state, battleContext, maps, currentLocation] = controller->getAll();
+	if (!input->hasMouseClick()) return;
+
+	auto buttons = em->getEntitiesWithComponent<QuestButtonComponent>();
+	for (auto button : buttons) {
+		auto buttonComponent = button->getComponent<QuestButtonComponent>();
+		if (isClickOnEntity(input->getMouseClick(), button)) {
+			if (buttonComponent->getType() == QuestButtonType::Cancel) {
+				clearDialog(em, render);
+				*state = GameState::Game;
+				input->clear();
+				return;
+			}
+
+			if (buttonComponent->getType() == QuestButtonType::Ok) {
+				clearDialog(em, render);
+				auto player = em->getEntitiesWithComponent<PlayerControlComponent>()[0];
+				auto inventory = player->getComponent<PlayersInventoryComponent>();
+				input->clear();
+				*state = GameState::Game;
+				if (inventory->getPokemonCount() == 0) return;
+				initBattle(em, render, battleContext);
+				*state = GameState::Battle;
+				return;
+			}
+		}
+	}
+}
 
 void updateBattle(Controller *controller) {
     auto [input, em, render, state, battleContext, maps, currentLocation] = controller->getAll();

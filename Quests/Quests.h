@@ -1,5 +1,6 @@
 #pragma once
 #include "../systems/Controller.h"
+#include "../Battle/Battle.h"
 #include "../Components/Components.h"
 
 void createDialog(EntityManager* em, RenderSystem* render);
@@ -8,6 +9,7 @@ void createDialogText(EntityManager* em);
 void createDialogButtons(EntityManager* em);
 void createOkButtonDialog(EntityManager* em);
 void createCancelButtonDialog(EntityManager* em);
+void clearDialog(EntityManager* em, RenderSystem* render);
 
 void initAreaForFinalQuest(Controller* controller) {
 	auto [input, em, render, state, battleContext, collisionMaps, currentLocation] = controller->getAll();
@@ -79,7 +81,6 @@ void createDialogText(EntityManager* em) {
 	);
 }
 
-
 void createDialogButtons(EntityManager* em) {
 	createOkButtonDialog(em);
 	createCancelButtonDialog(em);
@@ -91,6 +92,7 @@ void createOkButtonDialog(EntityManager* em) {
 	okButton->addComponent<SizeComponent>(DIALOG_BUTTON_WIDTH, DIALOG_BUTTON_HEIGHT);
 	okButton->addComponent<QuestDialogComponent>();
 	okButton->addComponent<RenderLayerComponent>(2);
+	okButton->addComponent<QuestButtonComponent>(QuestButtonType::Ok);
 	sf::Texture okButtonTexture;
 	if (okButtonTexture.loadFromFile("../res/okButton(32x13).png")) {
 		okButton->addComponent<TextureComponent>(
@@ -107,6 +109,7 @@ void createCancelButtonDialog(EntityManager* em) {
 	cancelButton->addComponent<SizeComponent>(DIALOG_BUTTON_WIDTH, DIALOG_BUTTON_HEIGHT);
 	cancelButton->addComponent<QuestDialogComponent>();
 	cancelButton->addComponent<RenderLayerComponent>(2);
+	cancelButton->addComponent<QuestButtonComponent>(QuestButtonType::Cancel);
 	sf::Texture cancelButtonTexture;
 	if (cancelButtonTexture.loadFromFile("../res/backButton(32x13).png")) {
 		cancelButton->addComponent<TextureComponent>(
@@ -116,3 +119,12 @@ void createCancelButtonDialog(EntityManager* em) {
 		);
 	}
 }
+
+void clearDialog(EntityManager* em, RenderSystem* render) {
+	auto dialogs = em->getEntitiesWithComponent<QuestDialogComponent>();
+	for (auto dialog : dialogs) {
+		render->removeEntity(dialog->getId());
+		em->removeEntity(dialog);
+	}
+}
+

@@ -9,7 +9,6 @@
 #include "./Inventory/InventorySystem.h"
 #include "./Chests/ChestSystem.h"
 #include "./Battle/Battle.h"
-#include "./Trainer/Trainer.h"
 #include "./Pokemon/PokemonSystem.h"
 #include "./Menu/MenuSystem.h"
 #include "./Time/TimeSystem.h"
@@ -67,7 +66,6 @@ void update(Controller* controller, float deltaTime, sf::RenderWindow* window) {
 		pokemonCollision(controller);
 		chestOpening(controller);
 		finalQuestCollision(controller);
-		// trainerCollision(controller);
 		shopCollision(controller);
 	break;
 
@@ -108,6 +106,7 @@ void update(Controller* controller, float deltaTime, sf::RenderWindow* window) {
 	}
 
 	case GameState::Dialog: {
+		handleDialog(controller);
 		break;
 	}
 
