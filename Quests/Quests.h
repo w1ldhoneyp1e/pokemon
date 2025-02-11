@@ -59,13 +59,21 @@ void createDialogLayout(EntityManager* em) {
 }
 
 void createDialogText(EntityManager* em) {
+	auto player = em->getEntitiesWithComponent<PlayerControlComponent>()[0];
+	auto inventory = player->getComponent<PlayersInventoryComponent>();
+	auto amountOfPokemons = inventory->getPokemonCount();
+	
+	auto text = amountOfPokemons == 0 
+		? "You have no pokemons,\ncatch some!" 
+		: "Are you ready to fight?";
+
 	auto dialog = em->createEntity();
 	dialog->addComponent<PositionComponent>(DIALOG_POSITION_X + 30, DIALOG_POSITION_Y + 30);
 	dialog->addComponent<SizeComponent>(DIALOG_WIDTH - 30, DIALOG_HEIGHT - 30);
 	dialog->addComponent<QuestDialogComponent>();
 	dialog->addComponent<RenderLayerComponent>(2);
 	dialog->addComponent<TextComponent>(
-		"Hello, how are you?", 
+		text, 
 		DIALOG_POSITION_X + 30,
 		DIALOG_POSITION_Y + 30,
 		20,
