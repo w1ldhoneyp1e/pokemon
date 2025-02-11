@@ -179,7 +179,7 @@ void initEnemyPokemon(EntityManager *em) {
 	);
     pokemon->addComponent<SizeComponent>(BATTLE_POKEMON_WIDTH, BATTLE_POKEMON_HEIGHT);
 	pokemon->addComponent<RenderLayerComponent>(1);
-	pokemon->addComponent<HealthComponent>(100, 100, true);
+	pokemon->addComponent<HealthComponent>(500, 500, true);
     pokemon->addComponent<BattleTypeEntityComponent>();
     pokemon->addComponent<DamageComponent>(10, 25);
     pokemon->addComponent<EnemyPokemonComponent>();
