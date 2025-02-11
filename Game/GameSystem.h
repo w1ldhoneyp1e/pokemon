@@ -12,10 +12,10 @@ void initPlayer(EntityManager* em);
 void initGameLocation(EntityManager* em);
 void initBulbasour(EntityManager* em);
 
-void initTrainer(EntityManager* em);
+void initTrainer(Controller* controller);
 void initTrainerPokemons(EntityManager *em, TrainerPokemonsComponent *pokemons);
-
-void initGameEntities(Controller* controller	) {
+void initAreaForFinalQuest(Controller* controller, Entity* trainer);
+void initGameEntities(Controller* controller) {
     auto [input, em, render, state, battleContext, collisionMaps, currentLocation] = controller->getAll();
     initPlayer(em);
     initGameLocation(em);
@@ -23,7 +23,7 @@ void initGameEntities(Controller* controller	) {
     for(int i = 0; i < 3; ++i) {
         generatePokemon(controller);
     }
-    initTrainer(em);
+    initTrainer(controller);
 	initShop(em);
 }
 
@@ -106,7 +106,9 @@ void initBulbasour(EntityManager* em) {
     }
 }
 
-void initTrainer(EntityManager *em) {
+void initTrainer(Controller* controller) {
+	auto em = controller->getEntityManager();
+
 	auto trainer = em->createEntity();
     trainer->addComponent<PositionComponent>(
 		TRAINER_POSITION_X, 
@@ -127,6 +129,22 @@ void initTrainer(EntityManager *em) {
 			24
 		);
     }
+	initAreaForFinalQuest(controller, trainer);
+}
+
+void initAreaForFinalQuest(Controller* controller, Entity* trainer) {
+	auto [input, em, render, state, battleContext, collisionMaps, currentLocation] = controller->getAll();
+
+	auto area = em->createEntity();
+	area->addComponent<PositionComponent>(
+		trainer->getComponent<PositionComponent>()->getX(), 
+		trainer->getComponent<PositionComponent>()->getY() + trainer->getComponent<SizeComponent>()->getHeight()
+	);
+	area->addComponent<SizeComponent>(16, 11);
+	area->addComponent<GameTypeEntityComponent>();
+	area->addComponent<QuestAreaComponent>(trainer->getId());
+	area->addComponent<RenderLayerComponent>(1);
+    area->addComponent<ShapeComponent>(ShapeType::Ellipse, sf::Color(68, 68, 68, 204));
 }
 
 void initTrainerPokemons(EntityManager *em, TrainerPokemonsComponent *pokemons) {

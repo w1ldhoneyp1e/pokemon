@@ -6,7 +6,6 @@ enum QuestButtonType {
 	Cancel
 };
 
-class QuestAreaComponent : public Component {};
 class QuestDialogComponent : public Component {};
 class QuestButtonComponent : public Component {
 	private:
@@ -14,6 +13,14 @@ class QuestButtonComponent : public Component {
 	public:
 		QuestButtonComponent(QuestButtonType type) : type(type) {}
 		QuestButtonType getType() const { return type; }
+};
+
+class QuestAreaComponent : public Component {
+	private:
+		int trainerId;
+	public:
+		QuestAreaComponent(int trainerId) : trainerId(trainerId) {}
+		int getTrainerId() const { return trainerId; }
 };
 
 

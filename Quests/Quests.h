@@ -11,18 +11,6 @@ void createOkButtonDialog(EntityManager* em);
 void createCancelButtonDialog(EntityManager* em);
 void clearDialog(EntityManager* em, RenderSystem* render);
 
-void initAreaForFinalQuest(Controller* controller) {
-	auto [input, em, render, state, battleContext, collisionMaps, currentLocation] = controller->getAll();
-
-	auto area = em->createEntity();
-	area->addComponent<PositionComponent>(TRAINER_POSITION_X, TRAINER_POSITION_Y + TRAINER_HEIGHT);
-	area->addComponent<SizeComponent>(16, 11);
-	area->addComponent<GameTypeEntityComponent>();
-	area->addComponent<QuestAreaComponent>();
-	area->addComponent<RenderLayerComponent>(1);
-    area->addComponent<ShapeComponent>(ShapeType::Ellipse, sf::Color(68, 68, 68, 204));
-}
-
 void finalQuestCollision(Controller* controller) {
     auto [input, em, render, state, battleContext, maps, currentLocation] = controller->getAll();
     auto keys = input->getPressedKeys();
@@ -36,6 +24,10 @@ void finalQuestCollision(Controller* controller) {
     auto questArea = questAreas[0];
 
     if (isCollision(player, questArea)) {
+		auto trainerId = questArea->getComponent<QuestAreaComponent>()->getTrainerId();
+		auto trainer = em->getEntity(trainerId);
+		trainer->getComponent<TrainerComponent>()->setAttacked(true);
+		
         *state = GameState::Dialog;
         createDialog(em, render);
         render->addEntities(em->getEntitiesWithComponent<QuestDialogComponent>());

@@ -18,7 +18,6 @@ void onStartGameButtonPress(Controller* controller) {
 	if (!isClickOnEntity(input->getMouseClick(), button)) return;
 	*state = GameState::Game;
 	initGameEntities(controller);
-	initAreaForFinalQuest(controller);
 	render->removeEntities();
 
 	render->addEntities(em->getEntitiesWithComponent<GameTypeEntityComponent>());
