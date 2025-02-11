@@ -53,7 +53,7 @@ void initPlayer(EntityManager* em) {
 	player->getComponent<AnimationComponent>()->currentDirection = 1;
 	player->addComponent<SpeedComponent>(PLAYER_SPEED);
     player->addComponent<GameTypeEntityComponent>();
-	player->addComponent<RenderLayerComponent>(1);
+	player->addComponent<RenderLayerComponent>(2);
 	player->addComponent<PlayersInventoryComponent>();
 	auto inventory = player->getComponent<PlayersInventoryComponent>();
 	inventory->addPokeballs(3);

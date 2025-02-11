@@ -46,7 +46,7 @@ void createDialogLayout(EntityManager* em) {
 	dialog->addComponent<PositionComponent>(DIALOG_POSITION_X, DIALOG_POSITION_Y);
 	dialog->addComponent<SizeComponent>(DIALOG_WIDTH, DIALOG_HEIGHT);
 	dialog->addComponent<QuestDialogComponent>();
-	dialog->addComponent<RenderLayerComponent>(1);
+	dialog->addComponent<RenderLayerComponent>(3);
 	sf::Texture dialogTexture;
 
 	if (dialogTexture.loadFromFile("../res/background_menu(62x46).png")) {
@@ -71,7 +71,7 @@ void createDialogText(EntityManager* em) {
 	dialog->addComponent<PositionComponent>(DIALOG_POSITION_X + 30, DIALOG_POSITION_Y + 30);
 	dialog->addComponent<SizeComponent>(DIALOG_WIDTH - 30, DIALOG_HEIGHT - 30);
 	dialog->addComponent<QuestDialogComponent>();
-	dialog->addComponent<RenderLayerComponent>(2);
+	dialog->addComponent<RenderLayerComponent>(4);
 	dialog->addComponent<TextComponent>(
 		text, 
 		DIALOG_POSITION_X + 30,
@@ -91,7 +91,7 @@ void createOkButtonDialog(EntityManager* em) {
 	okButton->addComponent<PositionComponent>(DIALOG_OK_BUTTON_POSITION_X, DIALOG_OK_BUTTON_POSITION_Y);
 	okButton->addComponent<SizeComponent>(DIALOG_BUTTON_WIDTH, DIALOG_BUTTON_HEIGHT);
 	okButton->addComponent<QuestDialogComponent>();
-	okButton->addComponent<RenderLayerComponent>(2);
+	okButton->addComponent<RenderLayerComponent>(4);
 	okButton->addComponent<QuestButtonComponent>(QuestButtonType::Ok);
 	sf::Texture okButtonTexture;
 	if (okButtonTexture.loadFromFile("../res/okButton(32x13).png")) {
@@ -108,7 +108,7 @@ void createCancelButtonDialog(EntityManager* em) {
 	cancelButton->addComponent<PositionComponent>(DIALOG_CANCEL_BUTTON_POSITION_X, DIALOG_CANCEL_BUTTON_POSITION_Y);
 	cancelButton->addComponent<SizeComponent>(DIALOG_BUTTON_WIDTH, DIALOG_BUTTON_HEIGHT);
 	cancelButton->addComponent<QuestDialogComponent>();
-	cancelButton->addComponent<RenderLayerComponent>(2);
+	cancelButton->addComponent<RenderLayerComponent>(4);
 	cancelButton->addComponent<QuestButtonComponent>(QuestButtonType::Cancel);
 	sf::Texture cancelButtonTexture;
 	if (cancelButtonTexture.loadFromFile("../res/backButton(32x13).png")) {

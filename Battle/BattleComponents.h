@@ -2,6 +2,7 @@
 #include "../Components/ParentComponent.h"
 
 class BattleTypeEntityComponent : public Component {};
+class BattleInterfaceEntityComponent : public Component {};
 class PlayerPokemonComponent : public Component {};
 class PotionButtonComponent : public Component {};
 class PotionButtonLayoutComponent : public Component {};

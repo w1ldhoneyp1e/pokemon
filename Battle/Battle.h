@@ -111,6 +111,7 @@ void initBattleLocation(EntityManager *em) {
 	auto location = em->createEntity();
     location->addComponent<PositionComponent>(0, 0);
     location->addComponent<SizeComponent>(WINDOW_WIDTH, WINDOW_HEIGHT);
+	location->addComponent<BattleInterfaceEntityComponent>();
 	location->addComponent<RenderLayerComponent>(0);
     location->addComponent<BattleTypeEntityComponent>();
     sf::Texture locationTexture;
@@ -130,6 +131,7 @@ void initArrows(EntityManager *em) {
 			BATTLE_ARROWS_POS_X,
 			BATTLE_ARROWS_POS_Y + i * BATTLE_ARROW_WIDTH
 		);
+		arrow->addComponent<BattleInterfaceEntityComponent>();
 		arrow->addComponent<SizeComponent>(BATTLE_ARROW_WIDTH, BATTLE_ARROW_HEIGHT);
 		arrow->addComponent<RenderLayerComponent>(1);
 		arrow->addComponent<BattleArrowComponent>(ATTACK_DIR_ARR[i]);
@@ -222,6 +224,7 @@ void initPotionButtonTexture(EntityManager *em) {
 	potionButtonTexture->addComponent<SizeComponent>(BATTLE_POTION_BUTTON_WIDTH, BATTLE_POTION_BUTTON_HEIGHT);
 	potionButtonTexture->addComponent<RenderLayerComponent>(1);
 	potionButtonTexture->addComponent<BattleTypeEntityComponent>();
+	potionButtonTexture->addComponent<BattleInterfaceEntityComponent>();
 	potionButtonTexture->addComponent<PotionButtonComponent>();
 	potionButtonTexture->addComponent<PotionButtonLayoutComponent>();
 	sf::Texture texture;
@@ -235,6 +238,7 @@ void initPotionButtonTriggerKey(EntityManager *em) {
 	potionButtonTriggerKey->addComponent<PositionComponent>(BATTLE_POTION_BUTTON_TEXT_X, BATTLE_POTION_BUTTON_UPPER_TEXT_Y);
 	potionButtonTriggerKey->addComponent<RenderLayerComponent>(2);
 	potionButtonTriggerKey->addComponent<BattleTypeEntityComponent>();
+	potionButtonTriggerKey->addComponent<BattleInterfaceEntityComponent>();
 	potionButtonTriggerKey->addComponent<PotionButtonComponent>();
 	potionButtonTriggerKey->addComponent<TextComponent>(
 		"1", 
@@ -258,6 +262,7 @@ void initPotionButtonAmount(EntityManager *em) {
 	potionButtonAmount->addComponent<PositionComponent>(BATTLE_POTION_BUTTON_TEXT_X, BATTLE_POTION_BUTTON_LOWER_TEXT_Y);
 	potionButtonAmount->addComponent<RenderLayerComponent>(2);
 	potionButtonAmount->addComponent<BattleTypeEntityComponent>();
+	potionButtonAmount->addComponent<BattleInterfaceEntityComponent>();
 	potionButtonAmount->addComponent<PotionButtonComponent>();
 	potionButtonAmount->addComponent<TextComponent>(
 		std::to_string(potionAmount), 
@@ -341,7 +346,11 @@ void enemyAttack(EntityManager *em, BattleContext  *ctx) {
 
 void closeBattle(EntityManager *em, RenderSystem *render) {
 	auto battleEntities = em->getEntitiesWithComponent<BattleTypeEntityComponent>();
+	auto battleInterfaceEntities = em->getEntitiesWithComponent<BattleInterfaceEntityComponent>();
 	render->removeEntities();
+	for (auto entity : battleInterfaceEntities) {
+		em->removeEntity(entity);
+	}
     initGameLocation(em);
 	auto gameEntities = em->getEntitiesWithComponent<GameTypeEntityComponent>();
 	render->addEntities(gameEntities);
