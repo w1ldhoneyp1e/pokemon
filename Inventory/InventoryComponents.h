@@ -17,11 +17,8 @@ private:
 public:
     void addPokemon(int id) { pokemonCollection.push_back(id); }
     void removePokemon(int id) { pokemonCollection.erase(std::remove(pokemonCollection.begin(), pokemonCollection.end(), id), pokemonCollection.end()); }
-
     void clearInventory() { pokemonCollection.clear(); }
-
     std::vector<int> getPokemons() { return pokemonCollection; }
-
     size_t getPokemonCount() const { return pokemonCollection.size(); }
 
     void addCoins(int amount) { coins += amount; }

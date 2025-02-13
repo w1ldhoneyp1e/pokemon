@@ -36,6 +36,7 @@ bool isSomePotions(EntityManager *em);
 void decreasePotionCount(EntityManager *em);
 
 void closeBattle(EntityManager *em, RenderSystem *render);
+void removePlayersPokemon(EntityManager *em);
 
 void handleDialog(Controller* controller) {
 	auto [input, em, render, state, battleContext, maps, currentLocation] = controller->getAll();
@@ -90,9 +91,21 @@ void updateBattle(Controller *controller) {
 
     case BattleState::EnemyWon:
 		closeBattle(em, render);
+		removePlayersPokemon(em);
 		*state = GameState::Game;
         break;
     }
+}
+
+void removePlayersPokemon(EntityManager *em) {
+	auto player = em->getEntitiesWithComponent<PlayerControlComponent>().front();
+	if (!player) return;
+
+	auto inventory = player->getComponent<PlayersInventoryComponent>();
+
+	auto playerPokemon = em->getEntitiesWithComponent<PlayerPokemonComponent>().front();
+	inventory->removePokemon(playerPokemon->getId());
+	em->removeEntity(playerPokemon);
 }
 
 void initBattle(EntityManager *em, RenderSystem *render, BattleContext *ctx) {
