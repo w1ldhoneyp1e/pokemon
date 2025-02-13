@@ -85,6 +85,13 @@ const int POKEBALL_POS_Y = ARROW_POS_Y + POKEBALL_HEIGHT / 2;
 
 const float ARROW_RADIUS = ARROW_POKEBALL_GAP + POKEBALL_HEIGHT / 2;
 
+const int TIMER_POS_X = WINDOW_WIDTH / 2 - 13;
+const int TIMER_POS_Y = WINDOW_HEIGHT / 10;
+
+const int TIMER_TEXT_SIZE = 48;
+
+const int TIMER_DURATION = 20;
+
 // Items Chest
 
 const int ITEM_SIDE = 14;

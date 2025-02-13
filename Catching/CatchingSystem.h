@@ -6,14 +6,13 @@
 #include "../const.h"
 #include <iostream>
 
+float timer = 0;
 void initCatching(EntityManager* em, RenderSystem* render);
 void arrowRotation(EntityManager* em, float dt);
 void onSpacePressed(EntityManager* em, InputSystem* input, float dt);
 void throwPokeball(EntityManager* em, float dt);
 void pokeballCollision(EntityManager* em, RenderSystem* render, GameState* state);
 void removeCatchingEntities(EntityManager* em, RenderSystem* render);
-
-void setPokemonPropsIfLose(Entity *pokemon);
 
 void initCatchingLocation(EntityManager* em);
 void initCatchingArrow(EntityManager* em);
@@ -23,9 +22,17 @@ void initCatchingPokemon(EntityManager* em);
 void handlePokeballPokemonCollision(EntityManager* em, RenderSystem* render, GameState* state);
 void handlePokeballOutOfMap(EntityManager* em, RenderSystem* render, GameState* state);
 
+void initTimer(EntityManager* em);
+void updateTimer(EntityManager* em, float dt);
+bool checkTimer(EntityManager* em, RenderSystem* render, GameState* state);
+
 void updateCatching(Controller* controller, float dt) {
 	auto [input, em, render, state, battleContext, maps, currentLocation] = controller->getAll();
 
+    updateTimer(em, dt);
+    if (checkTimer(em, render, state)) {
+        return;
+    }
     arrowRotation(em, dt);
     onSpacePressed(em, input, dt);
     throwPokeball(em, dt);
@@ -33,6 +40,8 @@ void updateCatching(Controller* controller, float dt) {
 }
 
 void initCatching(EntityManager* em, RenderSystem* render) {
+    timer = 20;
+    initTimer(em);
     initCatchingLocation(em);
     initCatchingArrow(em);
     initCatchingPokeball(em);
@@ -41,6 +50,23 @@ void initCatching(EntityManager* em, RenderSystem* render) {
     render->removeEntities();
     render->addEntities(em->getEntitiesWithComponent<CatchingTypeEntityComponent>());
 }
+
+void initTimer(EntityManager* em) {
+    timer = TIMER_DURATION;
+    auto timerText = em->createEntity();
+    timerText->addComponent<TextComponent>(
+        std::to_string(timer),
+        TIMER_POS_X,
+        TIMER_POS_Y,
+        TIMER_TEXT_SIZE,
+        sf::Color(246, 246, 246)
+    );
+    timerText->addComponent<PositionComponent>(TIMER_POS_X, TIMER_POS_Y);
+    timerText->addComponent<RenderLayerComponent>(3);
+    timerText->addComponent<CatchingTypeEntityComponent>();
+    timerText->addComponent<TimerComponent>();
+}
+
 
 void arrowRotation(EntityManager* em, float dt) {
     auto arrow = em->getEntitiesWithComponent<CatchingArrowComponent>()[0];
@@ -183,12 +209,6 @@ void pokeballCollision(EntityManager* em, RenderSystem* render, GameState* state
 }
 
 void handlePokeballOutOfMap(EntityManager* em, RenderSystem* render, GameState* state) {
-    auto pokeball = em->getEntitiesWithComponent<PokeballComponent>()[0];
-    auto location = em->getEntitiesWithComponent<CatchingLocationComponent>()[0];
-    auto pokemon = em->getEntitiesWithComponent<AttackedPokemonComponent>()[0];
-
-    pokemon->removeComponent<CatchingTypeEntityComponent>();
-    setPokemonPropsIfLose(pokemon);
     removeCatchingEntities(em, render);
     
     auto entities = em->getEntitiesWithComponent<GameTypeEntityComponent>();
@@ -223,14 +243,17 @@ void removeCatchingEntities(EntityManager* em, RenderSystem* render) {
     }
 }
 
-void setPokemonPropsIfLose(Entity *pokemon) {
-    pokemon->getComponent<PositionComponent>()->setPos(
-        BULBASOUR_POSITION_X,
-        BULBASOUR_POSITION_Y
-    );
-    pokemon->getComponent<SizeComponent>()->setSize(
-        POKEMON_INVENTORY_WIDTH,
-        POKEMON_INVENTORY_HEIGHT
-    );
-    pokemon->addComponent<GameTypeEntityComponent>();
+void updateTimer(EntityManager* em, float dt) {
+    timer -= dt;
+    auto timerText = em->getEntitiesWithComponent<TimerComponent>()[0];
+    timerText->getComponent<TextComponent>()->setText(std::to_string(static_cast<int>(timer + 0.5f)));
+}
+
+bool checkTimer(EntityManager* em, RenderSystem* render, GameState* state) {
+    if (timer <= 0) {
+        timer = TIMER_DURATION;
+        handlePokeballOutOfMap(em, render, state);
+        return true;
+    }
+    return false;
 }
