@@ -110,6 +110,11 @@ void update(Controller* controller, float deltaTime, sf::RenderWindow* window) {
 		break;
 	}
 
+	case GameState::Onboarding: {
+		handleOnboarding(controller);
+		break;
+	}
+
 	default:
 		break;
 	}

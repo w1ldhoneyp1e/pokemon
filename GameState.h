@@ -9,5 +9,6 @@ enum GameState {
 	Shop,
 	TheEnd,
     Pause,
-	Dialog
+	Dialog,
+    Onboarding
 };

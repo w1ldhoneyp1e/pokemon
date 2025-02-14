@@ -6,6 +6,28 @@ void initOnboardingLayout(EntityManager* em);
 void initOnboardingText(EntityManager* em);
 void initOnboardingButton(EntityManager* em);
 
+void clearOnboarding(EntityManager* em, RenderSystem* render);
+void closeOnboarding(Controller* controller);
+
+void handleOnboarding(Controller* controller) {
+	auto [input, em, render, state, battleContext, maps, currentLocation] = controller->getAll();
+
+	if (input->hasMouseClick()) {
+		auto button = em->getEntitiesWithComponent<OnboardingButtonComponent>()[0];
+		if (isClickOnEntity(input->getMouseClick(), button)) {
+			closeOnboarding(controller);
+			return;
+		}
+	}
+	auto keys = input->getPressedKeys();
+	if (
+		std::find(keys.begin(), keys.end(), sf::Keyboard::Escape) != keys.end() || 
+		std::find(keys.begin(), keys.end(), sf::Keyboard::Enter) != keys.end()
+	) {
+		closeOnboarding(controller);
+	}
+}
+
 void initOnboarding(EntityManager* em) {
 	initOnboardingLayout(em);
 	initOnboardingText(em);
@@ -14,6 +36,7 @@ void initOnboarding(EntityManager* em) {
 
 void initOnboardingLayout(EntityManager* em) {
 	auto onboarding = em->createEntity();
+	onboarding->addComponent<OnboardingComponent>();
 	onboarding->addComponent<PositionComponent>(
 		ONBOARDING_LAYOUT_POSITION_X,
 		ONBOARDING_LAYOUT_POSITION_Y
@@ -36,6 +59,7 @@ void initOnboardingLayout(EntityManager* em) {
 
 void initOnboardingText(EntityManager* em) {
 	auto text = em->createEntity();
+	text->addComponent<OnboardingComponent>();
 	text->addComponent<PositionComponent>(
 		ONBOARDING_TEXT_X,
 		ONBOARDING_TEXT_Y
@@ -53,6 +77,8 @@ void initOnboardingText(EntityManager* em) {
 
 void initOnboardingButton(EntityManager* em) {
 	auto button = em->createEntity();
+	button->addComponent<OnboardingComponent>();
+	button->addComponent<OnboardingButtonComponent>();
 	button->addComponent<PositionComponent>(
 		ONBOARDING_BUTTON_X,
 		ONBOARDING_BUTTON_Y
@@ -71,4 +97,19 @@ void initOnboardingButton(EntityManager* em) {
 			13
 		);
 	}
+}
+
+void clearOnboarding(EntityManager* em, RenderSystem* render) {
+	auto onboarding = em->getEntitiesWithComponent<OnboardingComponent>();
+	for (auto entity : onboarding) {
+		render->removeEntity(entity->getId());
+		em->removeEntity(entity);
+	}
+}
+
+void closeOnboarding(Controller* controller) {
+	auto [input, em, render, state, battleContext, maps, currentLocation] = controller->getAll();
+	clearOnboarding(em, render);
+	*state = GameState::Game;
+	input->clear();
 }

@@ -16,8 +16,9 @@ void onStartGameButtonPress(Controller* controller) {
 	auto button = em->getEntitiesWithComponent<StartButtonComponent>()[0];
 	if (!input->hasMouseClick()) return;
 	if (!isClickOnEntity(input->getMouseClick(), button)) return;
-	*state = GameState::Game;
+	*state = GameState::Onboarding;
 	initGameEntities(controller);
+	initOnboarding(em);
 	render->removeEntities();
 
 	render->addEntities(em->getEntitiesWithComponent<GameTypeEntityComponent>());

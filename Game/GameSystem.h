@@ -20,7 +20,6 @@ void initGameEntities(Controller* controller) {
     auto [input, em, render, state, battleContext, collisionMaps, currentLocation] = controller->getAll();
     initPlayer(em);
     initGameLocation(em);
-	initOnboarding(em);
 	
     for(int i = 0; i < 3; ++i) {
         generatePokemon(controller);
