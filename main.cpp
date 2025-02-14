@@ -120,6 +120,11 @@ void update(Controller* controller, float deltaTime, sf::RenderWindow* window) {
 		break;
 	}
 
+	case GameState::AfterCatchingPopup: {
+		handleAfterCatchingPopup(controller);
+		break;
+	}
+
 	default:
 		break;
 	}

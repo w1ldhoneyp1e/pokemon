@@ -34,6 +34,15 @@ void initTimer(EntityManager* em);
 void updateTimer(EntityManager* em, float dt);
 bool checkTimer(EntityManager* em, RenderSystem* render, GameState* state);
 
+void createAfterCatchingPopup(EntityManager* em, bool isSuccess);
+void createAfterCatchingPopupLayout(EntityManager* em);
+void createAfterCatchingPopupText(EntityManager* em, bool isSuccess);
+void createAfterCatchingPopupButton(EntityManager* em);
+
+void handleAfterCatchingPopup(Controller* controller);
+void closeAfterCatchingPopup(Controller* controller);
+void clearAfterCatchingPopup(EntityManager* em, RenderSystem* render);
+
 void updateCatching(Controller* controller, float dt) {
 	auto [input, em, render, state, battleContext, maps, currentLocation] = controller->getAll();
 
@@ -225,11 +234,13 @@ void pokeballCollision(EntityManager* em, RenderSystem* render, GameState* state
 
 void handlePokeballOutOfMap(EntityManager* em, RenderSystem* render, GameState* state) {
     removeCatchingEntities(em, render);
+
+    createAfterCatchingPopup(em, false);
     
     auto entities = em->getEntitiesWithComponent<GameTypeEntityComponent>();
     render->addEntities(entities);
 
-    *state = GameState::Game;
+    *state = GameState::AfterCatchingPopup;
 }
 
 void handlePokeballPokemonCollision(EntityManager* em, RenderSystem* render, GameState* state) {
@@ -243,10 +254,12 @@ void handlePokeballPokemonCollision(EntityManager* em, RenderSystem* render, Gam
     
     removeCatchingEntities(em, render);
 
+    createAfterCatchingPopup(em, true);
+
     auto entities = em->getEntitiesWithComponent<GameTypeEntityComponent>();
     render->addEntities(entities);
 
-    *state = GameState::Game;
+    *state = GameState::AfterCatchingPopup;
 }
 
 
@@ -382,4 +395,109 @@ void closeHelpCatching(Controller* controller) {
 	clearHelpCatching(em, render);
 	*state = GameState::Catching;
 	input->clear();
+}
+
+void createAfterCatchingPopup(EntityManager* em, bool isSuccess) {
+    createAfterCatchingPopupLayout(em);
+    createAfterCatchingPopupText(em, isSuccess);
+    createAfterCatchingPopupButton(em);
+}
+
+void createAfterCatchingPopupLayout(EntityManager* em) {
+    auto afterCatchingPopupLayout = em->createEntity();
+    afterCatchingPopupLayout->addComponent<PositionComponent>(
+        AFTER_CATCHING_POPUP_LAYOUT_X,
+        AFTER_CATCHING_POPUP_LAYOUT_Y
+    );
+    afterCatchingPopupLayout->addComponent<SizeComponent>(
+        AFTER_CATCHING_POPUP_LAYOUT_WIDTH,
+        AFTER_CATCHING_POPUP_LAYOUT_HEIGHT
+    );
+    afterCatchingPopupLayout->addComponent<RenderLayerComponent>(5);
+    afterCatchingPopupLayout->addComponent<GameTypeEntityComponent>();
+    afterCatchingPopupLayout->addComponent<AfterCatchingPopupComponent>();
+    sf::Texture afterCatchingPopupLayoutTexture;
+    if (afterCatchingPopupLayoutTexture.loadFromFile("../res/background_menu(62x46).png")) {
+        afterCatchingPopupLayout->addComponent<TextureComponent>(
+            afterCatchingPopupLayoutTexture,
+            62,
+            46
+        );
+    }
+}
+
+void createAfterCatchingPopupText(EntityManager* em, bool isSuccess) {
+    auto afterCatchingPopupText = em->createEntity();
+    afterCatchingPopupText->addComponent<PositionComponent>(
+        AFTER_CATCHING_POPUP_TEXT_X,
+        AFTER_CATCHING_POPUP_TEXT_Y
+    );
+    afterCatchingPopupText->addComponent<RenderLayerComponent>(6);
+    afterCatchingPopupText->addComponent<AfterCatchingPopupComponent>();
+    afterCatchingPopupText->addComponent<GameTypeEntityComponent>();
+    afterCatchingPopupText->addComponent<TextComponent>(
+        isSuccess ? AFTER_CATCHING_POPUP_TEXT_SUCCESS : AFTER_CATCHING_POPUP_TEXT_FAIL,
+        AFTER_CATCHING_POPUP_TEXT_X,
+        AFTER_CATCHING_POPUP_TEXT_Y,
+        AFTER_CATCHING_POPUP_TEXT_SIZE,
+        sf::Color(68, 68, 68)
+    );
+}
+
+void createAfterCatchingPopupButton(EntityManager* em) {
+    auto afterCatchingPopupButton = em->createEntity();
+    afterCatchingPopupButton->addComponent<PositionComponent>(
+        AFTER_CATCHING_POPUP_BUTTON_X,
+        AFTER_CATCHING_POPUP_BUTTON_Y
+    );
+    afterCatchingPopupButton->addComponent<SizeComponent>(
+        AFTER_CATCHING_POPUP_BUTTON_WIDTH,
+        AFTER_CATCHING_POPUP_BUTTON_HEIGHT
+    );
+    afterCatchingPopupButton->addComponent<RenderLayerComponent>(6);
+    afterCatchingPopupButton->addComponent<AfterCatchingPopupComponent>();
+    afterCatchingPopupButton->addComponent<AfterCatchingPopupButtonComponent>();
+    afterCatchingPopupButton->addComponent<GameTypeEntityComponent>();
+    sf::Texture afterCatchingPopupButtonTexture;
+    if (afterCatchingPopupButtonTexture.loadFromFile("../res/okButton(32x13).png")) {
+        afterCatchingPopupButton->addComponent<TextureComponent>(
+            afterCatchingPopupButtonTexture,
+            32,
+            13
+        );
+    }
+}
+
+void handleAfterCatchingPopup(Controller* controller) {
+    auto [input, em, render, state, battleContext, maps, currentLocation] = controller->getAll();
+    if (input->hasMouseClick()) {
+        auto button = em->getEntitiesWithComponent<AfterCatchingPopupButtonComponent>()[0];
+        if (isClickOnEntity(input->getMouseClick(), button)) {
+            closeAfterCatchingPopup(controller);
+            return;
+        }
+    }
+
+    auto keys = input->getPressedKeys();
+    if (
+        std::find(keys.begin(), keys.end(), sf::Keyboard::Escape) != keys.end() || 
+        std::find(keys.begin(), keys.end(), sf::Keyboard::Enter) != keys.end()
+    ) {
+        closeAfterCatchingPopup(controller);
+    }
+}
+
+void closeAfterCatchingPopup(Controller* controller) {
+    auto [input, em, render, state, battleContext, maps, currentLocation] = controller->getAll();
+    clearAfterCatchingPopup(em, render);
+    *state = GameState::Game;
+    input->clear();
+}
+
+void clearAfterCatchingPopup(EntityManager* em, RenderSystem* render) {
+    auto afterCatchingPopup = em->getEntitiesWithComponent<AfterCatchingPopupComponent>();
+    for (auto entity : afterCatchingPopup) {
+        render->removeEntity(entity->getId());
+        em->removeEntity(entity);
+    }
 }

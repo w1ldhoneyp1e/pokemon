@@ -12,5 +12,6 @@ enum GameState {
 	Dialog,
     Onboarding,
     HelpCatching,
-    HelpBattle
+    HelpBattle,
+    AfterCatchingPopup
 };

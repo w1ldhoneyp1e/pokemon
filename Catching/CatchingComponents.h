@@ -9,6 +9,8 @@ class PokeballComponent : public Component {};
 class TimerComponent : public Component {};
 class HelpCatchingComponent : public Component {};
 class HelpCatchingButtonComponent : public Component {};
+class AfterCatchingPopupComponent : public Component {};
+class AfterCatchingPopupButtonComponent : public Component {};
 
 class ThrowablePokeballComponent : public Component {
 private:
