@@ -197,9 +197,9 @@ void initMyPokemon(EntityManager *em) {
 	pokemon->getComponent<HealthComponent>()->setVisible(true);
 	sf::Texture pokemonTexture;
 	auto texture = pokemon->getComponent<TextureComponent>();
-	texture->setWidth(64);
-	texture->setHeight(64);
-	if (pokemonTexture.loadFromFile("../res/" + pokemon->getComponent<PokemonComponent>()->getName() + "(64x64).png")) {
+	texture->setWidth(48);
+	texture->setHeight(48);
+	if (pokemonTexture.loadFromFile("../res/" + pokemon->getComponent<PokemonComponent>()->getName() + "(48x48).png")) {
 		texture->setTexture(pokemonTexture);
 	}
 }
@@ -219,11 +219,11 @@ void initEnemyPokemon(EntityManager *em) {
     pokemon->addComponent<DamageComponent>(10, 25);
     pokemon->addComponent<EnemyPokemonComponent>();
     sf::Texture pokemonTexture;
-    if (pokemonTexture.loadFromFile("../res/" + pokemon->getComponent<PokemonComponent>()->getName() + "(64x64).png")) {
+    if (pokemonTexture.loadFromFile("../res/" + pokemon->getComponent<PokemonComponent>()->getName() + "(48x48).png")) {
         pokemon->addComponent<TextureComponent>(
 			pokemonTexture,
-			64, 
-			64
+			48, 
+			48
 		);
     }
 }

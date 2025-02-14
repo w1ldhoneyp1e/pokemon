@@ -353,7 +353,7 @@ void initHelpCatchingButton(EntityManager* em) {
     helpCatchingButton->addComponent<RenderLayerComponent>(5);
     helpCatchingButton->addComponent<CatchingTypeEntityComponent>();
     sf::Texture helpCatchingButtonTexture;
-    if (helpCatchingButtonTexture.loadFromFile("../res/backButton(32x13).png")) {
+    if (helpCatchingButtonTexture.loadFromFile("../res/okButton(32x13).png")) {
         helpCatchingButton->addComponent<TextureComponent>(
             helpCatchingButtonTexture,
             32,
