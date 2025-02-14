@@ -18,3 +18,4 @@
 #include "../TheEnd/TheEndComponents.h"
 #include "../Pause/PauseComponents.h"
 #include "../Quests/QuestsComponents.h"
+#include "../Onboarding/OnboardingComponents.h"

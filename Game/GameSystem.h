@@ -2,6 +2,7 @@
 #include "../systems/EntityManager.h"
 #include "../systems/RenderSystem.h"
 #include "../Pokemon/PokemonSystem.h"
+#include "../Onboarding/OnboardingSystem.h"
 #include "../Shop/ShopSystem.h"
 #include <SFML/Graphics.hpp>
 #include "../Entity.h"
@@ -10,15 +11,16 @@
 
 void initPlayer(EntityManager* em);
 void initGameLocation(EntityManager* em);
-void initBulbasour(EntityManager* em);
 
 void initTrainer(Controller* controller);
 void initTrainerPokemons(EntityManager *em, TrainerPokemonsComponent *pokemons);
 void initAreaForFinalQuest(Controller* controller, Entity* trainer);
+
 void initGameEntities(Controller* controller) {
     auto [input, em, render, state, battleContext, collisionMaps, currentLocation] = controller->getAll();
     initPlayer(em);
     initGameLocation(em);
+	initOnboarding(em);
 	
     for(int i = 0; i < 3; ++i) {
         generatePokemon(controller);
@@ -26,7 +28,6 @@ void initGameEntities(Controller* controller) {
     initTrainer(controller);
 	initShop(em);
 }
-
 
 std::array<std::vector<sf::Texture>, 4> getPlayerTextures();
 
@@ -80,28 +81,6 @@ void initGameLocation(EntityManager* em) {
 			locationTexture,
 			WINDOW_WIDTH, 
 			WINDOW_HEIGHT
-		);
-    }
-}
-
-void initBulbasour(EntityManager* em) {
-	auto bulbasour = em->createEntity();
-    bulbasour->addComponent<PositionComponent>(
-		BULBASOUR_POSITION_X, 
-		BULBASOUR_POSITION_Y
-	);
-    bulbasour->addComponent<SizeComponent>(POKEMON_INVENTORY_WIDTH, POKEMON_INVENTORY_HEIGHT);
-	bulbasour->addComponent<RenderLayerComponent>(1);
-	bulbasour->addComponent<HealthComponent>(100, 100);
-	bulbasour->addComponent<DamageComponent>(20, 30);
-	bulbasour->addComponent<PokemonComponent>("Bulbasour");
-    bulbasour->addComponent<GameTypeEntityComponent>();
-    sf::Texture bulbasourTexture;
-    if (bulbasourTexture.loadFromFile("../res/bulbasour(64x64).png")) {
-        bulbasour->addComponent<TextureComponent>(
-			bulbasourTexture,
-			64, 
-			64
 		);
     }
 }

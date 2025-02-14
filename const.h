@@ -256,4 +256,48 @@ const int DIALOG_CANCEL_BUTTON_POSITION_Y = DIALOG_POSITION_Y + DIALOG_HEIGHT - 
 const int DIALOG_OK_BUTTON_POSITION_X = DIALOG_POSITION_X + DIALOG_WIDTH - DIALOG_BUTTON_WIDTH - 30;
 const int DIALOG_OK_BUTTON_POSITION_Y = DIALOG_CANCEL_BUTTON_POSITION_Y;
 
+// Onboarding
 
+const int ONBOARDING_LAYOUT_WIDTH = 300;
+const int ONBOARDING_LAYOUT_HEIGHT = 300;
+
+const int ONBOARDING_LAYOUT_POSITION_X = WINDOW_WIDTH / 2 - ONBOARDING_LAYOUT_WIDTH / 2;
+const int ONBOARDING_LAYOUT_POSITION_Y = WINDOW_HEIGHT / 2 - ONBOARDING_LAYOUT_HEIGHT / 2;
+
+const int ONBOARDING_TEXT_SIZE = 22;
+
+const int ONBOARDING_TEXT_X = ONBOARDING_LAYOUT_POSITION_X + 30;
+const int ONBOARDING_TEXT_Y = ONBOARDING_LAYOUT_POSITION_Y + 30;
+
+const int ONBOARDING_BUTTON_WIDTH = 100;
+const int ONBOARDING_BUTTON_HEIGHT = 32;
+
+const int ONBOARDING_BUTTON_X = WINDOW_WIDTH / 2 - ONBOARDING_BUTTON_WIDTH / 2;
+const int ONBOARDING_BUTTON_Y = WINDOW_HEIGHT - ONBOARDING_BUTTON_HEIGHT - 20;
+
+const std::string ONBOARDING_TEXT_VALUE = R"(
+Welcome to the World of Pokemon!
+
+
+In this adventure, your goal is 
+to become the ultimate Trainer! 
+
+To win, you must defeat the Trainer
+in battle. But first, you need 
+a Pokemon of your own!
+
+
+Explore the world, catch powerful 
+Pokemon, and prepare for battle.
+
+
+Controls:
+-- Enter - Perform an action
+-- E - Open inventory
+-- Esc - Open menu
+
+
+Get ready for an exciting 
+journey-your Pokemon adventure 
+starts now!
+)";
