@@ -115,6 +115,11 @@ void update(Controller* controller, float deltaTime, sf::RenderWindow* window) {
 		break;
 	}
 
+	case GameState::HelpCatching: {
+		handleHelpCatching(controller);
+		break;
+	}
+
 	default:
 		break;
 	}

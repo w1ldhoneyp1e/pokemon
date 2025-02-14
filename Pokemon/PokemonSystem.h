@@ -42,12 +42,12 @@ void pokemonCollision(Controller* controller) {
 				inventory,
 				keys
 			})) {
-			*state = GameState::Catching;
+			*state = GameState::HelpCatching;
 			input->clear();
 			pokemon->addComponent<AttackedPokemonComponent>();
 			render->removeEntity(pokemon->getId());
 			pokemon->removeComponent<GameTypeEntityComponent>();
-			initCatching(em, render);
+			initCatching(em, render, state);
 			inventory->removePokeballs(1);
 			return;
 		}

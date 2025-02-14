@@ -10,5 +10,7 @@ enum GameState {
 	TheEnd,
     Pause,
 	Dialog,
-    Onboarding
+    Onboarding,
+    HelpCatching,
+    HelpBattle
 };

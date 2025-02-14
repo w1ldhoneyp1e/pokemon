@@ -22,6 +22,14 @@ void initCatchingPokemon(EntityManager* em);
 void handlePokeballPokemonCollision(EntityManager* em, RenderSystem* render, GameState* state);
 void handlePokeballOutOfMap(EntityManager* em, RenderSystem* render, GameState* state);
 
+void initHelpCatching(EntityManager* em);
+void initHelpCatchingLayout(EntityManager* em);
+void initHelpCatchingText(EntityManager* em);
+void initHelpCatchingButton(EntityManager* em);
+void handleHelpCatching(Controller* controller);
+void clearHelpCatching(EntityManager* em, RenderSystem* render);
+void closeHelpCatching(Controller* controller);
+
 void initTimer(EntityManager* em);
 void updateTimer(EntityManager* em, float dt);
 bool checkTimer(EntityManager* em, RenderSystem* render, GameState* state);
@@ -39,14 +47,21 @@ void updateCatching(Controller* controller, float dt) {
     pokeballCollision(em, render, state);
 }
 
-void initCatching(EntityManager* em, RenderSystem* render) {
+bool hasPlayerSeenHelpCatching = false;
+
+void initCatching(EntityManager* em, RenderSystem* render, GameState* state) {
     timer = 20;
     initTimer(em);
     initCatchingLocation(em);
     initCatchingArrow(em);
     initCatchingPokeball(em);
     initCatchingPokemon(em);
-
+    if (!hasPlayerSeenHelpCatching) {
+        initHelpCatching(em);
+        hasPlayerSeenHelpCatching = true;
+    } else {
+        *state = GameState::Catching;
+    }
     render->removeEntities();
     render->addEntities(em->getEntitiesWithComponent<CatchingTypeEntityComponent>());
 }
@@ -256,4 +271,115 @@ bool checkTimer(EntityManager* em, RenderSystem* render, GameState* state) {
         return true;
     }
     return false;
+}
+
+void initHelpCatching(EntityManager* em) {
+    initHelpCatchingLayout(em);
+    initHelpCatchingText(em);
+    initHelpCatchingButton(em);
+}
+
+void initHelpCatchingLayout(EntityManager* em) {
+    auto helpCatchingLayout = em->createEntity();
+    helpCatchingLayout->addComponent<PositionComponent>(
+        ONBOARDING_LAYOUT_POSITION_X,
+        ONBOARDING_LAYOUT_POSITION_Y
+    );
+    helpCatchingLayout->addComponent<SizeComponent>(
+        ONBOARDING_LAYOUT_WIDTH,
+        ONBOARDING_LAYOUT_HEIGHT
+    );
+    helpCatchingLayout->addComponent<RenderLayerComponent>(4);
+    helpCatchingLayout->addComponent<HelpCatchingComponent>();
+    helpCatchingLayout->addComponent<CatchingTypeEntityComponent>();
+    sf::Texture helpCatchingLayoutTexture;
+    if (helpCatchingLayoutTexture.loadFromFile("../res/background_menu(62x46).png")) {
+        helpCatchingLayout->addComponent<TextureComponent>(
+            helpCatchingLayoutTexture,
+            62,
+            46
+        );
+    }
+}
+
+void initHelpCatchingText(EntityManager* em) {
+    auto helpCatchingText = em->createEntity();
+    helpCatchingText->addComponent<HelpCatchingComponent>();
+    helpCatchingText->addComponent<PositionComponent>(
+        ONBOARDING_LAYOUT_POSITION_X,
+        ONBOARDING_LAYOUT_POSITION_Y
+    );
+    helpCatchingText->addComponent<SizeComponent>(
+        ONBOARDING_LAYOUT_WIDTH,
+        ONBOARDING_LAYOUT_HEIGHT
+    );
+    helpCatchingText->addComponent<RenderLayerComponent>(5);
+    helpCatchingText->addComponent<HelpCatchingComponent>();
+    helpCatchingText->addComponent<CatchingTypeEntityComponent>();
+    helpCatchingText->addComponent<TextComponent>(
+        HELP_CATCHING_TEXT_VALUE,
+        ONBOARDING_TEXT_X,
+        ONBOARDING_TEXT_Y,
+        ONBOARDING_TEXT_SIZE,
+        sf::Color(68, 68, 68)
+    );
+}
+
+void initHelpCatchingButton(EntityManager* em) {
+    auto helpCatchingButton = em->createEntity();
+    helpCatchingButton->addComponent<HelpCatchingComponent>();
+    helpCatchingButton->addComponent<HelpCatchingButtonComponent>();
+    helpCatchingButton->addComponent<PositionComponent>(
+        ONBOARDING_BUTTON_X,
+        ONBOARDING_BUTTON_Y
+    );
+    helpCatchingButton->addComponent<SizeComponent>(
+        ONBOARDING_BUTTON_WIDTH,
+        ONBOARDING_BUTTON_HEIGHT
+    );
+    helpCatchingButton->addComponent<RenderLayerComponent>(5);
+    helpCatchingButton->addComponent<CatchingTypeEntityComponent>();
+    sf::Texture helpCatchingButtonTexture;
+    if (helpCatchingButtonTexture.loadFromFile("../res/backButton(32x13).png")) {
+        helpCatchingButton->addComponent<TextureComponent>(
+            helpCatchingButtonTexture,
+            32,
+            13
+        );
+    }
+}
+
+void handleHelpCatching(Controller* controller) {
+    auto [input, em, render, state, battleContext, maps, currentLocation] = controller->getAll();
+
+	if (input->hasMouseClick()) {
+		auto button = em->getEntitiesWithComponent<HelpCatchingButtonComponent>()[0];
+		if (isClickOnEntity(input->getMouseClick(), button)) {
+			closeHelpCatching(controller);
+			return;
+		}
+	}
+
+	auto keys = input->getPressedKeys();
+	if (
+		std::find(keys.begin(), keys.end(), sf::Keyboard::Escape) != keys.end() || 
+		std::find(keys.begin(), keys.end(), sf::Keyboard::Enter) != keys.end()
+	) {
+		closeHelpCatching(controller);
+	}
+}
+
+void clearHelpCatching(EntityManager* em, RenderSystem* render) {
+	auto helpCatching = em->getEntitiesWithComponent<HelpCatchingComponent>();
+	for (auto entity : helpCatching) {
+		render->removeEntity(entity->getId());
+		em->removeEntity(entity);
+	}
+}
+
+void closeHelpCatching(Controller* controller) {
+	auto [input, em, render, state, battleContext, maps, currentLocation] = controller->getAll();
+	clearHelpCatching(em, render);
+	*state = GameState::Catching;
+	input->clear();
 }

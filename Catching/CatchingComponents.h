@@ -7,6 +7,8 @@ class CatchingArrowComponent : public Component {};
 class CatchingLocationComponent : public Component {};
 class PokeballComponent : public Component {};
 class TimerComponent : public Component {};
+class HelpCatchingComponent : public Component {};
+class HelpCatchingButtonComponent : public Component {};
 
 class ThrowablePokeballComponent : public Component {
 private:

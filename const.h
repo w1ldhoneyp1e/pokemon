@@ -92,6 +92,24 @@ const int TIMER_TEXT_SIZE = 48;
 
 const int TIMER_DURATION = 20;
 
+const std::string HELP_CATCHING_TEXT_VALUE = R"(
+Catch the Pokemon!
+
+
+You have 20 seconds to catch
+the Pokemon. Press Enter or Space
+when the arrow is perfectly 
+aligned with it.
+
+
+!!! If you miss or time runs out,
+you will lose your Pokeball, 
+and the Pokemon will escape !!!
+
+
+Good luck, Trainer!
+)";
+
 // Items Chest
 
 const int ITEM_SIDE = 14;
