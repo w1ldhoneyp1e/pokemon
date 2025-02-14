@@ -2,6 +2,7 @@
 
 
 enum class BattleState {
+    Help,
     PlayerTurn,
     EnemyTurn,
     PlayerWon,

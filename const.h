@@ -176,6 +176,29 @@ const int BATTLE_POTION_BUTTON_TEXT_X = BATTLE_POTION_BUTTON_X + BATTLE_POTION_B
 const int BATTLE_POTION_BUTTON_UPPER_TEXT_Y = BATTLE_POTION_BUTTON_Y + 3;
 const int BATTLE_POTION_BUTTON_LOWER_TEXT_Y = BATTLE_POTION_BUTTON_Y + BATTLE_POTION_BUTTON_HEIGHT - 10;
 
+const std::string BATTLE_HELP_TEXT_VALUE = R"(
+Defeat the Enemy!
+
+
+To defeat your opponent, reduce 
+their health bar to 0. 
+
+
+Use the arrow keys:
+--- Up - Attack
+--- Right - Attack
+--- Down - Attack
+
+
+You can also heal by pressing 1 
+or clicking the Potion icon 
+at the bottom.
+
+
+Stay strong 
+and strategize wisely, Trainer!
+)";
+
 // Shop
 
 const float SHOP_POS_X = 256.0f;

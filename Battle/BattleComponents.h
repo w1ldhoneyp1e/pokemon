@@ -6,6 +6,8 @@ class BattleInterfaceEntityComponent : public Component {};
 class PlayerPokemonComponent : public Component {};
 class PotionButtonComponent : public Component {};
 class PotionButtonLayoutComponent : public Component {};
+class BattleHelpComponent : public Component {};
+class BattleHelpButtonComponent : public Component {};
 
 enum AttackDir {
     Head,

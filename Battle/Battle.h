@@ -38,6 +38,14 @@ void decreasePotionCount(EntityManager *em);
 void closeBattle(EntityManager *em, RenderSystem *render);
 void removePlayersPokemon(EntityManager *em);
 
+void initBattleHelp(EntityManager *em);
+void initBattleHelpLayout(EntityManager *em);
+void initBattleHelpText(EntityManager *em);
+void initBattleHelpButton(EntityManager *em);
+void onCloseBattleHelp(Controller *controller);
+void clearBattleHelp(EntityManager *em, RenderSystem *render);
+void closeBattleHelp(Controller *controller);
+
 void handleDialog(Controller* controller) {
 	auto [input, em, render, state, battleContext, maps, currentLocation] = controller->getAll();
 	if (!input->hasMouseClick()) return;
@@ -72,29 +80,33 @@ void updateBattle(Controller *controller) {
     auto [input, em, render, state, battleContext, maps, currentLocation] = controller->getAll();
 
     switch (battleContext->state) {
-    case BattleState::PlayerTurn: {
-		onUsePotion(em, input);
-		onClickArrow(em, input, battleContext);
-        break;
-	}
-    case BattleState::EnemyTurn:
-		enemyAttack(em, battleContext);
-        break;
+		case BattleState::Help: {
+			onCloseBattleHelp(controller);
+			break;
+		}
+		case BattleState::PlayerTurn: {
+			onUsePotion(em, input);
+			onClickArrow(em, input, battleContext);
+			break;
+		}
+		case BattleState::EnemyTurn:
+			enemyAttack(em, battleContext);
+			break;
 
-    case BattleState::PlayerWon:
-		closeBattle(em, render);
-		clearGameEntities(em, render);
-		createTheEnd(controller);
-		*state = GameState::TheEnd;
-        break;
+		case BattleState::PlayerWon:
+			closeBattle(em, render);
+			clearGameEntities(em, render);
+			createTheEnd(controller);
+			*state = GameState::TheEnd;
+			break;
 
 
-    case BattleState::EnemyWon:
-		closeBattle(em, render);
-		removePlayersPokemon(em);
-		*state = GameState::Game;
-        break;
-    }
+		case BattleState::EnemyWon:
+			closeBattle(em, render);
+			removePlayersPokemon(em);
+			*state = GameState::Game;
+			break;
+		}
 }
 
 void removePlayersPokemon(EntityManager *em) {
@@ -108,7 +120,16 @@ void removePlayersPokemon(EntityManager *em) {
 	em->removeEntity(playerPokemon);
 }
 
+bool hasPlayerSeenBattleHelp = false;
+
 void initBattle(EntityManager *em, RenderSystem *render, BattleContext *ctx) {
+	if (!hasPlayerSeenBattleHelp) {
+		initBattleHelp(em);
+		ctx->state = BattleState::Help;
+		hasPlayerSeenBattleHelp = true;
+	} else {
+		ctx->state = BattleState::PlayerTurn;
+	}
 	initBattleLocation(em);
 	initArrows(em);
 	initMyPokemon(em);
@@ -117,7 +138,6 @@ void initBattle(EntityManager *em, RenderSystem *render, BattleContext *ctx) {
 
 	render->removeEntities();
     render->addEntities(em->getEntitiesWithComponent<BattleTypeEntityComponent>());
-	ctx->state = BattleState::PlayerTurn;
 }
 
 void initBattleLocation(EntityManager *em) {
@@ -421,3 +441,88 @@ bool isSomePotions(EntityManager *em) {
 	auto potionAmount = inventory->getPotionCount();
 	return potionAmount > 0;
 }
+
+void initBattleHelp(EntityManager *em) {
+	initBattleHelpLayout(em);
+	initBattleHelpText(em);
+	initBattleHelpButton(em);
+}
+
+void initBattleHelpLayout(EntityManager *em) {
+	auto battleHelpLayout = em->createEntity();
+	battleHelpLayout->addComponent<PositionComponent>(ONBOARDING_LAYOUT_POSITION_X, ONBOARDING_LAYOUT_POSITION_Y);
+	battleHelpLayout->addComponent<SizeComponent>(ONBOARDING_LAYOUT_WIDTH, ONBOARDING_LAYOUT_HEIGHT);
+	battleHelpLayout->addComponent<BattleTypeEntityComponent>();
+	battleHelpLayout->addComponent<BattleInterfaceEntityComponent>();
+	battleHelpLayout->addComponent<BattleHelpComponent>();
+	battleHelpLayout->addComponent<RenderLayerComponent>(5);
+	sf::Texture texture;
+	if (texture.loadFromFile("../res/background_menu(62x46).png")) {
+		battleHelpLayout->addComponent<TextureComponent>(texture, 62, 46);
+	}
+}
+
+void initBattleHelpText(EntityManager *em) {
+	auto battleHelpText = em->createEntity();
+	battleHelpText->addComponent<PositionComponent>(ONBOARDING_TEXT_X, ONBOARDING_TEXT_Y);
+	battleHelpText->addComponent<BattleTypeEntityComponent>();
+	battleHelpText->addComponent<BattleInterfaceEntityComponent>();
+	battleHelpText->addComponent<BattleHelpComponent>();
+	battleHelpText->addComponent<RenderLayerComponent>(6);
+	battleHelpText->addComponent<TextComponent>(
+		BATTLE_HELP_TEXT_VALUE,
+		ONBOARDING_TEXT_X,
+		ONBOARDING_TEXT_Y,
+		ONBOARDING_TEXT_SIZE,
+		sf::Color(68, 68, 68)
+	);
+}
+
+void initBattleHelpButton(EntityManager *em) {
+	auto battleHelpButton = em->createEntity();
+	battleHelpButton->addComponent<PositionComponent>(ONBOARDING_BUTTON_X, ONBOARDING_BUTTON_Y);
+	battleHelpButton->addComponent<SizeComponent>(ONBOARDING_BUTTON_WIDTH, ONBOARDING_BUTTON_HEIGHT);
+	battleHelpButton->addComponent<BattleTypeEntityComponent>();
+	battleHelpButton->addComponent<BattleInterfaceEntityComponent>();
+	battleHelpButton->addComponent<BattleHelpComponent>();
+	battleHelpButton->addComponent<BattleHelpButtonComponent>();
+	battleHelpButton->addComponent<RenderLayerComponent>(6);
+	sf::Texture texture;
+	if (texture.loadFromFile("../res/okButton(32x13).png")) {
+		battleHelpButton->addComponent<TextureComponent>(texture, 32, 13);
+	}
+}
+
+void onCloseBattleHelp(Controller *controller) {
+	auto em = controller->getEntityManager();
+	auto input = controller->getInputSystem();
+
+	auto battleHelpButton = em->getEntitiesWithComponent<BattleHelpButtonComponent>().front();
+	if (input->hasMouseClick() && isClickOnEntity(input->getMouseClick(), battleHelpButton)) {
+		closeBattleHelp(controller);
+	}
+
+	auto keys = input->getPressedKeys();
+	if (
+		std::find(keys.begin(), keys.end(), sf::Keyboard::Escape) != keys.end() ||
+		std::find(keys.begin(), keys.end(), sf::Keyboard::Enter) != keys.end()
+	) {
+		closeBattleHelp(controller);
+	}
+}
+
+void closeBattleHelp(Controller *controller) {
+	auto [input, em, render, state, battleContext, maps, currentLocation] = controller->getAll();
+	clearBattleHelp(em, render);
+	battleContext->state = BattleState::PlayerTurn;
+	input->clear();
+}
+
+void clearBattleHelp(EntityManager *em, RenderSystem *render) {
+	auto battleHelp = em->getEntitiesWithComponent<BattleHelpComponent>();
+	for (auto entity : battleHelp) {
+		render->removeEntity(entity->getId());
+		em->removeEntity(entity);
+	}
+}
+
