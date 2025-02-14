@@ -8,6 +8,7 @@
 
 void createShop(EntityManager* em, RenderSystem* render);
 void createShopItems(EntityManager* em);
+void createShopTitle(EntityManager* em);
 void handleShopInput(Controller* controller, float deltaTime);
 void createShopRow(EntityManager* em, const ShopItemInfo& itemInfo, float yPos);
 PlayersInventoryComponent* getPlayerInventory(EntityManager* em);
@@ -415,8 +416,23 @@ void createShopButtons(EntityManager* em) {
     createBackButton(em);
 }
 
+void createShopTitle(EntityManager* em) {
+    auto shopTitle = em->createEntity();
+    shopTitle->addComponent<ShopTypeEntityComponent>();
+    shopTitle->addComponent<PositionComponent>(SHOP_INTERFACE_X + SHOP_INTERFACE_WIDTH / 2 - 27, SHOP_INTERFACE_Y + 40);
+    shopTitle->addComponent<RenderLayerComponent>(6);
+    shopTitle->addComponent<TextComponent>(
+        "Store", 
+        SHOP_INTERFACE_X + SHOP_INTERFACE_WIDTH / 2 - 27, 
+        SHOP_INTERFACE_Y + 40, 
+        30,
+        sf::Color(68, 68, 68)
+    );
+}
+
 void createShop(EntityManager* em, RenderSystem* render) {
     createShopInterface(em);
+    createShopTitle(em);
     createPlayerAvatar(em);
     createShopAvatar(em);
 
