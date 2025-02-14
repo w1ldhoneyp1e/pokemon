@@ -182,7 +182,7 @@ void createInventory(EntityManager* em) {
 void createSellLable(EntityManager* em, int id, float x, float y) {
 	auto sellLable = em->createEntity();
 	sellLable->addComponent<InventoryTypeEntityComponent>();
-	sellLable->addComponent<PositionComponent>(x + POKEMON_INVENTORY_WIDTH - 10, y + POKEMON_INVENTORY_HEIGHT - 10);
+	sellLable->addComponent<PositionComponent>(x + POKEMON_INVENTORY_WIDTH - 5, y + POKEMON_INVENTORY_HEIGHT - 5);
 	sellLable->addComponent<SizeComponent>(8, 8);
 	sellLable->addComponent<RenderLayerComponent>(5);
 	sellLable->addComponent<PokemonSellComponent>(id, POKEMON_SELL_PRICE);
