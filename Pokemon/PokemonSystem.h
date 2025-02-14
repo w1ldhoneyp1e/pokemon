@@ -111,8 +111,8 @@ void generatePokemon(Controller* controller) {
 			if (texture->loadFromFile(stats.texturePath)) {
 				pokemon->addComponent<TextureComponent>(
 					*texture,
-					64,
-					64
+					48,
+					48
 				);
 			}
 			render->addEntity(pokemon);

@@ -16,28 +16,28 @@ const std::vector<PokemonStats> POKEMON_TYPES = {
         100, 
         20, 
         30, 
-        "../res/bulbasour(64x64).png"
+        "../res/bulbasour(48x48).png"
     },
     {
         "Charmander", 
         90, 
         25, 
         35, 
-        "../res/charmander(64x64).png"
+        "../res/charmander(48x48).png"
     },
     {
         "Squirtle", 
         110, 
         15, 
         25, 
-        "../res/squirtle(64x64).png"
+        "../res/squirtle(48x48).png"
     },
     {
         "Pikachu", 
         85, 
         30, 
         40, 
-        "../res/pikachu(64x64).png"
+        "../res/pikachu(48x48).png"
     }
 };
 

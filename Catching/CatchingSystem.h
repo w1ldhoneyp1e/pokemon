@@ -7,7 +7,7 @@
 #include <iostream>
 
 float timer = 0;
-void initCatching(EntityManager* em, RenderSystem* render);
+void initCatching(EntityManager* em, RenderSystem* render, GameState* state);
 void arrowRotation(EntityManager* em, float dt);
 void onSpacePressed(EntityManager* em, InputSystem* input, float dt);
 void throwPokeball(EntityManager* em, float dt);
@@ -108,12 +108,12 @@ void arrowRotation(EntityManager* em, float dt) {
 void initCatchingPokemon(EntityManager* em) {
     auto pokemon = em->getEntitiesWithComponent<AttackedPokemonComponent>()[0];
     pokemon->getComponent<PositionComponent>()->setPos(
-        WINDOW_WIDTH / 2.5,
-        WINDOW_HEIGHT / 10
+        WINDOW_WIDTH / 2.5 + 10,
+        WINDOW_HEIGHT / 10 + 20
     );
     pokemon->getComponent<SizeComponent>()->setSize(
-        WINDOW_WIDTH / 5,
-        WINDOW_WIDTH / 5
+        WINDOW_WIDTH / 6,
+        WINDOW_WIDTH / 6
     );
     pokemon->addComponent<CatchingTypeEntityComponent>();
 }
